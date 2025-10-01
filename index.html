@@ -3,8 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>KH Brokers — Passive E‑commerce Investments</title>
-    <meta name="description" content="Acquire cash‑flowing e‑commerce brands with complete hands‑off management. Join 200+ smart investors trusting KH Brokers." />
+    
+    <title>KH Web Design — Professional Website Designer & Developer</title>
+    <meta name="description" content="Professional website designer and developer offering custom websites, responsive design, SEO optimization, logos, and digital marketing solutions. Elevate your business online." />
+    <meta name="keywords" content="website designer, website developer, web development, responsive websites, SEO, digital marketing, logos, branding, custom websites" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cdb0fbd5ab0709489ae497_kh-logo.png" />
 
     <!-- Tailwind CDN for single-file build -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,6 +34,8 @@
         }
       }
     </script>
+
+     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
@@ -40,20 +47,12 @@
       .backdrop{backdrop-filter:saturate(140%) blur(8px)}
     </style>
   </head>
-  <body>
-
-
-
-
-
-
-
-
-
+<body>
 
 <!-- Header -->
-<header class="sticky top-0 z-50 border-b border-white/10 bg-white/10 backdrop text-white">
+<header class="fixed top-0 left-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur text-white">
   <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <!-- Logo -->
     <a href="#hero-sec" class="inline-flex items-center gap-2">
       <img src="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cdb0fbd5ab0709489ae497_kh-logo.png" alt="KH Brokers" class="h-8 w-auto" />
     </a>
@@ -77,7 +76,7 @@
   </div>
 
   <!-- Mobile Nav -->
-  <div id="mobileNav" class="hidden md:hidden border-t border-white/10 bg-black/50 backdrop">
+  <div id="mobileNav" class="hidden md:hidden border-t border-white/10 bg-black/70 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-2">
       <a href="#hero-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Home</a>
       <a href="#about-sec1" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">About us</a>
@@ -87,36 +86,34 @@
   </div>
 </header>
 
-<!-- Script -->
+<!-- Spacer -->
+<div class="h-16"></div>
+
 <script>
+  // Sections & Links
   const sections = document.querySelectorAll("section[id]");
   const navLinks = document.querySelectorAll(".nav-link");
 
-  // Set the first one active by default
-  navLinks[0].classList.add("bg-purple-600", "text-white", "font-bold");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          navLinks.forEach((link) => {
+            link.classList.remove("bg-white", "text-black", "font-bold");
+            link.classList.add("text-white/80");
+            if (link.getAttribute("href") === `#${entry.target.id}`) {
+              link.classList.add("bg-white", "text-black", "font-bold");
+              link.classList.remove("text-white/80");
+            }
+          });
+        }
+      });
+    },
+    { threshold: 0.6 }
+  );
 
-  const observer = new IntersectionObserver((entries) => {
-    let maxRatio = 0;
-    let visibleSectionId = sections[0].id;
-
-    entries.forEach(entry => {
-      if (entry.intersectionRatio > maxRatio) {
-        maxRatio = entry.intersectionRatio;
-        visibleSectionId = entry.target.id;
-      }
-    });
-
-    navLinks.forEach(link => {
-      link.classList.remove("bg-purple-600", "text-white", "font-bold");
-      if (link.getAttribute("href") === `#${visibleSectionId}`) {
-        link.classList.add("bg-purple-600", "text-white", "font-bold");
-      }
-    });
-  }, { threshold: Array.from({length: 101}, (_, i) => i/100) }); // multiple thresholds for smoother tracking
-
-  sections.forEach(sec => observer.observe(sec));
+  sections.forEach((sec) => observer.observe(sec));
 </script>
-
 
 
 <!-- HERO -->
@@ -221,10 +218,6 @@
 </div> 
 </section>
 
-
-
-
-
       <!-- VIDEO / ABOUT -->
 <section id="about-sec1" class="max-w-6xl mx-auto px-4 mt-20">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -248,7 +241,6 @@
     
   </div>
 </section>
-
 
       <!-- BENEFITS -->
 <section id="benefits-sec" class="max-w-6xl mx-auto px-4 mt-20">
@@ -285,6 +277,8 @@
   </div>
 </section>
 
+
+</section>
 <!-- FAQ -->
 <section id="faq-sec" class="max-w-6xl mx-auto px-4 mt-20 mb-24">
   <h2 class="text-2xl md:text-3xl font-bold mb-6">FAQs</h2>
@@ -365,8 +359,6 @@
   </div>
 </section>
 
-
-
     <footer class="mt-20 border-t border-white/10">
       <div class="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <a href="#hero-sec" class="inline-flex items-center gap-2">
@@ -388,3 +380,5 @@
     </script>
   </body>
 </html>
+
+
