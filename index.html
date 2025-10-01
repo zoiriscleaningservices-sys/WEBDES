@@ -191,7 +191,7 @@
 </div> 
 </section>
 
-      <!-- VIDEO / ABOUT -->
+<!-- VIDEO / ABOUT -->
 <section id="about-sec1" class="max-w-6xl mx-auto px-4 mt-20">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
     
@@ -203,15 +203,19 @@
       </p>
     </div>
     
-    <!-- Video -->
+    <!-- YouTube Video -->
     <div class="w-full">
       <div class="relative" style="padding-top:56.25%">
-        <div class="absolute inset-0">
-          <div class="wistia_embed wistia_async_h6xfyxiaea videoFoam=true h-full w-full"></div>
-        </div>
+        <iframe class="absolute inset-0 w-full h-full" 
+                src="https://www.youtube.com/embed/KvPR9YTHsB0" 
+                title="YouTube video" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
       </div>
     </div>
-    
+
   </div>
 </section>
 
@@ -331,7 +335,7 @@
 
   <!-- Filters -->
   <div class="flex flex-wrap justify-center gap-3 mb-12">
-    <button class="filter-btn px-4 py-2 rounded bg-red-700 text-white font-medium" data-filter="all">All</button>
+    <button class="filter-btn px-4 py-2 rounded btn-grad text-white font-medium" data-filter="all">All</button>
     <button class="filter-btn px-4 py-2 rounded border border-gray-400" data-filter="ecommerce">Ecommerce</button>
     <button class="filter-btn px-4 py-2 rounded border border-gray-400" data-filter="fitness">Fitness</button>
     <button class="filter-btn px-4 py-2 rounded border border-gray-400" data-filter="technology">Technology</button>
@@ -571,9 +575,9 @@
       const filter = btn.getAttribute('data-filter');
 
       // Style active button
-      filterButtons.forEach(b => b.classList.remove('bg-red-700','text-white'));
+      filterButtons.forEach(b => b.classList.remove('btn-grad','text-white'));
       filterButtons.forEach(b => b.classList.add('border','border-gray-400'));
-      btn.classList.add('bg-red-700','text-white');
+      btn.classList.add('btn-grad','text-white');
       btn.classList.remove('border','border-gray-400');
 
       // Show/hide items
