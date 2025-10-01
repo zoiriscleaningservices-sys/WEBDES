@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KH Brokers — Passive E‑commerce Investments</title>
+    <meta name="description" content="Acquire cash‑flowing e‑commerce brands with complete hands‑off management. Join 200+ smart investors trusting KH Brokers." />
+
+    <!-- Tailwind CDN for single-file build -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                primary: '#6200FF',
+                accent: '#2DD652'
+              }
+            },
+            keyframes: {
+              glow: {
+                '0%,100%': { boxShadow: '0 0 0px rgba(45,214,82,0.3)' },
+                '50%': { boxShadow: '0 0 14px rgba(45,214,82,0.9)' }
+              }
+            },
+            animation: { glow: 'glow 1.2s ease-in-out infinite' }
+          }
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      html,body{height:100%}
+      body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";background:#02010A url('https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cdae4994b05fad558040a6_body-bg.png') no-repeat center/cover fixed;color:#fff}
+      .btn-grad{background-image:linear-gradient(90deg,#8e2efb 60%,#38ff7e)}
+      .text-grad{background:linear-gradient(90deg,#A363F4 -15%,#2DD652 110%);-webkit-background-clip:text;background-clip:text;color:transparent}
+      .backdrop{backdrop-filter:saturate(140%) blur(8px)}
+    </style>
+  </head>
+  <body>
+
+
+
+
+
+
+
+
+
+
+<!-- Header -->
+<header class="sticky top-0 z-50 border-b border-white/10 bg-white/10 backdrop text-white">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <a href="#hero-sec" class="inline-flex items-center gap-2">
+      <img src="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cdb0fbd5ab0709489ae497_kh-logo.png" alt="KH Brokers" class="h-8 w-auto" />
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav id="navbar" class="hidden md:flex items-center gap-4">
+      <a href="#hero-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Home</a>
+      <a href="#about-sec1" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">About us</a>
+      <a href="#benefits-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Benefits</a>
+      <a href="#faq-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">FAQs</a>
+    </nav>
+
+    <!-- Mobile Button -->
+    <button id="menuBtn" aria-label="Toggle menu" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-md border border-white/20 text-white/80">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Nav -->
+  <div id="mobileNav" class="hidden md:hidden border-t border-white/10 bg-black/50 backdrop">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-2">
+      <a href="#hero-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Home</a>
+      <a href="#about-sec1" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">About us</a>
+      <a href="#benefits-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Benefits</a>
+      <a href="#faq-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">FAQs</a>
+    </div>
+  </div>
+</header>
+
+<!-- Script -->
+<script>
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  // Set the first one active by default
+  navLinks[0].classList.add("bg-purple-600", "text-white", "font-bold");
+
+  const observer = new IntersectionObserver((entries) => {
+    let maxRatio = 0;
+    let visibleSectionId = sections[0].id;
+
+    entries.forEach(entry => {
+      if (entry.intersectionRatio > maxRatio) {
+        maxRatio = entry.intersectionRatio;
+        visibleSectionId = entry.target.id;
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove("bg-purple-600", "text-white", "font-bold");
+      if (link.getAttribute("href") === `#${visibleSectionId}`) {
+        link.classList.add("bg-purple-600", "text-white", "font-bold");
+      }
+    });
+  }, { threshold: Array.from({length: 101}, (_, i) => i/100) }); // multiple thresholds for smoother tracking
+
+  sections.forEach(sec => observer.observe(sec));
+</script>
+
+
+
+<!-- HERO -->
+<section id="hero-sec" class="relative">
+  <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/70 via-black/40 to-transparent"></div>
+  <div class="relative max-w-6xl mx-auto px-4 pt-10 md:pt-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+      
+      <!-- HERO TEXT -->
+      <div class="space-y-6">
+        <p class="inline-flex rounded-full border border-white/20 bg-white/10 backdrop px-3 py-1 text-xs font-medium text-white/80">
+          Trusted by 200+ Clients Worldwide
+        </p>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight">
+          <span class="block">Building Modern Websites</span>
+          <span class="block text-grad">For Businesses & Entrepreneurs</span>
+          <span class="block">Responsive, Fast, and SEO-Optimized</span>
+        </h1>
+        <p class="text-base text-white/80">
+          Join 200+ satisfied clients who trust our web design & development expertise
+        </p>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-3">
+            <svg class="h-5 w-5 text-[#2DD652] mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span class="text-white/90">Custom, fully responsive designs tailored to your brand</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="h-5 w-5 text-[#2DD652] mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span class="text-white/90">Full-stack development for seamless functionality</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <svg class="h-5 w-5 text-[#2DD652] mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span class="text-white/90">SEO-friendly, fast-loading websites to grow your online presence</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- FORM -->
+      <div>
+        <div class="relative p-[1px] rounded-2xl bg-gradient-to-r from-[#8e2efb] to-[#38ff7e]/40">
+          <div class="rounded-2xl bg-white/90 backdrop p-6 shadow-xl text-black">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold">
+                Get a Free Consultation with Our Web Design Experts
+              </h3>
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-[#2DD652] animate-glow"></span>
+            </div>
+
+<!-- Formspree form -->
+<form action="mailto:2519308621@mymetropcs.com" method="POST" class="space-y-4" enctype="text/plain">
+  <input name="name" placeholder="Name" class="w-full rounded-md border border-black/10 bg-white/70 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand.primary" required />
+  <input name="phone" placeholder="Phone" class="w-full rounded-md border border-black/10 bg-white/70 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand.primary" />
+  <input name="email" type="email" placeholder="Email" class="w-full rounded-md border border-black/10 bg-white/70 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand.primary" required />
+  
+  <button type="submit" class="btn-grad w-full rounded-md px-4 py-3 text-sm font-medium text-white shadow">
+    Schedule My Free Consultation
+  </button>
+</form>
+
+            <!-- /Formspree -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+      <!-- VIDEO / ABOUT -->
+<section id="about-sec1" class="max-w-6xl mx-auto px-4 mt-20">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    
+    <!-- Text -->
+    <div class="space-y-4">
+      <h2 class="text-2xl md:text-3xl font-bold">How We Work</h2>
+      <p class="text-white/80">
+        We design and develop stunning, fully responsive websites tailored to your brand. Our process ensures fast-loading, SEO-friendly websites with modern layouts and seamless functionality. From concept to launch, we handle everything to bring your online vision to life.
+      </p>
+    </div>
+    
+    <!-- Video -->
+    <div class="w-full">
+      <div class="relative" style="padding-top:56.25%">
+        <div class="absolute inset-0">
+          <div class="wistia_embed wistia_async_h6xfyxiaea videoFoam=true h-full w-full"></div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+      <!-- BENEFITS -->
+<section id="benefits-sec" class="max-w-6xl mx-auto px-4 mt-20">
+  <h2 class="text-2xl md:text-3xl font-bold mb-8">Why Choose Us</h2>
+  <div class="space-y-10">
+
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      <img src="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cf80930bfd35245c4eb6d3_img1.png" alt="" class="w-full md:w-1/2 rounded-xl shadow" />
+      <div class="md:w-1/2 space-y-3">
+        <h3 class="text-xl md:text-2xl font-semibold">Custom, Responsive Design</h3>
+        <p class="text-white/80">We create visually stunning, fully responsive websites tailored to your brand and audience. Every design is crafted to enhance user experience and engage visitors effectively.</p>
+        <a href="#hero-sec" class="btn-grad inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white shadow">GET A FREE DESIGN CONSULTATION</a>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row-reverse items-center gap-6">
+      <img src="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cf83b9a9a3bc67911d90bb_img2.png" alt="" class="w-full md:w-1/2 rounded-xl shadow" />
+      <div class="md:w-1/2 space-y-3">
+        <h3 class="text-xl md:text-2xl font-semibold">Full-Stack Development</h3>
+        <p class="text-white/80">From front-end interactivity to back-end functionality, our team ensures your website runs smoothly and efficiently. We integrate all necessary features for a seamless online experience.</p>
+        <a href="#hero-sec" class="btn-grad inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white shadow">GET A FREE DESIGN CONSULTATION</a>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      <img src="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cf83cda53a47caf325bf80_img3.png" alt="" class="w-full md:w-1/2 rounded-xl shadow" />
+      <div class="md:w-1/2 space-y-3">
+        <h3 class="text-xl md:text-2xl font-semibold">SEO & Performance Optimized</h3>
+        <p class="text-white/80">We build websites optimized for speed, SEO, and mobile performance, helping your business rank higher in search results and attract more visitors.</p>
+        <a href="#hero-sec" class="btn-grad inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white shadow">GET A FREE DESIGN CONSULTATION</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq-sec" class="max-w-6xl mx-auto px-4 mt-20 mb-24">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">FAQs</h2>
+  <div class="divide-y divide-white/10">
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        What services do you offer besides websites?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        In addition to building custom websites, we provide complete branding solutions including logos, business cards, flyers, social media graphics, and other digital assets to ensure your business looks professional across all platforms.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        Do you offer digital marketing and online marketing services?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Yes! We specialize in online marketing, including SEO, social media management, email marketing campaigns, paid ads, and content marketing strategies. Our goal is to not only build beautiful websites but also drive traffic, generate leads, and increase conversions.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        How long does it take to complete a website?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Depending on complexity, most websites are completed within 2-6 weeks. Simple brochure sites take less time, while fully custom or e-commerce websites may require more development time to ensure all features and designs meet your needs.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        Can you handle SEO and website performance optimization?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Absolutely. Every website we build is optimized for fast loading, mobile responsiveness, and search engine visibility. We implement best practices for on-page SEO, page speed optimization, and performance monitoring to help your site rank higher and attract more visitors.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        Do you provide support and maintenance after the website is launched?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Yes! We provide ongoing website maintenance, updates, backups, and technical support. Additionally, we can assist with further design requests, marketing campaigns, and digital content creation, ensuring your online presence remains strong and effective.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        Can you help with e-commerce websites and online stores?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Absolutely. We design and develop full-featured e-commerce websites with shopping carts, product catalogs, payment integration, inventory management, and user-friendly interfaces. We also provide guidance on digital marketing strategies to increase sales and conversions.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        Do you assist with social media and online advertising?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Yes! We help businesses create and manage social media profiles, run paid ad campaigns on platforms like Facebook, Instagram, and Google, and track analytics to ensure campaigns are effective. Our goal is to integrate your website and marketing efforts for maximum results.
+      </p>
+    </details>
+
+    <details class="group py-4">
+      <summary class="cursor-pointer list-none flex items-center justify-between text-white/90 font-medium">
+        How do I get started?<span class="ml-4 transition group-open:rotate-45">＋</span>
+      </summary>
+      <p class="mt-3 text-white/80">
+        Getting started is simple. Contact us through our consultation form, and we’ll discuss your business goals, design preferences, and marketing needs. We then create a custom plan tailored specifically to your brand and objectives.
+      </p>
+    </details>
+
+  </div>
+</section>
+
+
+
+    <footer class="mt-20 border-t border-white/10">
+      <div class="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <a href="#hero-sec" class="inline-flex items-center gap-2">
+          <img src="https://cdn.prod.website-files.com/68cd83cc005bcd3adf46af3c/68cdb0fbd5ab0709489ae497_kh-logo.png" alt="KH Brokers" class="h-7 w-auto" />
+        </a>
+        <p class="text-xs text-white/60">© <span id="year"></span> All Rights Reserved, KHSellers</p>
+      </div>
+    </footer>
+
+    <!-- Wistia embed -->
+    <script src="https://fast.wistia.com/embed/medias/h6xfyxiaea.jsonp" async></script>
+    <script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+      document.getElementById('menuBtn').addEventListener('click', () => {
+        const m = document.getElementById('mobileNav');
+        m.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>
