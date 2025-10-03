@@ -594,6 +594,8 @@
   const modalImage = document.getElementById('modalImage');
   const modalClose = document.getElementById('modalClose');
 
+  let scrollInterval;
+
   function openModal(ev, src) {
     if(ev) ev.stopPropagation();
     modalImage.src = src;
@@ -613,7 +615,28 @@
   modal.addEventListener('click', e => { if(e.target===modal) closeModal(); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
-  // Filter logic
+  // --- Mobile Touch Scroll Effect ---
+  modalImage.addEventListener("touchstart", () => {
+    // Reset scroll
+    modalImage.style.transform = "translateY(0)";
+    let start = 0;
+    const maxScroll = modalImage.scrollHeight - window.innerHeight * 0.9;
+
+    scrollInterval = setInterval(() => {
+      start += 1; // speed
+      modalImage.style.transform = `translateY(-${start}px)`;
+
+      if (start >= maxScroll) {
+        clearInterval(scrollInterval);
+      }
+    }, 20); // lower = faster
+  });
+
+  modalImage.addEventListener("touchend", () => {
+    clearInterval(scrollInterval);
+  });
+
+  // --- Portfolio filter logic ---
   const filterButtons = document.querySelectorAll('.filter-btn');
   const portfolioItems = document.querySelectorAll('#portfolio-grid .portfolio-item');
 
@@ -630,7 +653,6 @@
       // Show/hide items
       portfolioItems.forEach(item => {
         if(filter==='all'){
-          // Show first image of each category
           const category = Array.from(item.classList).find(c=>!['portfolio-item','group','rounded-xl','shadow-lg'].includes(c));
           const first = document.querySelector(`#portfolio-grid .${category}`);
           item.classList.toggle('hidden', item!==first);
