@@ -58,7 +58,6 @@
   </head>
 <body>
 
-<!-- Header --> 
 <!-- Header with Portfolio -->
 <header class="fixed top-0 left-0 w-full z-50 border-b border-white/10 bg-black/50 backdrop-blur text-white">
   <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -72,14 +71,18 @@
       <a href="#portfolio-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Portfolio</a>
       <a href="#faq-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">FAQs</a>
     </nav>
+    <!-- Mobile Menu Button -->
     <button id="menuBtn" aria-label="Toggle menu" class="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-md border border-white/20 text-white/80">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="3" y1="12" x2="21" y2="12"/>
         <line x1="3" y1="6" x2="21" y2="6"/>
         <line x1="3" y1="18" x2="21" y2="18"/>
       </svg>
     </button>
   </div>
+
+  <!-- Mobile Nav -->
   <div id="mobileNav" class="hidden md:hidden border-t border-white/10 bg-black/70 backdrop-blur">
     <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-2">
       <a href="#hero-sec" class="nav-link px-4 py-2 rounded-md text-sm border border-white/20">Home</a>
@@ -92,6 +95,17 @@
 </header>
 
 <div class="h-16"></div>
+
+<!-- Script -->
+<script>
+  const menuBtn = document.getElementById("menuBtn");
+  const mobileNav = document.getElementById("mobileNav");
+
+  menuBtn.addEventListener("click", () => {
+    mobileNav.classList.toggle("hidden");
+  });
+</script>
+
 
 
     
