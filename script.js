@@ -1,0 +1,1 @@
+console.log('Firebase scripts go here');
