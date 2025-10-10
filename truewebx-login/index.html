@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso para Clientes - TrueWebX</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // 🔹 Your Firebase Config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            measurementId: "YOUR_MEASUREMENT_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const loginForm = document.getElementById('loginForm');
+        const googleBtn = document.getElementById('googleLogin');
+        const rememberCheckbox = document.getElementById('remember');
+        const userDiv = document.getElementById('userDiv');
+        const loginDiv = document.getElementById('loginDiv');
+        const userName = document.getElementById('userName');
+        const logoutBtn = document.getElementById('logout');
+
+        // Email/password login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+            const persistence = rememberCheckbox.checked ? browserLocalPersistence : browserSessionPersistence;
+            try {
+                await setPersistence(auth, persistence);
+                await signInWithEmailAndPassword(auth, email, password);
+                loginForm.reset();
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        // Google login
+        googleBtn.addEventListener('click', async () => {
+            try {
+                await setPersistence(auth, rememberCheckbox.checked ? browserLocalPersistence : browserSessionPersistence);
+                await signInWithPopup(auth, provider);
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        // Auth state
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                loginDiv.style.display = "none";
+                userDiv.style.display = "flex";
+                userName.textContent = user.displayName || user.email;
+            } else {
+                loginDiv.style.display = "block";
+                userDiv.style.display = "none";
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => signOut(auth));
+    </script>
+
+    <style>
+        /* --- Keep all your original CSS exactly as is --- */
+        :root {
+            --color-dark-bg: #03000a;
+            --color-primary-purple: #8a2be2;
+            --color-primary-blue: #0066ff;
+            --color-secondary-cyan: #00ccff;
+            --color-text-primary: #ffffff;
+            --color-text-secondary: #ccc;
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Roboto', sans-serif;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-body); background: var(--color-dark-bg); color: var(--color-text-primary); overflow-x: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 80px 20px 40px; }
+        .background { position: fixed; top:0; left:0; width:100vw; height:100vh; background: radial-gradient(ellipse at 20% 30%, rgba(138,43,226,0.25) 0%, transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(0,102,255,0.25) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(75,0,130,0.2) 0%, transparent 70%); z-index:-1; animation: pulse 8s ease-in-out infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity:1; } }
+        .main-container { width:100%; max-width:1100px; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; margin-bottom:60px; }
+        .welcome-content { padding-right:20px; }
+        .welcome-content .badge { display:inline-flex; align-items:center; gap:10px; background: rgba(138,43,226,0.2); border:1px solid var(--color-primary-purple); color: var(--color-text-primary); padding:8px 15px; border-radius:50px; font-size:0.9rem; margin-bottom:25px; text-shadow:0 0 5px var(--color-primary-purple); }
+        .welcome-content h1 { font-family: var(--font-heading); font-size:3.5rem; line-height:1.2; margin-bottom:20px; background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-primary-purple) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip: text; }
+        .welcome-content p { font-size:1.1rem; line-height:1.7; color: var(--color-text-secondary); margin-bottom:30px; }
+        .stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .stat-item { background: rgba(0,0,0,0.2); padding:15px; border-radius:10px; border-left:3px solid var(--color-primary-blue); }
+        .stat-item strong { display:block; font-family: var(--font-heading); font-size:1.5rem; color: var(--color-secondary-cyan); }
+        .stat-item span { font-size:0.9rem; color: var(--color-text-secondary); }
+        .login-card-wrapper { perspective:1000px; }
+        .login-card { background: rgba(10,5,25,0.5); backdrop-filter: blur(15px); border:1px solid rgba(0,102,255,0.4); border-radius:20px; padding:40px; box-shadow:0 10px 40px rgba(0,102,255,0.2); transform: rotateY(-5deg); transition: transform 0.5s ease; }
+        .login-card:hover { transform:rotateY(0deg); }
+        .login-card h2 { font-family: var(--font-heading); text-align:center; font-size:2rem; margin-bottom:30px; color: var(--color-text-primary); }
+        .form-group { margin-bottom:25px; position:relative; }
+        .form-group label { display:block; margin-bottom:8px; font-size:0.9rem; color: var(--color-text-secondary); }
+        .form-control { width:100%; padding:12px 15px; background: rgba(0,0,0,0.3); border:1px solid rgba(0,102,255,0.5); border-radius:8px; color: var(--color-text-primary); font-size:1rem; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        .form-control:focus { outline:none; border-color: var(--color-secondary-cyan); box-shadow:0 0 15px rgba(0,204,255,0.5); }
+        .login-actions { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; font-size:0.9rem; }
+        .remember-me { display:flex; align-items:center; gap:8px; cursor:pointer; }
+        .remember-me input[type="checkbox"] { display:none; }
+        .remember-me .checkbox-custom { width:20px; height:20px; background: rgba(0,0,0,0.3); border:1px solid var(--color-primary-blue); border-radius:5px; position:relative; transition:all 0.3s; }
+        .remember-me input:checked + .checkbox-custom { background: var(--color-primary-blue); border-color: var(--color-secondary-cyan); }
+        .remember-me .checkbox-custom::after { content:'\f00c'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; top:50%; left:50%; transform: translate(-50%, -50%) scale(0); color:white; transition: transform 0.2s ease-out; font-size:12px; }
+        .remember-me input:checked + .checkbox-custom::after { transform: translate(-50%, -50%) scale(1); }
+        .forgot-password a { color: var(--color-secondary-cyan); text-decoration:none; transition: color 0.3s; }
+        .forgot-password a:hover { color: var(--color-text-primary); text-decoration: underline; }
+        .btn-login { width:100%; padding:15px; border:none; border-radius:8px; background: linear-gradient(135deg, var(--color-primary-blue), var(--color-secondary-cyan)); color: var(--color-text-primary); font-size:1.1rem; font-weight:700; cursor:pointer; transition:all 0.3s ease; box-shadow:0 0 20px rgba(0,102,255,0.5); }
+        .btn-login:hover { transform:translateY(-3px); box-shadow:0 0 30px rgba(0,204,255,0.8); }
+        .divider { text-align:center; margin:25px 0; color: var(--color-text-secondary); display:flex; align-items:center; }
+        .divider::before, .divider::after { content:''; flex:1; border-bottom:1px solid rgba(255,255,255,0.2); }
+        .divider:not(:empty)::before { margin-right:.5em; }
+        .divider:not(:empty)::after { margin-left:.5em; }
+        .btn-google { width:100%; padding:12px; border-radius:8px; background-color:#fff; color:#1f1f1f; font-size:1rem; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; border:1px solid #ddd; transition:all 0.3s ease; }
+        .btn-google:hover { background-color:#f2f2f2; box-shadow:0 2px 10px rgba(255,255,255,0.1); }
+        .signup-link { text-align:center; margin-top:30px; font-size:0.9rem; }
+        .signup-link a { color: var(--color-primary-purple); text-decoration:none; font-weight:bold; }
+        .tutorials-section { width:100%; max-width:1100px; padding:40px 0; text-align:center; margin-bottom:40px; }
+        .tutorials-section h2 { font-family: var(--font-heading); font-size:2.5rem; margin-bottom:40px; color: var(--color-secondary-cyan); text-shadow:0 0 10px var(--color-secondary-cyan); }
+        .videos-container { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:30px; }
+        .video-wrapper { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:10px; box-shadow:0 0 20px rgba(0,204,255,0.3); }
+        .video-wrapper iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+        footer { width:100%; text-align:center; padding:20px; background: rgba(0,0,0,0.2); border-top:1px solid rgba(0,102,255,0.4); }
+        footer p { color: var(--color-text-secondary); font-size:0.9rem; }
+        @media (max-width:992px) { body{padding-top:40px;} .main-container{grid-template-columns:1fr; gap:50px; max-width:500px; margin-bottom:40px;} .welcome-content{text-align:center;padding-right:0;} .stats-grid{justify-content:center;} .stat-item{text-align:left;} .login-card{transform:rotateY(0deg);} }
+        @media(max-width:500px) { .welcome-content h1{font-size:2.8rem;} .tutorials-section h2{font-size:2rem;} }
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+
+    <div class="main-container">
+
+        <div class="welcome-content">
+            <div class="badge">
+                <i class="fa-solid fa-user-astronaut"></i>
+                <span>Bienvenido a TrueWebX</span>
+            </div>
+            <h1>Tu Aventura Digital Comienza Aquí</h1>
+            <p>
+                Accede a tu cuenta para gestionar tus servicios y explorar todo lo que tenemos para ofrecer. Potencia tu presencia en línea con TrueWebX.
+            </p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <strong>+10,000</strong>
+                    <span>Clientes Satisfechos</span>
+                </div>
+                <div class="stat-item">
+                    <strong>99.9%</strong>
+                    <span>Servicios Activos</span>
+                </div>
+                <div class="stat-item">
+                    <strong>100%</strong>
+                    <span>Calidad Garantizada</span>
+                </div>
+                <div class="stat-item">
+                    <strong>24/7</strong>
+                    <span>Soporte Dedicado</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-card-wrapper">
+            <div class="login-card" id="loginDiv">
+                <h2><i class="fa-solid fa-user-shield"></i> Acceso Seguro</h2>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <div class="login-actions">
+                        <label class="remember-me" for="remember">
+                            <input type="checkbox" name="remember" value="1" id="remember">
+                            <span class="checkbox-custom"></span>
+                            Recuérdame
+                        </label>
+                        <div class="forgot-password">
+                            <a href="/resetpassword">¿Olvidaste la clave?</a>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login">Iniciar Sesión</button>
+                </form>
+
+                <div class="divider">o</div>
+
+                <button type="button" class="btn-google" id="googleLogin">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                        <g>
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                            <path fill="none" d="M0 0h48v48H0z"></path>
+                        </g>
+                    </svg>
+                    <span>Continuar con Google</span>
+                </button>
+
+                <div class="signup-link">
+                    <p>¿No tienes cuenta? <a href="/signup">Regístrate aquí</a></p>
+                </div>
+            </div>
+
+            <div class="user-div" id="userDiv" style="display:none; flex-direction:column; align-items:center; gap:15px; background:rgba(0,0,0,0.2); padding:30px; border-radius:15px; box-shadow:0 0 20px rgba(0,102,255,0.3);">
+                <h3>Bienvenido, <span id="userName"></span></h3>
+                <button id="logout" style="padding:10px 20px; border:none; border-radius:8px; background:var(--color-primary-blue); color:#fff; cursor:pointer;">Cerrar Sesión</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Sección de Tutoriales -->
+    <section class="tutorials-section" id="tutorials">
+        <h2>Tutoriales</h2>
+        <div class="videos-container">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/mrNMidJyGO4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/8fNhTCZ0M9c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/rILhR0BwXcI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 TrueWebX. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>
