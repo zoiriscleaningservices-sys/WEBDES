@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic AI Search</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:black; color:white; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding-top:3rem; font-family:sans-serif; }
+  #ai-response {
+    margin-top:10px; 
+    padding:12px; 
+    border-radius:12px; 
+    background:rgba(14,18,52,0.8);
+    color:#a9c7ff;
+    font-size:0.95rem;
+    display:none;
+    max-height:200px;
+    overflow-y:auto;
+  }
+  #ai-response.show { display:block; }
+</style>
+</head>
+<body>
+
+<div class="w-full py-4">
+  <div class="relative max-w-xl w-full mx-auto">
+    <div class="relative flex flex-col bg-black/5 rounded-xl">
+      <textarea
+        id="ai-input"
+        class="w-full min-h-[52px] max-h-[200px] rounded-xl rounded-b-none px-4 py-3 bg-black text-white placeholder:text-white/70 border-0 outline-none resize-none focus:ring-0 focus:outline-none leading-[1.2]"
+        placeholder="Search the web..."
+      ></textarea>
+
+      <div class="h-12 bg-black rounded-b-xl relative">
+        <div class="absolute left-3 bottom-3 flex items-center gap-2">
+          <label class="cursor-pointer rounded-lg p-2 bg-white/5 hover:bg-white/10">
+            <input class="hidden" type="file" />
+            <svg class="text-white/40 hover:text-white transition-colors" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" height="16" width="16">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </label>
+
+          <button id="ai-search-btn" class="rounded-full flex items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-400 text-sky-500" type="button">
+            <div class="w-4 h-4 flex items-center justify-center shrink-0">
+              <svg class="text-sky-500" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" height="16" width="16">
+                <circle r="10" cy="12" cx="12"></circle>
+                <path d="M2 12h20"></path>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <span class="text-sm text-sky-500">Search</span>
+          </button>
+        </div>
+
+        <div class="absolute right-3 bottom-3">
+          <button class="rounded-lg p-2 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white cursor-pointer transition-colors">
+            <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" height="16" width="16">
+              <path d="m22 2-7 20-4-9-9-4Z"></path>
+              <path d="M22 2 11 13"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="ai-response"><p id="ai-text"></p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const input=document.getElementById('ai-input');
+const btn=document.getElementById('ai-search-btn');
+const response=document.getElementById('ai-response');
+const text=document.getElementById('ai-text');
+
+async function fetchAI(query){
+  text.textContent="The cosmos is thinking...";
+  response.classList.add("show");
+  try{
+    const res=await fetch('http://localhost:3000/api/ai',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query})
+    });
+    const data=await res.json();
+    text.textContent=data.choices[0].message.content;
+  }catch(e){
+    console.error(e);
+    text.textContent="Oops, the cosmos is offline!";
+  }
+}
+
+btn.addEventListener('click',()=>{
+  const query=input.value.trim();
+  if(!query) return;
+  fetchAI(query);
+  input.value='';
+});
+
+input.addEventListener('keypress',(e)=>{
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    const query=input.value.trim();
+    if(!query) return;
+    fetchAI(query);
+    input.value='';
+  }
+});
+</script>
+
+</body>
+</html>
