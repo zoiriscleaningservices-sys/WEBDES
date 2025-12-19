@@ -25,18 +25,72 @@
             max-width: 1400px; 
             margin: 0 auto; 
             padding: 16px; 
+            position: relative;
+        }
+
+        /* ===== HEADER FIJO CON BOTÓN LOGIN ===== */
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 16px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            transition: background 0.3s ease;
+        }
+        .header-wrapper.scrolled {
+            background: rgba(0, 0, 0, 0.4);
         }
         .header {
             text-align: center;
-            padding: 50px 16px 30px;
+            flex: 1;
         }
         .logo { 
-            font-size: clamp(2.4rem, 9vw, 4.5rem); 
+            font-size: clamp(2rem, 7vw, 3.5rem); 
             font-weight: 900; 
             background: linear-gradient(45deg, #fff, #ff8fa3); 
             -webkit-background-clip: text; 
             color: transparent; 
-            margin-bottom: 12px;
+            margin: 0;
+        }
+
+        /* ===== BOTÓN LOGIN TOP RIGHT ===== */
+        .login-btn {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .login-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .login-btn i {
+            font-size: 1.1rem;
+        }
+
+        /* ===== CONTENIDO PRINCIPAL CON PADDING TOP PARA NO QUEDAR DETRÁS DEL HEADER ===== */
+        .main-content {
+            padding-top: 100px; /* Espacio para el header fijo */
+        }
+        .hero {
+            text-align: center;
+            padding: 40px 16px 30px;
         }
         .tagline {
             font-size: clamp(1.3rem, 5.5vw, 2rem);
@@ -51,6 +105,7 @@
             line-height: 1.6;
             padding: 0 10px;
         }
+
         .glass { 
             background: var(--light-glass);
             backdrop-filter: blur(20px); 
@@ -143,48 +198,64 @@
             opacity: 0.8;
         }
 
-        /* Tablet - 2 columnas */
         @media (min-width: 640px) {
-            .services { 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 24px;
-            }
+            .services { grid-template-columns: repeat(2, 1fr); gap: 24px; }
             .glass { padding: 40px 30px; }
             .photos { grid-template-columns: repeat(3, 1fr); }
         }
-
-        /* Desktop - Más columnas */
         @media (min-width: 1024px) {
-            .services { 
-                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
-            }
-            .header { padding: 80px 20px 50px; }
+            .services { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+            .hero { padding: 60px 20px 50px; }
             .glass { padding: 50px 40px; border-radius: 32px; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <h1 class="logo">TrueWebX</h1>
-        <div class="tagline">Promote Your Business Worldwide</div>
-        <p class="subtitle">
-            All-in-one platform to promote, grow, and automate your business globally<br>
-            <strong>Everything Your Business Needs</strong>
-        </p>
+
+    <!-- HEADER FIJO -->
+    <div class="header-wrapper" id="header">
+        <div class="header">
+            <h1 class="logo">TrueWebX</h1>
+        </div>
+        <button class="login-btn" onclick="window.location.href='dashboard.html'">
+            <i class="fas fa-user-circle"></i>
+            Login / Sign Up
+        </button>
     </div>
 
-    <div class="glass">
-        <h2>Servicios Disponibles en Todo el Mundo</h2>
-        <div class="services" id="list"></div>
-    </div>
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="main-content">
+        <div class="hero">
+            <div class="tagline">Promote Your Business Worldwide</div>
+            <p class="subtitle">
+                All-in-one platform to promote, grow, and automate your business globally<br>
+                <strong>Everything Your Business Needs</strong>
+            </p>
+        </div>
 
-    <footer>
-        © 2025 TrueWebX – La plataforma global para emprendedores y negocios
-    </footer>
+        <div class="glass">
+            <h2>Servicios Disponibles en Todo el Mundo</h2>
+            <div class="services" id="list"></div>
+        </div>
+
+        <footer>
+            © 2025 TrueWebX – La plataforma global para emprendedores y negocios
+        </footer>
+    </div>
 </div>
 
 <script>
+    // Hacer que el header cambie de estilo al hacer scroll
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
     const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
