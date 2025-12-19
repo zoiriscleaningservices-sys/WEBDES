@@ -189,8 +189,7 @@
                 <input type="text" id="name" placeholder="Nombre completo" required>
                 <input type="text" id="city" placeholder="Ciudad y País" required>
                 <input type="tel" id="phone" placeholder="Teléfono" required>
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="email" id="gmail" placeholder="Gmail (opcional)">
+                <input type="email" id="gmail" placeholder="Gmail" required>
                 <input type="text" id="price" placeholder="Precio" required>
                 <textarea id="desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="profile" accept="image/*">
@@ -228,8 +227,7 @@
                 <input type="text" id="edit-name" placeholder="Nombre completo" required>
                 <input type="text" id="edit-city" placeholder="Ciudad y País" required>
                 <input type="tel" id="edit-phone" placeholder="Teléfono" required>
-                <input type="email" id="edit-email" placeholder="Email" required>
-                <input type="email" id="edit-gmail" placeholder="Gmail (opcional)">
+                <input type="email" id="edit-gmail" placeholder="Gmail" required>
                 <input type="text" id="edit-price" placeholder="Precio" required>
                 <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="edit-profile" accept="image/*">
@@ -328,7 +326,6 @@
                     <p>${s.description || 'Sin descripción'}</p>
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
-                    <p>Email: <span class="private">${s.email || 'No disponible'}</span></p>
                     <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
                     <div class="links">
@@ -418,7 +415,6 @@
             name: document.getElementById('name').value.trim(),
             city: document.getElementById('city').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            email: document.getElementById('email').value.trim(),
             gmail: document.getElementById('gmail').value.trim(),
             price: document.getElementById('price').value.trim(),
             description: document.getElementById('desc').value.trim(),
@@ -445,7 +441,6 @@
         document.getElementById('edit-name').value = service.name;
         document.getElementById('edit-city').value = service.city;
         document.getElementById('edit-phone').value = service.phone;
-        document.getElementById('edit-email').value = service.email;
         document.getElementById('edit-gmail').value = service.gmail || '';
         document.getElementById('edit-price').value = service.price;
         document.getElementById('edit-desc').value = service.description;
@@ -462,7 +457,6 @@
         const profileFile = document.getElementById('edit-profile').files[0];
         const photoFiles = document.getElementById('edit-photos').files;
 
-        // Obtener datos actuales para mantener lo que no se cambia
         const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
 
         let profileUrl = current.profile;
@@ -489,7 +483,6 @@
             name: document.getElementById('edit-name').value.trim(),
             city: document.getElementById('edit-city').value.trim(),
             phone: document.getElementById('edit-phone').value.trim(),
-            email: document.getElementById('edit-email').value.trim(),
             gmail: document.getElementById('edit-gmail').value.trim(),
             price: document.getElementById('edit-price').value.trim(),
             description: document.getElementById('edit-desc').value.trim(),
