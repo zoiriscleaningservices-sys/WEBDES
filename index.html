@@ -178,6 +178,27 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
+        .links {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .links a {
+            color: #ffeb3b;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
         .no-services {
             font-size: 1.3rem;
             text-align: center;
@@ -220,10 +241,10 @@
 
     <div class="main-content">
         <div class="hero">
-            <div class="tagline">Promote Your Business Worldwide</div>
+            <div class="tagline">Promueve tu Negocio en Todo el Mundo</div>
             <p class="subtitle">
-                All-in-one platform to promote, grow, and automate your business globally<br>
-                <strong>Everything Your Business Needs</strong>
+                Plataforma todo-en-uno para publicar, crecer y conectar tu negocio con clientes globales.<br>
+                <strong>Todo lo que necesitas para destacar</strong>
             </p>
         </div>
 
@@ -272,7 +293,7 @@
 
         list.innerHTML = services.map(s => `
             <div class="card">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Perfil del negocio">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Foto de perfil del negocio">
                 <h3>${s.name || 'Sin nombre'}</h3>
                 <p><strong>${s.city || 'Sin ubicación'}</strong></p>
                 <p>${s.description || 'Sin descripción'}</p>
@@ -284,9 +305,22 @@
                 </div>
                 
                 <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
-                <p>Email: <span class="private">${s.email || 'No disponible'}</span></p>
+                <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
                 <p class="price">${s.price || 'Consultar precio'}</p>
-                <small style="opacity:0.85;">Publicado: ${s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES') : 'Reciente'}</small>
+
+                <div class="links">
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 
+                        ? s.social_links.map(link => `
+                            <a href="${link.url}" target="_blank">
+                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            </a>
+                        `).join('') 
+                        : ''}
+                </div>
+
+                <small style="opacity:0.85; display:block; margin-top:12px;">
+                    Publicado: ${s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Reciente'}
+                </small>
             </div>
         `).join('');
     }
