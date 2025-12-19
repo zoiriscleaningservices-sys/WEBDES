@@ -47,32 +47,19 @@
         input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
         input, textarea { background:rgba(255,255,255,0.2); color:white; }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; }
-        button.disabled { background:#777; cursor:not-allowed; opacity:0.7; }
         .services { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; margin-top:20px; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; }
-        .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
-        .delete { background:red; color:white; right:60px; }
-        .card:hover .edit, .card:hover .delete { opacity:1; }
+        .delete { position:absolute; top:10px; right:10px; background:red; color:white; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
+        .card:hover .delete { opacity:1; }
         .private { filter:blur(6px); user-select:none; }
         .private:hover { filter:none; }
         .photos img { width:100%; max-width:280px; border-radius:12px; margin:8px 0; }
-        .links { margin-top:15px; display:flex; flex-wrap:wrap; gap:8px; }
-        .links a { color:var(--coral); text-decoration:none; font-weight:600; display:inline-block; }
-
-        .link-input { display:flex; gap:10px; margin-bottom:10px; align-items:center; }
-        .link-input select { flex:0.4; }
-        .link-input input { flex:1; }
-        .link-input button { flex:0 0 40px; background:var(--turquoise); color:white; font-size:20px; padding:0; }
-        .added-link { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.1); padding:10px; border-radius:12px; }
-        .added-link button { background:red; }
 
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
             .form-grid { padding:0 10px; }
             .services { grid-template-columns:1fr; }
-            .edit, .delete { opacity:1; }
-            .link-input { flex-direction:column; }
-            .link-input select, .link-input input { width:100%; }
+            .delete { opacity:1; }
         }
     </style>
 </head>
@@ -113,8 +100,8 @@
 <div id="dashboardScreen" style="display:none;">
     <div class="bottom-nav">
         <div class="nav-container">
-            <div class="nav-item active" onclick="showSection('home')"><i class="fas fa-home"></i><span>Mis Servicios</span></div>
-            <div class="nav-item" onclick="showSection('add')"><i class="fas fa-plus-circle"></i><span>Nuevo</span></div>
+            <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>Mis Servicios</span></div>
+            <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>Nuevo</span></div>
             <div class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Salir</span></div>
         </div>
     </div>
@@ -123,15 +110,13 @@
         <h1 class="logo">TrueWebX</h1>
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
 
-        <!-- HOME -->
         <div id="home" class="glass">
             <h2>Mis Servicios Publicados</h2>
             <div class="services" id="list"></div>
         </div>
 
-        <!-- ADD / EDIT FORM -->
-        <div id="formSection" class="glass" style="display:none;">
-            <h2 id="formTitle">Publicar Nuevo Servicio</h2>
+        <div id="add" class="glass" style="display:none;">
+            <h2>Publicar Nuevo Servicio</h2>
             <div class="form-grid">
                 <input type="text" id="name" placeholder="Nombre completo" required>
                 <input type="text" id="city" placeholder="Ciudad y País" required>
@@ -141,27 +126,7 @@
                 <textarea id="desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="profile" accept="image/*">
                 <input type="file" id="photos" accept="image/*" multiple>
-
-                <div>
-                    <h3 style="margin:20px 0 10px;">Redes Sociales (opcional)</h3>
-                    <div id="linksList"></div>
-                    <div class="link-input">
-                        <select id="linkType">
-                            <option value="instagram">Instagram</option>
-                            <option value="tiktok">TikTok</option>
-                            <option value="facebook">Facebook</option>
-                            <option value="x">X (Twitter)</option>
-                            <option value="linkedin">LinkedIn</option>
-                            <option value="youtube">YouTube</option>
-                            <option value="website">Sitio Web</option>
-                            <option value="other">Otro</option>
-                        </select>
-                        <input type="url" id="linkUrl" placeholder="https://...">
-                        <button type="button" onclick="addLinkField()">+</button>
-                    </div>
-                </div>
-
-                <button id="submitBtn" onclick="submitPost()">PUBLICAR AHORA</button>
+                <button onclick="addService()">PUBLICAR AHORA</button>
             </div>
             <p id="msg"></p>
         </div>
@@ -187,16 +152,7 @@
     const list = document.getElementById('list');
     const msg = document.getElementById('msg');
     const welcomeMsg = document.getElementById('welcomeMsg');
-    const formSection = document.getElementById('formSection');
-    const formTitle = document.getElementById('formTitle');
-    const submitBtn = document.getElementById('submitBtn');
-    const linksList = document.getElementById('linksList');
 
-    let currentEditId = null;
-    let currentLinks = [];
-    let isSubmitting = false;
-
-    // Login
     document.getElementById('loginForm').onsubmit = e => {
         e.preventDefault();
         const email = document.getElementById('email').value.trim();
@@ -234,8 +190,7 @@
         list.innerHTML = services && services.length > 0
             ? services.map(s => `
                 <div class="card">
-                    <div class="edit" onclick="startEdit('${s.id}')"><i class="fas fa-edit"></i></div>
-                    <div class="delete" onclick="deleteService('${s.id}')"><i class="fas fa-trash"></i></div>
+                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
                     <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
                     <h3>${s.name}</h3>
                     <p><strong>${s.city}</strong></p>
@@ -244,68 +199,19 @@
                     <p>Tel: <span class="private">${s.phone}</span></p>
                     <p>Email: <span class="private">${s.email}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price}</strong></p>
-                    <div class="links">
-                        ${Array.isArray(s.links) && s.links.length > 0 
-                            ? s.links.map(link => {
-                                const icon = link.type.toLowerCase() === 'x' ? 'twitter' : link.type.toLowerCase();
-                                return `<a href="${link.url}" target="_blank"><i class="fab fa-${icon}"></i> ${link.type}</a>`;
-                            }).join('') 
-                            : ''}
-                    </div>
                 </div>
             `).join('')
-            : '<p style="text-align:center; font-size:1.2rem;">Aún no tienes servicios publicados.<br>¡Haz clic en "Nuevo" para empezar!</p>';
+            : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
     }
 
-    function showSection(section) {
+    function show(section) {
         document.getElementById('home').style.display = section === 'home' ? 'block' : 'none';
-        formSection.style.display = section === 'add' || section === 'edit' ? 'block' : 'none';
+        document.getElementById('add').style.display = section === 'add' ? 'block' : 'none';
         document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === (section === 'home' ? 0 : 1)));
         if (section === 'home') loadDashboard();
-        if (section === 'add') resetForm();
-        if (section === 'edit') formTitle.textContent = 'Editar Servicio';
-        if (section === 'add') formTitle.textContent = 'Publicar Nuevo Servicio';
-    }
-
-    function resetForm() {
-        currentEditId = null;
-        currentLinks = [];
-        document.querySelector('.form-grid').reset();
-        linksList.innerHTML = '';
-        submitBtn.textContent = 'PUBLICAR AHORA';
-        submitBtn.onclick = addService;
-    }
-
-    function addLinkField() {
-        const type = document.getElementById('linkType').value;
-        const url = document.getElementById('linkUrl').value.trim();
-        if (url) {
-            currentLinks.push({ type, url });
-            renderLinks();
-            document.getElementById('linkUrl').value = '';
-        }
-    }
-
-    function renderLinks() {
-        linksList.innerHTML = currentLinks.map((link, i) => `
-            <div class="added-link">
-                <span><i class="fab fa-${link.type.toLowerCase() === 'x' ? 'twitter' : link.type.toLowerCase()}"></i> ${link.type}: ${link.url}</span>
-                <button type="button" onclick="removeLink(${i})"><i class="fas fa-trash"></i></button>
-            </div>
-        `).join('');
-    }
-
-    function removeLink(index) {
-        currentLinks.splice(index, 1);
-        renderLinks();
     }
 
     async function addService() {
-        if (isSubmitting) return;
-        isSubmitting = true;
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Publicando...';
-
         const user = auth.currentUser;
         if (!user) return;
 
@@ -317,7 +223,7 @@
             const fileExt = profileFile.name.split('.').pop();
             const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; resetSubmit(); return; }
+            if (error) { msg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; return; }
             const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
             profileUrl = data.publicUrl;
         }
@@ -327,7 +233,7 @@
             const fileExt = file.name.split('.').pop();
             const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; resetSubmit(); return; }
+            if (error) { msg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; return; }
             const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
             photosUrls.push(data.publicUrl);
         }
@@ -343,105 +249,24 @@
             description: document.getElementById('desc').value.trim(),
             profile: profileUrl,
             photos: photosUrls,
-            links: currentLinks,
             created_at: new Date().toISOString()
         };
 
         const { error } = await supabaseClient.from('services').insert(service);
-        if (error) { msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; resetSubmit(); return; }
+        if (error) { msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
 
         msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
-        resetForm();
-        setTimeout(() => { showSection('home'); msg.innerHTML = ''; resetSubmit(); }, 2000);
-    }
-
-    async function startEdit(id) {
-        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
-        if (!service) return;
-
-        currentEditId = id;
-        currentLinks = service.links || [];
-
-        document.getElementById('name').value = service.name;
-        document.getElementById('city').value = service.city;
-        document.getElementById('phone').value = service.phone;
-        document.getElementById('email').value = service.email;
-        document.getElementById('price').value = service.price;
-        document.getElementById('desc').value = service.description;
-
-        renderLinks();
-        submitBtn.textContent = 'ACTUALIZAR SERVICIO';
-        submitBtn.onclick = updateService;
-
-        showSection('edit');
-    }
-
-    async function updateService() {
-        if (isSubmitting) return;
-        isSubmitting = true;
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Actualizando...';
-
-        const user = auth.currentUser;
-        if (!user || !currentEditId) return;
-
-        const profileFile = document.getElementById('profile').files[0];
-        const photoFiles = document.getElementById('photos').files;
-
-        let profileUrl = null;
-        if (profileFile) {
-            const fileExt = profileFile.name.split('.').pop();
-            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; resetSubmit(); return; }
-            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-            profileUrl = data.publicUrl;
-        }
-
-        const photosUrls = [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; resetSubmit(); return; }
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
-
-        const updates = {
-            name: document.getElementById('name').value.trim(),
-            city: document.getElementById('city').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            price: document.getElementById('price').value.trim(),
-            description: document.getElementById('desc').value.trim(),
-            links: currentLinks
-        };
-
-        if (profileUrl) updates.profile = profileUrl;
-        if (photosUrls.length > 0) updates.photos = photosUrls;
-
-        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
-        if (error) { msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; resetSubmit(); return; }
-
-        msg.innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
-        resetForm();
-        setTimeout(() => { showSection('home'); msg.innerHTML = ''; resetSubmit(); }, 2000);
+        document.querySelector('.form-grid').reset();
+        setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
     }
 
     async function deleteService(id) {
-        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+        if (confirm('¿Borrar este servicio?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
             if (error) alert('Error: ' + error.message);
             loadDashboard();
         }
     }
-
-    function resetSubmit() {
-        isSubmitting = false;
-        submitBtn.disabled = false;
-        submitBtn.textContent = currentEditId ? 'ACTUALIZAR SERVICIO' : 'PUBLICAR AHORA';
-    }
 </script>
 </body>
-</html>
+</html> 
