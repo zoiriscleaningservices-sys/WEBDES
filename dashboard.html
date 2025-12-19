@@ -3,332 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrueWebX – Promote Your Business Worldwide</title>
+    <title>TrueWebX – Mi Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { 
-            --coral: #ff6b6b; 
-            --turquoise: #0d9488; 
-            --white: #ffffff;
-            --light-glass: rgba(255, 255, 255, 0.22);
-            --card-glass: rgba(255, 255, 255, 0.25);
-        }
+        :root { --coral: #ff6b6b; --turquoise: #0d9488; }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { 
-            font-family: system-ui, -apple-system, sans-serif; 
-            background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
-            color: var(--white); 
-            min-height: 100vh; 
-        }
-        .container { 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            padding: 16px; 
-            position: relative;
-        }
+        body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, var(--turquoise), var(--coral)); color:white; min-height:100vh; }
 
-        /* Header fijo con botón login */
-        .header-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 16px;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(15px);
-            transition: background 0.3s ease;
+        .login-container { 
+            display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; 
         }
-        .header-wrapper.scrolled {
-            background: rgba(0, 0, 0, 0.4);
+        .form { 
+            width:100%; max-width:450px; background:#ffffff; color:#151717; padding:40px; border-radius:20px; 
+            box-shadow:0 10px 40px rgba(0,0,0,.15); text-align:center;
         }
-        .header {
-            text-align: center;
-            flex: 1;
+        .inputForm { 
+            height:56px; 
+            border:2px solid #e0e0e0; 
+            border-radius:12px; 
+            padding:0 16px; 
+            display:flex; 
+            align-items:center; 
+            margin-bottom:16px;
+            background:white;
         }
-        .logo { 
-            font-size: clamp(2rem, 7vw, 3.5rem); 
-            font-weight: 900; 
-            background: linear-gradient(45deg, #fff, #ff8fa3); 
-            -webkit-background-clip: text; 
-            color: transparent; 
-            margin: 0;
+        .inputForm:focus-within { 
+            border-color:#2d79f3; 
+            box-shadow:0 0 0 3px rgba(45,121,243,0.15);
         }
-
-        .login-btn {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .input { 
+            width:100%; 
+            height:100%; 
+            border:none; 
+            background:transparent; 
+            font-size:16px; 
+            color:#151717; /* Texto negro visible */
+            outline:none;
         }
-        .login-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
+        .input::placeholder {
+            color:#aaa;
         }
-
-        .main-content {
-            padding-top: 100px;
+        .button-submit { 
+            background:#151717; 
+            color:white; 
+            height:56px; 
+            border-radius:12px; 
+            font-weight:600; 
+            font-size:16px;
+            cursor:pointer; 
+            width:100%; 
+            margin:20px 0;
+            border:none;
         }
-        .hero {
-            text-align: center;
-            padding: 40px 16px 30px;
-        }
-        .tagline {
-            font-size: clamp(1.3rem, 5.5vw, 2rem);
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            font-size: clamp(0.95rem, 3.5vw, 1.35rem);
-            opacity: 0.95;
-            max-width: 900px;
-            margin: 0 auto 40px;
-            line-height: 1.6;
-            padding: 0 10px;
-        }
-
-        .glass { 
-            background: var(--light-glass);
-            backdrop-filter: blur(20px); 
-            border-radius: 28px; 
-            padding: 32px 20px; 
-            margin: 20px 0; 
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        h2 {
-            font-size: clamp(1.7rem, 5.5vw, 2.6rem);
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        .services { 
-            display: grid; 
-            grid-template-columns: 1fr; 
-            gap: 20px; 
-        }
-        .card { 
-            background: var(--card-glass);
-            backdrop-filter: blur(15px);
-            border-radius: 24px; 
-            padding: 20px; 
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-6px);
-        }
-        .card img {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-        }
-        .card h3 { 
-            font-size: 1.6rem; 
-            margin: 10px 0; 
-        }
-        .card p { 
-            margin: 8px 0; 
-            line-height: 1.5; 
-            font-size: 1rem;
-        }
-        .card strong { 
-            color: #ffeb3b; 
-        }
-        .private { 
-            filter: blur(6px); 
-            user-select: none; 
-            transition: filter 0.3s; 
-            font-weight: 500;
-        }
-        .private:hover, .private:focus { 
-            filter: none; 
-        }
-        .price {
-            font-size: 1.8rem !important;
-            color: var(--coral) !important;
-            font-weight: 800;
-            margin: 16px 0;
-        }
-        .photos {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 14px 0;
-        }
-        .photos img {
-            width: 100%;
-            height: auto;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .links {
-            margin-top: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .links a {
-            color: #ffeb3b;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            transition: background 0.3s;
-        }
-        .links a:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .no-services {
-            font-size: 1.3rem;
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0.9;
-            font-style: italic;
-        }
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 24px 16px;
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        @media (min-width: 640px) {
-            .services { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-            .glass { padding: 40px 30px; }
-            .photos { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (min-width: 1024px) {
-            .services { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
-            .hero { padding: 60px 20px 50px; }
-            .glass { padding: 50px 40px; border-radius: 32px; }
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-
-    <div class="header-wrapper" id="header">
-        <div class="header">
-            <h1 class="logo">TrueWebX</h1>
-        </div>
-        <button class="login-btn" onclick="window.location.href='dashboard.html'">
-            <i class="fas fa-user-circle"></i>
-            Login / Sign Up
-        </button>
-    </div>
-
-    <div class="main-content">
-        <div class="hero">
-            <div class="tagline">Promueve tu Negocio en Todo el Mundo</div>
-            <p class="subtitle">
-                Plataforma todo-en-uno para publicar, crecer y conectar tu negocio con clientes globales.<br>
-                <strong>Todo lo que necesitas para destacar</strong>
-            </p>
-        </div>
-
-        <div class="glass">
-            <h2>Servicios Disponibles en Todo el Mundo</h2>
-            <div class="services" id="list"></div>
-        </div>
-
-        <footer>
-            © 2025 TrueWebX – La plataforma global para emprendedores y negocios
-        </footer>
-    </div>
-</div>
-
-<script>
-    window.addEventListener('scroll', () => {
-        const header = document.getElementById('header');
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
-
-    const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    async function loadServices() {
-        const { data: services, error } = await supabaseClient
-            .from('services')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        const list = document.getElementById('list');
-
-        if (error) {
-            list.innerHTML = `<p style="color:#ff6b6b; text-align:center;">Error al cargar servicios. Intenta más tarde.</p>`;
-            return;
-        }
-
-        if (!services || services.length === 0) {
-            list.innerHTML = '<p class="no-services">Aún no hay servicios publicados. ¡Sé el primero en unirte a TrueWebX!</p>';
-            return;
-        }
-
-        list.innerHTML = services.map(s => `
-            <div class="card">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Foto de perfil del negocio">
-                <h3>${s.name || 'Sin nombre'}</h3>
-                <p><strong>${s.city || 'Sin ubicación'}</strong></p>
-                <p>${s.description || 'Sin descripción'}</p>
-                
-                <div class="photos">
-                    ${Array.isArray(s.photos) && s.photos.length > 0 
-                        ? s.photos.map(p => `<img src="${p}" alt="Foto del servicio">`).join('') 
-                        : ''}
-                </div>
-                
-                <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
-                <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
-                <p class="price">${s.price || 'Consultar precio'}</p>
-
-                <div class="links">
-                    ${Array.isArray(s.social_links) && s.social_links.length > 0 
-                        ? s.social_links.map(link => `
-                            <a href="${link.url}" target="_blank">
-                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
-                            </a>
-                        `).join('') 
-                        : ''}
-                </div>
-
-                <small style="opacity:0.85; display:block; margin-top:12px;">
-                    Publicado: ${s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Reciente'}
-                </small>
-            </div>
-        `).join('');
-    }
-
-    loadServices();
-</script>
-</body>
-</html>            background:white; 
+        .button-submit:hover { background:#2d79f3; }
+        .btn.google { 
+            background:white; 
             border:2px solid #e0e0e0; 
             height:56px; 
             border-radius:12px; 
@@ -462,6 +194,31 @@
                 <textarea id="desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="profile" accept="image/*">
                 <input type="file" id="photos" accept="image/*" multiple>
+
+                <!-- Sección de Redes Sociales -->
+                <div id="social-container">
+                    <h3 style="color:white; margin:20px 0 10px;">Redes Sociales (opcional)</h3>
+                    <div class="social-input">
+                        <select id="social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Otro</option>
+                        </select>
+                        <input type="url" id="social-url" placeholder="URL completa (ej: https://instagram.com/tuusuario)">
+                        <button type="button" onclick="addSocialLink()">+</button>
+                    </div>
+                    <div id="added-socials" style="margin-top:10px;"></div>
+                </div>
+
+                <button onclick="addService()">PUBLICAR AHORA</button>
+            </div>
+            <p id="msg"></p>
+        </div>
 
         <!-- EDIT SECTION (oculta al inicio) -->
         <div id="edit" class="glass" style="display:none;">
