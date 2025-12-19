@@ -13,7 +13,6 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, var(--turquoise), var(--coral)); color:white; min-height:100vh; }
 
-        /* Login Styles - Mobile Friendly */
         .login-container { 
             display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; 
         }
@@ -29,7 +28,6 @@
         .btn.google { background:white; border:1px solid #ededef; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:10px; }
         .error { color:#e74c3c; background:#fff5f5; padding:10px; border-radius:8px; text-align:center; margin-top:10px; }
 
-        /* Dashboard Styles - Responsive */
         .bottom-nav {
             position:fixed; bottom:0; left:0; right:0; height:80px; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px);
             display:flex; align-items:center; justify-content:center; z-index:9999; padding-bottom:env(safe-area-inset-bottom);
@@ -61,13 +59,13 @@
             .nav-container { gap:30px; padding:10px 20px; }
             .form-grid { padding:0 10px; }
             .services { grid-template-columns:1fr; }
-            .delete { opacity:1; } /* Siempre visible en móvil */
+            .delete { opacity:1; }
         }
     </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginScreen" class="login-container">
     <form class="form" id="loginForm">
         <div class="flex-column"><label>Email </label></div>
@@ -84,7 +82,6 @@
 
         <div class="flex-row" style="display:flex; justify-content:space-between; align-items:center; margin:15px 0;">
             <div><input type="checkbox" id="remember" checked><label>Recordarme</label></div>
-            <span class="span" id="forgot">¿Olvidaste?</span>
         </div>
 
         <button type="submit" class="button-submit" id="loginBtn">Entrar</button>
@@ -99,7 +96,7 @@
     </form>
 </div>
 
-<!-- DASHBOARD SCREEN -->
+<!-- DASHBOARD -->
 <div id="dashboardScreen" style="display:none;">
     <div class="bottom-nav">
         <div class="nav-container">
@@ -137,7 +134,6 @@
 </div>
 
 <script>
-    // Firebase Auth
     const firebaseConfig = {
         apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
         authDomain: "truewebx-78890.firebaseapp.com",
@@ -149,7 +145,6 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Supabase
     const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -158,14 +153,13 @@
     const msg = document.getElementById('msg');
     const welcomeMsg = document.getElementById('welcomeMsg');
 
-    // Login
     document.getElementById('loginForm').onsubmit = e => {
         e.preventDefault();
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         auth.signInWithEmailAndPassword(email, password)
             .then(() => loadDashboard())
-            .catch(err => document.getElementById('message').innerHTML = `<div class="error">Error: ${err.message}</div>`);
+            .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
     };
 
     document.getElementById('googleBtn').onclick = () => {
@@ -177,27 +171,20 @@
         auth.signOut().then(() => location.reload());
     }
 
-    // Cuando el usuario está autenticado
     auth.onAuthStateChanged(user => {
-        if (user) {
-            loadDashboard(user);
-        }
+        if (user) loadDashboard(user);
     });
 
     async function loadDashboard(user = auth.currentUser) {
         if (!user) return;
-
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboardScreen').style.display = 'block';
+        welcomeMsg.textContent = `¡Hola ${user.displayName || user.email.split('@')[0]}!`;
 
-        // Mensaje personalizado
-        welcomeMsg.textContent = `¡Hola ${user.displayName || user.email.split('@')[0]}! Aquí gestionas tus servicios`;
-
-        // Cargar SOLO los servicios del usuario actual
         const { data: services } = await supabaseClient
             .from('services')
             .select('*')
-            .eq('owner_id', user.uid)  // ← CLAVE: solo los suyos
+            .eq('owner_id', user.uid)
             .order('created_at', { ascending: false });
 
         list.innerHTML = services && services.length > 0
@@ -207,14 +194,14 @@
                     <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
                     <h3>${s.name}</h3>
                     <p><strong>${s.city}</strong></p>
-                    <p>${s.desc}</p>
+                    <p>${s.description}</p>
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Tel: <span class="private">${s.phone}</span></p>
                     <p>Email: <span class="private">${s.email}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price}</strong></p>
                 </div>
             `).join('')
-            : '<p style="text-align:center; font-size:1.2rem;">Aún no has publicado ningún servicio.<br>¡Haz clic en "Nuevo" para empezar!</p>';
+            : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
     }
 
     function show(section) {
@@ -226,7 +213,7 @@
 
     async function addService() {
         const user = auth.currentUser;
-        if (!user) { msg.innerHTML = '<p style="color:red;">Debes iniciar sesión</p>'; return; }
+        if (!user) return;
 
         const profileFile = document.getElementById('profile').files[0];
         const photoFiles = document.getElementById('photos').files;
@@ -253,13 +240,13 @@
 
         const service = {
             id: crypto.randomUUID(),
-            owner_id: user.uid,  // ← IMPORTANTE: guarda el dueño
+            owner_id: user.uid,
             name: document.getElementById('name').value.trim(),
             city: document.getElementById('city').value.trim(),
             phone: document.getElementById('phone').value.trim(),
             email: document.getElementById('email').value.trim(),
             price: document.getElementById('price').value.trim(),
-            desc: document.getElementById('desc').value.trim(),
+            description: document.getElementById('desc').value.trim(),
             profile: profileUrl,
             photos: photosUrls,
             created_at: new Date().toISOString()
@@ -274,9 +261,9 @@
     }
 
     async function deleteService(id) {
-        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+        if (confirm('¿Borrar este servicio?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
+            if (error) alert('Error: ' + error.message);
             loadDashboard();
         }
     }
