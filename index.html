@@ -180,11 +180,14 @@
         const list = document.getElementById('list');
 
         if (error) {
-            list.innerHTML = `<p style="color:#ff6b6b; font-size:1.4rem;">Error al cargar servicios. Intenta más tarde.</p>`;
+            list.innerHTML = `<p style="color:#ff6b6b; font-size:1.4rem;">Error al cargar servicios: ${error.message}</p>`;
+            console.error('Error Supabase:', error);
             return;
         }
 
-
+        if (services.length === 0) {
+            list.innerHTML = '<p class="no-services">Aún no hay servicios publicados. ¡Sé el primero en unirte a TrueWebX!</p>';
+            return;
         }
 
         list.innerHTML = services.map(s => `
@@ -196,7 +199,7 @@
                 <p>${s.desc || 'Sin descripción disponible'}</p>
                 
                 <div class="photos">
-                    ${s.photos && s.photos.length > 0 
+                    ${Array.isArray(s.photos) && s.photos.length > 0 
                         ? s.photos.map(p => `<img src="${p}" alt="Foto del servicio">`).join('') 
                         : ''}
                 </div>
@@ -204,7 +207,7 @@
                 <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
                 <p>Email: <span class="private">${s.email || 'No disponible'}</span></p>
                 <p class="price">${s.price || 'Consultar precio'}</p>
-                <small style="opacity:0.8;">Publicado el ${s.created_at ? new Date(s.created_at).toLocaleDateString() : 'fecha desconocida'}</small>
+                <small style="opacity:0.8;">Publicado el ${s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES') : 'fecha desconocida'}</small>
             </div>
         `).join('');
     }
