@@ -17,16 +17,64 @@
             display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; 
         }
         .form { 
-            width:100%; max-width:450px; background:#ffffff; color:#151717; padding:30px; border-radius:20px; 
-            box-shadow:0 10px 40px rgba(0,0,0,.15); 
+            width:100%; max-width:450px; background:#ffffff; color:#151717; padding:40px; border-radius:20px; 
+            box-shadow:0 10px 40px rgba(0,0,0,.15); text-align:center;
         }
-        .inputForm { height:50px; border:1.5px solid #ecedec; border-radius:10px; padding-left:10px; display:flex; align-items:center; }
-        .input { width:100%; height:100%; border:none; background:transparent; font-size:15px; }
-        .inputForm:focus-within { border-color:#2d79f3; }
-        .button-submit { background:#151717; color:white; height:50px; border-radius:10px; font-weight:500; }
+        .inputForm { 
+            height:56px; 
+            border:2px solid #e0e0e0; 
+            border-radius:12px; 
+            padding:0 16px; 
+            display:flex; 
+            align-items:center; 
+            margin-bottom:16px;
+            background:white;
+        }
+        .inputForm:focus-within { 
+            border-color:#2d79f3; 
+            box-shadow:0 0 0 3px rgba(45,121,243,0.15);
+        }
+        .input { 
+            width:100%; 
+            height:100%; 
+            border:none; 
+            background:transparent; 
+            font-size:16px; 
+            color:#151717; /* Texto negro visible */
+            outline:none;
+        }
+        .input::placeholder {
+            color:#aaa;
+        }
+        .button-submit { 
+            background:#151717; 
+            color:white; 
+            height:56px; 
+            border-radius:12px; 
+            font-weight:600; 
+            font-size:16px;
+            cursor:pointer; 
+            width:100%; 
+            margin:20px 0;
+            border:none;
+        }
         .button-submit:hover { background:#2d79f3; }
-        .btn.google { background:white; border:1px solid #ededef; height:50px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:10px; }
-        .error { color:#e74c3c; background:#fff5f5; padding:10px; border-radius:8px; text-align:center; margin-top:10px; }
+        .btn.google { 
+            background:white; 
+            border:2px solid #e0e0e0; 
+            height:56px; 
+            border-radius:12px; 
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            gap:12px; 
+            cursor:pointer; 
+            width:100%; 
+            font-weight:600;
+            color:#151717;
+        }
+        .btn.google:hover { border-color:#2d79f3; }
+        .error { color:#e74c3c; background:#fff5f5; padding:12px; border-radius:8px; text-align:center; margin:10px 0; }
 
         .bottom-nav {
             position:fixed; bottom:0; left:0; right:0; height:80px; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px);
@@ -47,7 +95,6 @@
         input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
         input, textarea { background:rgba(255,255,255,0.2); color:white; }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; }
-        .disabled { background: gray; cursor: not-allowed; }
         .services { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; margin-top:20px; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; }
         .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
@@ -57,11 +104,21 @@
         .private:hover, .private:focus { filter:none; }
         .photos img { width:100%; max-width:280px; border-radius:12px; margin:8px 0; }
         .links { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-        .links a { color:var(--coral); text-decoration:none; font-weight:600; display:inline-block; margin-right:10px; }
+        .links a { 
+            color:var(--coral); 
+            text-decoration:none; 
+            font-weight:600; 
+            padding:8px 14px; 
+            background:rgba(255,255,255,0.1); 
+            border-radius:20px; 
+            display:flex; 
+            align-items:center; 
+            gap:6px; 
+        }
 
         .social-input { display:flex; gap:10px; margin-bottom:10px; }
         .social-input select, .social-input input { flex:1; }
-        .social-input button { flex:0 0 40px; background:#0d9488; color:white; font-size:20px; padding:0; }
+        .social-input button { flex:0 0 40px; background:#0d9488; color:white; font-size:20px; padding:0; border:none; border-radius:8px; cursor:pointer; }
 
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
@@ -76,27 +133,35 @@
 
 <!-- LOGIN -->
 <div id="loginScreen" class="login-container">
-    <form class="form" id="loginForm">
-        <div class="flex-column"><label>Email </label></div>
-        <div class="inputForm">
-            <input id="email" placeholder="Tu email" class="input" type="email" required>
-        </div>
+    <div class="form">
+        <h2 style="margin-bottom:30px; color:#151717;">Iniciar Sesión</h2>
 
-        <div class="flex-column"><label>Contraseña </label></div>
-        <div class="inputForm">
-            <input id="password" placeholder="Tu contraseña" class="input" type="password" required>
-        </div>
+        <form id="loginForm">
+            <div class="inputForm">
+                <input id="email" placeholder="Tu email" class="input" type="email" required>
+            </div>
 
-        <button type="submit" class="button-submit">Entrar</button>
+            <div class="inputForm">
+                <input id="password" placeholder="Tu contraseña" class="input" type="password" required>
+            </div>
+
+            <button type="submit" class="button-submit">Entrar</button>
+        </form>
+
         <div id="message"></div>
 
         <div style="margin-top:20px;">
             <button type="button" class="btn google" id="googleBtn">
-                <svg xml:space="preserve" viewBox="0 0 512 512" width="20"><path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path><path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path><path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path><path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path></svg>
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
+                    <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
+                    <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
+                    <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path>
+                </svg>
                 Continuar con Google
             </button>
         </div>
-    </form>
+    </div>
 </div>
 
 <!-- DASHBOARD -->
@@ -125,33 +190,38 @@
                 <input type="text" id="city" placeholder="Ciudad y País" required>
                 <input type="tel" id="phone" placeholder="Teléfono" required>
                 <input type="email" id="email" placeholder="Email" required>
-                <input type="email" id="gmail" placeholder="Gmail (opcional)" >
+                <input type="email" id="gmail" placeholder="Gmail (opcional)">
                 <input type="text" id="price" placeholder="Precio" required>
                 <textarea id="desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="profile" accept="image/*">
                 <input type="file" id="photos" accept="image/*" multiple>
+
+                <!-- Sección de Redes Sociales -->
                 <div id="social-container">
-                    <h3>Redes Sociales (opcional)</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Redes Sociales (opcional)</h3>
                     <div class="social-input">
-                        <select>
+                        <select id="social-type">
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
                             <option value="twitter">X (Twitter)</option>
                             <option value="linkedin">LinkedIn</option>
                             <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
                             <option value="other">Otro</option>
                         </select>
-                        <input type="url" placeholder="URL de la red social">
-                        <button type="button" onclick="addSocialLink()"><i class="fas fa-plus"></i></button>
+                        <input type="url" id="social-url" placeholder="URL completa (ej: https://instagram.com/tuusuario)">
+                        <button type="button" onclick="addSocialLink()">+</button>
                     </div>
-                    <div id="added-socials"></div>
+                    <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
-                <button id="submitBtn" onclick="addService()">PUBLICAR AHORA</button>
+
+                <button onclick="addService()">PUBLICAR AHORA</button>
             </div>
             <p id="msg"></p>
         </div>
 
+        <!-- EDIT SECTION (oculta al inicio) -->
         <div id="edit" class="glass" style="display:none;">
             <h2>Editar Servicio</h2>
             <div class="form-grid">
@@ -159,29 +229,32 @@
                 <input type="text" id="edit-city" placeholder="Ciudad y País" required>
                 <input type="tel" id="edit-phone" placeholder="Teléfono" required>
                 <input type="email" id="edit-email" placeholder="Email" required>
-                <input type="email" id="edit-gmail" placeholder="Gmail (opcional)" >
+                <input type="email" id="edit-gmail" placeholder="Gmail (opcional)">
                 <input type="text" id="edit-price" placeholder="Precio" required>
                 <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="edit-profile" accept="image/*">
                 <input type="file" id="edit-photos" accept="image/*" multiple>
+
                 <div id="edit-social-container">
-                    <h3>Redes Sociales (opcional)</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Redes Sociales</h3>
                     <div class="social-input">
-                        <select>
+                        <select id="edit-social-type">
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
                             <option value="twitter">X (Twitter)</option>
                             <option value="linkedin">LinkedIn</option>
                             <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
                             <option value="other">Otro</option>
                         </select>
-                        <input type="url" placeholder="URL de la red social">
-                        <button type="button" onclick="addSocialLink(true)"><i class="fas fa-plus"></i></button>
+                        <input type="url" id="edit-social-url" placeholder="URL completa">
+                        <button type="button" onclick="addSocialLink(true)">+</button>
                     </div>
-                    <div id="edit-added-socials"></div>
+                    <div id="edit-added-socials" style="margin-top:10px;"></div>
                 </div>
-                <button id="updateBtn" onclick="updateService()">ACTUALIZAR</button>
+
+                <button onclick="updateService()">GUARDAR CAMBIOS</button>
             </div>
             <p id="edit-msg"></p>
         </div>
@@ -209,7 +282,6 @@
     const welcomeMsg = document.getElementById('welcomeMsg');
     let currentEditId = null;
     let currentSocialLinks = [];
-    let isSubmitting = false;
 
     document.getElementById('loginForm').onsubmit = e => {
         e.preventDefault();
@@ -249,7 +321,7 @@
             ? services.map(s => `
                 <div class="card">
                     <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
-                    <div class="delete" onclick="deleteService('${s.id}')"><i class="fas fa-trash"></i></div>
+                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
                     <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
                     <h3>${s.name || 'Sin nombre'}</h3>
                     <p><strong>${s.city || 'Sin ubicación'}</strong></p>
@@ -260,7 +332,11 @@
                     <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
                     <div class="links">
-                        ${Array.isArray(s.social_links) ? s.social_links.map(link => `<a href="${link.url}" target="_blank">${link.type}</a>`).join('') : ''}
+                        ${Array.isArray(s.social_links) ? s.social_links.map(link => `
+                            <a href="${link.url}" target="_blank">
+                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            </a>
+                        `).join('') : ''}
                     </div>
                 </div>
             `).join('')
@@ -273,26 +349,33 @@
         document.getElementById('edit').style.display = section === 'edit' ? 'block' : 'none';
         document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === (section === 'home' ? 0 : 1)));
         if (section === 'home') loadDashboard();
+        if (section === 'add') {
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+        }
     }
 
     function addSocialLink(isEdit = false) {
-        const container = isEdit ? 'edit-social-container' : 'social-container';
-        const inputContainer = document.getElementById(container).querySelector('.social-input');
-        const type = inputContainer.querySelector('select').value;
-        const url = inputContainer.querySelector('input').value.trim();
-        if (url) {
+        const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+        const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+        const type = select.value;
+        const url = input.value.trim();
+        if (url && url.startsWith('http')) {
             currentSocialLinks.push({ type, url });
             updateAddedSocials(isEdit);
-            inputContainer.querySelector('input').value = '';
+            input.value = '';
+        } else if (url) {
+            alert('Por favor ingresa una URL válida (con https://)');
         }
     }
 
     function updateAddedSocials(isEdit = false) {
         const container = isEdit ? 'edit-added-socials' : 'added-socials';
         document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
-            <div class="social-input">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:8px; border-radius:12px;">
+                <i class="fab fa-${link.type.toLowerCase()}"></i>
                 <span>${link.type}: ${link.url}</span>
-                <button type="button" onclick="removeSocialLink(${i}, ${isEdit})"><i class="fas fa-trash"></i></button>
+                <button onclick="removeSocialLink(${i}, ${isEdit})" style="background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">×</button>
             </div>
         `).join('');
     }
@@ -303,12 +386,6 @@
     }
 
     async function addService() {
-        if (isSubmitting) return;
-        isSubmitting = true;
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.classList.add('disabled');
-        setTimeout(() => { isSubmitting = false; submitBtn.classList.remove('disabled'); }, 30000); // Anti-spam 30s
-
         const user = auth.currentUser;
         if (!user) return;
 
@@ -347,7 +424,7 @@
             description: document.getElementById('desc').value.trim(),
             profile: profileUrl,
             photos: photosUrls,
-            social_links: currentSocialLinks,
+            social_links: currentSocialLinks.length > 0 ? currentSocialLinks : [],
             created_at: new Date().toISOString()
         };
 
@@ -361,65 +438,54 @@
         setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
     }
 
-    async function deleteService(id) {
-        if (confirm('¿Borrar este servicio?')) {
-            const { error } = await supabaseClient.from('services').delete().eq('id', id);
-            if (error) alert('Error: ' + error.message);
-            loadDashboard();
-        }
-    }
-
     async function editService(id) {
         currentEditId = id;
-        const { data } = await supabaseClient.from('services').select('*').eq('id', id).single();
-        if (data) {
-            document.getElementById('edit-name').value = data.name;
-            document.getElementById('edit-city').value = data.city;
-            document.getElementById('edit-phone').value = data.phone;
-            document.getElementById('edit-email').value = data.email;
-            document.getElementById('edit-gmail').value = data.gmail || '';
-            document.getElementById('edit-price').value = data.price;
-            document.getElementById('edit-desc').value = data.description;
-            currentSocialLinks = data.social_links || [];
-            updateAddedSocials(true);
-            show('edit');
-        }
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name;
+        document.getElementById('edit-city').value = service.city;
+        document.getElementById('edit-phone').value = service.phone;
+        document.getElementById('edit-email').value = service.email;
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-price').value = service.price;
+        document.getElementById('edit-desc').value = service.description;
+
+        currentSocialLinks = service.social_links || [];
+        updateAddedSocials(true);
+
+        show('edit');
     }
 
     async function updateService() {
-        if (isSubmitting) return;
-        isSubmitting = true;
-        const updateBtn = document.getElementById('updateBtn');
-        updateBtn.classList.add('disabled');
-        setTimeout(() => { isSubmitting = false; updateBtn.classList.remove('disabled'); }, 30000); // Anti-spam 30s
-
-        const user = auth.currentUser;
-        if (!user || !currentEditId) return;
+        if (!currentEditId) return;
 
         const profileFile = document.getElementById('edit-profile').files[0];
         const photoFiles = document.getElementById('edit-photos').files;
 
-        let profileUrl = await getCurrentProfile(currentEditId); // Function to get existing
+        // Obtener datos actuales para mantener lo que no se cambia
+        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+        let profileUrl = current.profile;
         if (profileFile) {
             const fileExt = profileFile.name.split('.').pop();
             const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-            if (error) { editMsg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; return; }
+            if (error) throw error;
             const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
             profileUrl = data.publicUrl;
         }
 
-        let photosUrls = await getCurrentPhotos(currentEditId); // Function to get existing
+        let photosUrls = current.photos || [];
         for (let file of photoFiles) {
             const fileExt = file.name.split('.').pop();
             const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) { editMsg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; return; }
+            if (error) throw error;
             const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
             photosUrls.push(data.publicUrl);
         }
 
-        const service = {
+        const updates = {
             name: document.getElementById('edit-name').value.trim(),
             city: document.getElementById('edit-city').value.trim(),
             phone: document.getElementById('edit-phone').value.trim(),
@@ -432,24 +498,24 @@
             social_links: currentSocialLinks
         };
 
-        const { error } = await supabaseClient.from('services').update(service).eq('id', currentEditId);
-        if (error) { editMsg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
+        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+        if (error) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            return;
+        }
 
-        editMsg.innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
         currentEditId = null;
         currentSocialLinks = [];
-        updateAddedSocials(true);
-        setTimeout(() => { show('home'); editMsg.innerHTML = ''; }, 2000);
+        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
     }
 
-    async function getCurrentProfile(id) {
-        const { data } = await supabaseClient.from('services').select('profile').eq('id', id).single();
-        return data.profile;
-    }
-
-    async function getCurrentPhotos(id) {
-        const { data } = await supabaseClient.from('services').select('photos').eq('id', id).single();
-        return data.photos || [];
+    async function deleteService(id) {
+        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+            const { error } = await supabaseClient.from('services').delete().eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadDashboard();
+        }
     }
 </script>
 </body>
