@@ -16,92 +16,90 @@
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { 
-            font-family: system-ui, sans-serif; 
+            font-family: system-ui, -apple-system, sans-serif; 
             background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
             color: var(--white); 
             min-height: 100vh; 
         }
         .container { 
-            max-width: 1200px; 
+            max-width: 1400px; 
             margin: 0 auto; 
-            padding: 20px; 
-            text-align: center; 
+            padding: 16px; 
         }
         .header {
-            padding: 80px 20px 40px;
+            text-align: center;
+            padding: 50px 16px 30px;
         }
         .logo { 
-            font-size: 4rem; 
+            font-size: clamp(2.4rem, 9vw, 4.5rem); 
             font-weight: 900; 
             background: linear-gradient(45deg, #fff, #ff8fa3); 
             -webkit-background-clip: text; 
             color: transparent; 
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .tagline {
-            font-size: 1.8rem;
+            font-size: clamp(1.3rem, 5.5vw, 2rem);
             font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--white);
+            margin-bottom: 10px;
         }
         .subtitle {
-            font-size: 1.3rem;
+            font-size: clamp(0.95rem, 3.5vw, 1.35rem);
             opacity: 0.95;
-            max-width: 800px;
-            margin: 0 auto 60px;
+            max-width: 900px;
+            margin: 0 auto 40px;
             line-height: 1.6;
+            padding: 0 10px;
         }
         .glass { 
             background: var(--light-glass);
             backdrop-filter: blur(20px); 
-            border-radius: 32px; 
-            padding: 50px 40px; 
-            margin: 40px 0; 
+            border-radius: 28px; 
+            padding: 32px 20px; 
+            margin: 20px 0; 
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
         h2 {
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            color: var(--white);
+            font-size: clamp(1.7rem, 5.5vw, 2.6rem);
+            margin-bottom: 24px;
+            text-align: center;
         }
         .services { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
-            gap: 28px; 
+            grid-template-columns: 1fr; 
+            gap: 20px; 
         }
         .card { 
             background: var(--card-glass);
             backdrop-filter: blur(15px);
             border-radius: 24px; 
-            padding: 28px; 
+            padding: 20px; 
             border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
             transition: transform 0.3s ease;
         }
         .card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-6px);
         }
         .card img {
             width: 100%;
-            max-width: 320px;
+            height: auto;
             border-radius: 16px;
-            margin: 12px 0;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 14px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
         }
         .card h3 { 
-            font-size: 1.9rem; 
-            margin: 16px 0 8px; 
-            color: var(--white); 
+            font-size: 1.6rem; 
+            margin: 10px 0; 
         }
         .card p { 
-            margin: 10px 0; 
-            line-height: 1.6; 
-            color: var(--white); 
+            margin: 8px 0; 
+            line-height: 1.5; 
+            font-size: 1rem;
         }
         .card strong { 
             color: #ffeb3b; 
-            font-size: 1.1rem;
         }
         .private { 
             filter: blur(6px); 
@@ -109,39 +107,59 @@
             transition: filter 0.3s; 
             font-weight: 500;
         }
-        .private:hover { 
+        .private:hover, .private:focus { 
             filter: none; 
         }
         .price {
-            font-size: 2rem !important;
+            font-size: 1.8rem !important;
             color: var(--coral) !important;
             font-weight: 800;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .photos {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin: 16px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 14px 0;
         }
         .photos img {
             width: 100%;
-            max-width: 280px;
+            height: auto;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         .no-services {
-            font-size: 1.6rem;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.9;
             font-style: italic;
-            padding: 40px;
         }
         footer {
-            margin-top: 80px;
-            padding: 30px;
-            font-size: 1rem;
+            text-align: center;
+            margin-top: 50px;
+            padding: 24px 16px;
+            font-size: 0.85rem;
             opacity: 0.8;
+        }
+
+        /* Tablet - 2 columnas */
+        @media (min-width: 640px) {
+            .services { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 24px;
+            }
+            .glass { padding: 40px 30px; }
+            .photos { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Desktop - Más columnas */
+        @media (min-width: 1024px) {
+            .services { 
+                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+            }
+            .header { padding: 80px 20px 50px; }
+            .glass { padding: 50px 40px; border-radius: 32px; }
         }
     </style>
 </head>
@@ -180,23 +198,21 @@
         const list = document.getElementById('list');
 
         if (error) {
-            list.innerHTML = `<p style="color:#ff6b6b; font-size:1.4rem;">Error al cargar servicios: ${error.message}</p>`;
-            console.error('Error Supabase:', error);
+            list.innerHTML = `<p style="color:#ff6b6b; text-align:center;">Error al cargar servicios. Intenta más tarde.</p>`;
             return;
         }
 
-        if (services.length === 0) {
+        if (!services || services.length === 0) {
             list.innerHTML = '<p class="no-services">Aún no hay servicios publicados. ¡Sé el primero en unirte a TrueWebX!</p>';
             return;
         }
 
         list.innerHTML = services.map(s => `
             <div class="card">
-                <img src="${s.profile || 'https://via.placeholder.com/320x240?text=Perfil+TrueWebX'}" 
-                     alt="Foto de perfil">
-                <h3>${s.name || 'Negocio sin nombre'}</h3>
-                <p><strong>${s.city || 'Ubicación no especificada'}</strong></p>
-                <p>${s.desc || 'Sin descripción disponible'}</p>
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Perfil del negocio">
+                <h3>${s.name || 'Sin nombre'}</h3>
+                <p><strong>${s.city || 'Sin ubicación'}</strong></p>
+                <p>${s.desc || 'Sin descripción'}</p>
                 
                 <div class="photos">
                     ${Array.isArray(s.photos) && s.photos.length > 0 
@@ -207,7 +223,7 @@
                 <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
                 <p>Email: <span class="private">${s.email || 'No disponible'}</span></p>
                 <p class="price">${s.price || 'Consultar precio'}</p>
-                <small style="opacity:0.8;">Publicado el ${s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES') : 'fecha desconocida'}</small>
+                <small style="opacity:0.85;">Publicado: ${s.created_at ? new Date(s.created_at).toLocaleDateString('es-ES') : 'Reciente'}</small>
             </div>
         `).join('');
     }
