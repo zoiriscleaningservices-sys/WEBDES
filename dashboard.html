@@ -247,7 +247,7 @@
                     <p>${s.description || 'Sin descripción'}</p>
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
-                    <p>Email: <span class="private">${s.email || 'No disponible'}</span></p>
+                    <p>Email: <span class="private">${s.emai || 'No disponible'}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
                 </div>
             `).join('')
