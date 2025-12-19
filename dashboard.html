@@ -194,7 +194,7 @@
                     <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
                     <h3>${s.name}</h3>
                     <p><strong>${s.city}</strong></p>
-                    <p>${s.description}</p>
+                    <p>${s.description || 'Sin descripción'}</p>
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Tel: <span class="private">${s.phone}</span></p>
                     <p>Email: <span class="private">${s.email}</span></p>
@@ -213,7 +213,10 @@
 
     async function addService() {
         const user = auth.currentUser;
-        if (!user) return;
+        if (!user) {
+            msg.innerHTML = '<p style="color:red;">Debes estar logueado</p>';
+            return;
+        }
 
         const profileFile = document.getElementById('profile').files[0];
         const photoFiles = document.getElementById('photos').files;
@@ -223,7 +226,10 @@
             const fileExt = profileFile.name.split('.').pop();
             const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; return; }
+            if (error) {
+                msg.innerHTML = `<p style="color:red;">Error al subir perfil: ${error.message}</p>`;
+                return;
+            }
             const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
             profileUrl = data.publicUrl;
         }
@@ -233,7 +239,10 @@
             const fileExt = file.name.split('.').pop();
             const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; return; }
+            if (error) {
+                msg.innerHTML = `<p style="color:red;">Error al subir foto: ${error.message}</p>`;
+                return;
+            }
             const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
             photosUrls.push(data.publicUrl);
         }
@@ -253,20 +262,30 @@
         };
 
         const { error } = await supabaseClient.from('services').insert(service);
-        if (error) { msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
+        if (error) {
+            msg.innerHTML = `<p style="color:red;">Error al publicar: ${error.message}</p>`;
+            console.error(error);
+            return;
+        }
 
         msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
         document.querySelector('.form-grid').reset();
-        setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+        setTimeout(() => {
+            show('home');
+            msg.innerHTML = '';
+        }, 2000);
     }
 
     async function deleteService(id) {
-        if (confirm('¿Borrar este servicio?')) {
+        if (confirm('¿Seguro que quieres borrar este servicio?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
-            if (error) alert('Error: ' + error.message);
-            loadDashboard();
+            if (error) {
+                alert('Error al borrar: ' + error.message);
+            } else {
+                loadDashboard();
+            }
         }
     }
 </script>
 </body>
-</html> 
+</html>
