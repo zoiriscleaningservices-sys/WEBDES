@@ -246,12 +246,11 @@
                     <p><strong>${s.city || 'Sin ubicación'}</strong></p>
                     <p>${s.description || 'Sin descripción'}</p>
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
-                    <p>Tel: <span class="private">${s.phone}</span></p>
-                    <p>Email: <span class="private">${s.email}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);margin:16px 0;"><strong>${s.price}</strong></p>
-                    <small>${new Date(s.created_at).toLocaleString()}</small>
+                    <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
+                    <p>Email: <span class="private">${s.email || 'No disponible'}</span></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
                 </div>
-            `).join('');
+            `).join('')
             : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
     }
 
