@@ -49,7 +49,7 @@
 
 <div class="container">
     <h1 class="logo">TrueWebX – Limpieza Digital</h1>
-    <p>Marketplace mundial – 100% funcional y en vivo</p>
+    <p>Marketplace mundial – ¡Ahora 100% funcional!</p>
 
     <div id="home" class="glass">
         <h2>Servicios disponibles</h2>
@@ -74,7 +74,6 @@
 </div>
 
 <script>
-    // TUS CREDENCIALES REALES
     const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
 
@@ -130,7 +129,7 @@
             phone: document.getElementById('phone').value.trim(),
             email: document.getElementById('email').value.trim(),
             price: document.getElementById('price').value.trim(),
-            description: document.getElementById('desc').value.trim(),
+            desc: document.getElementById('desc').value.trim(),  // ← CAMBIADO A "desc"
             profile: profileUrl,
             photos: photosUrls,
             created_at: new Date().toISOString()
@@ -177,7 +176,7 @@
                     <img src="${s.profile}" alt="Perfil" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
                     <h3>${s.name}</h3>
                     <p><strong>${s.city}</strong></p>
-                    <p>${s.description}</p>
+                    <p>${s.desc}</p>  <!-- ← CAMBIADO A "desc" -->
                     <div class="photos">
                         ${s.photos.map(p => `<img src="${p}" alt="Foto">`).join('')}
                     </div>
