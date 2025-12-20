@@ -230,8 +230,10 @@
                 <input type="tel" id="phone" placeholder="Teléfono" required>
                 <input type="email" id="gmail" placeholder="Gmail" required>
                 <input type="text" id="price" placeholder="Precio (opcional)">
-                <textarea id="desc" placeholder="Descripción detallada" required></textarea>
+                <textarea id="desc" placeholder="Descripción detallada" rows="5" required></textarea>
+                <label style="color:white; font-weight:bold;">Foto de perfil (obligatoria)</label>
                 <input type="file" id="profile" accept="image/*" required>
+                <label style="color:white; font-weight:bold; margin-top:10px;">Fotos adicionales (opcional)</label>
                 <input type="file" id="photos" accept="image/*" multiple>
 
                 <div id="social-container">
@@ -255,7 +257,7 @@
 
                 <button id="publishBtn" onclick="addService()">PUBLICAR AHORA</button>
             </div>
-            <p id="msg"></p>
+            <p id="msg" style="margin-top:20px; font-weight:bold;"></p>
         </div>
 
         <div id="edit" class="glass" style="display:none;">
@@ -266,8 +268,10 @@
                 <input type="tel" id="edit-phone" placeholder="Teléfono" required>
                 <input type="email" id="edit-gmail" placeholder="Gmail" required>
                 <input type="text" id="edit-price" placeholder="Precio (opcional)">
-                <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
+                <textarea id="edit-desc" placeholder="Descripción detallada" rows="5" required></textarea>
+                <label style="color:white; font-weight:bold;">Cambiar foto de perfil (opcional)</label>
                 <input type="file" id="edit-profile" accept="image/*">
+                <label style="color:white; font-weight:bold; margin-top:10px;">Agregar más fotos (opcional)</label>
                 <input type="file" id="edit-photos" accept="image/*" multiple>
 
                 <div id="edit-social-container">
@@ -291,7 +295,7 @@
 
                 <button onclick="updateService()">GUARDAR CAMBIOS</button>
             </div>
-            <p id="edit-msg"></p>
+            <p id="edit-msg" style="margin-top:20px; font-weight:bold;"></p>
         </div>
     </div>
 </div>
@@ -412,6 +416,7 @@
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             document.getElementById('publishBtn').disabled = false;
+            msg.innerHTML = '';
         }
     }
 
@@ -447,7 +452,7 @@
 
     async function addService() {
         if (isPublishing) return;
-        
+
         const name = document.getElementById('name').value.trim();
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
@@ -457,7 +462,7 @@
         const profileFile = document.getElementById('profile').files[0];
 
         if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio y las fotos adicionales!</p>';
+            msg.innerHTML = '<p style="color:red;">¡Error! Asegúrate de llenar todos los campos y subir una foto de perfil.</p>';
             return;
         }
 
@@ -465,15 +470,23 @@
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
         publishBtn.textContent = 'PUBLICANDO...';
+        msg.innerHTML = '<p style="color:#fff;">Subiendo imágenes y guardando...</p>';
 
         const user = auth.currentUser;
-        if (!user) return;
+        if (!user) {
+            msg.innerHTML = '<p style="color:red;">Error: No estás autenticado.</p>';
+            isPublishing = false;
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'PUBLICAR AHORA';
+            return;
+        }
 
+        // Subir foto de perfil
         const fileExt = profileFile.name.split('.').pop();
         const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
         const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
         if (profileError) {
-            msg.innerHTML = `<p style="color:red;">Error al subir perfil: ${profileError.message}</p>`;
+            msg.innerHTML = `<p style="color:red;">Error al subir foto de perfil: ${profileError.message}</p>`;
             isPublishing = false;
             publishBtn.disabled = false;
             publishBtn.textContent = 'PUBLICAR AHORA';
@@ -482,24 +495,32 @@
         const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
         const profileUrl = profileData.publicUrl;
 
+        // Subir fotos adicionales
         const photoFiles = document.getElementById('photos').files;
         const photosUrls = [];
         for (let file of photoFiles) {
             const fileExt = file.name.split('.').pop();
             const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) continue;
+            if (error) {
+                console.warn('Error subiendo foto adicional:', error);
+                continue;
+            }
             const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
             photosUrls.push(data.publicUrl);
         }
 
+        // Generar slug único
         const tempId = crypto.randomUUID();
         const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${tempId.slice(-8)}`;
 
         const service = {
             id: tempId,
             owner_id: user.uid,
-            name, city, phone, gmail,
+            name,
+            city,
+            phone,
+            gmail,
             price: price || null,
             description: desc,
             profile: profileUrl,
@@ -510,21 +531,27 @@
         };
 
         const { error } = await supabaseClient.from('services').insert(service);
+
         if (error) {
-            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            msg.innerHTML = `<p style="color:red;">Error al guardar: ${error.message}</p>`;
         } else {
-            msg.innerHTML = `<p style="color:#0f0;">¡Publicado con éxito!</p>
-                <p>Página individual: <a href="service.html?slug=${slug}" target="_blank" style="color:#ffeb3b;">Abrir página SEO</a></p>`;
+            msg.innerHTML = `<p style="color:#0f8;">¡Publicado con éxito!</p>
+                <p>Página individual: <a href="service.html?slug=${slug}" target="_blank" style="color:#ffeb3b; text-decoration:underline;">Abrir página SEO</a></p>`;
             document.querySelector('.form-grid').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
-            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 5000);
+            setTimeout(() => {
+                show('home');
+                msg.innerHTML = '';
+            }, 8000);
         }
 
         isPublishing = false;
         publishBtn.disabled = false;
         publishBtn.textContent = 'PUBLICAR AHORA';
     }
+
+    // Las funciones editService, updateService y deleteService permanecen iguales a tu versión original
 
     async function editService(id) {
         currentEditId = id;
@@ -598,7 +625,7 @@
             return;
         }
 
-        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f8;">¡Actualizado con éxito!</p>';
         currentEditId = null;
         currentSocialLinks = [];
         setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
