@@ -462,7 +462,7 @@
             .order('created_at', { ascending: false });
 
         if (error) {
-            list.innerHTML = '<p style="text-align:center;color:red;">Error loading data. Please try again later.</p>';
+            list.innerHTML = '<p style="text-align:center;color:red;">Error loading businesses. Please try again later.</p>';
             console.error(error);
             return;
         }
@@ -629,7 +629,7 @@
         currentEditId = id;
         const { data: service, error } = await supabaseClient.from('services').select('*').eq('id', id).single();
         if (error) {
-            alert('Error loading service for edit: ' + error.message);
+            alert('Error loading business for edit: ' + error.message);
             return;
         }
 
