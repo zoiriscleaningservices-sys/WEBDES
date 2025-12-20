@@ -447,7 +447,7 @@
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
-        const price = document.getElementById('price').value.trim(); // Ahora opcional
+        const price = document.getElementById('price').value.trim();
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
 
@@ -464,7 +464,6 @@
         const user = auth.currentUser;
         if (!user) return;
 
-        // Subir foto de perfil (obligatoria)
         const fileExt = profileFile.name.split('.').pop();
         const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
         const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
@@ -478,7 +477,6 @@
         const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
         const profileUrl = profileData.publicUrl;
 
-        // Subir fotos adicionales (opcionales)
         const photoFiles = document.getElementById('photos').files;
         const photosUrls = [];
         for (let file of photoFiles) {
@@ -492,9 +490,9 @@
 
         const service = {
             id: crypto.randomUUID(),
-            owner_id: user.uid.toString(), // ← FIX PRINCIPAL: convierte UUID a string
+            owner_id: user.uid.toString(),  // ← FIX: convert UID to string
             name, city, phone, gmail,
-            price: price || null, // Si está vacío, guardamos null
+            price: price || null,
             description: desc,
             profile: profileUrl,
             photos: photosUrls,
@@ -513,7 +511,6 @@
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
         }
 
-        // Anti-spam: botón bloqueado 5 segundos
         setTimeout(() => {
             isPublishing = false;
             publishBtn.disabled = false;
@@ -538,14 +535,14 @@
         show('edit');
     }
 
-    async function updateService() {
+    async function  updateService() {
         if (!currentEditId) return;
 
         const name = document.getElementById('edit-name').value.trim();
         const city = document.getElementById('edit-city').value.trim();
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
-        const price = document.getElementById('edit-price').value.trim(); // opcional
+        const price = document.getElementById('edit-price').value.trim();
         const desc = document.getElementById('edit-desc').value.trim();
 
         if (!name || !city || !phone || !gmail || !desc) {
