@@ -3,8 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrueWebX – My Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <meta name="description" content="TrueWebX Business Dashboard – Publish and manage your professional business profile. Add company name, state, city, contact details, free consultation info, modern photo gallery, and social links for maximum visibility.">
+    <meta name="keywords" content="TrueWebX, business profile, company listing, professional dashboard, free consultation, business directory, local business, portfolio management, local services">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="TrueWebX">
+    <meta property="og:title" content="TrueWebX – Business Dashboard">
+    <meta property="og:description" content="Create and manage your business profile with TrueWebX – featuring free consultation and a modern photo gallery.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://truewebx.site/dashboard">
+    <meta property="og:image" content="https://truewebx.site/og-image.jpg">
+    <title>TrueWebX – Business Dashboard</title>
+    <link rel="canonical" href="https://truewebx.site/dashboard">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,7 +22,7 @@
         :root { --coral: #ff6b6b; --turquoise: #0d9488; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { 
-            font-family: system-ui, sans-serif; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
             color:white; 
             min-height:100vh; 
@@ -122,12 +132,32 @@
             width:100%;
             max-width:600px;
         }
-        .form-grid { display:grid; gap:16px; width:100%; }
+        .form-grid { display:grid; gap:18px; width:100%; }
         input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
         input, textarea { background:rgba(255,255,255,0.25); color:white; backdrop-filter:blur(10px); width:100%; }
         input::placeholder, textarea::placeholder { color:rgba(255,255,255,0.7); }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
+
+        /* Reliable file upload */
+        .file-input {
+            background: rgba(255,255,255,0.25);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .file-input input[type="file"] {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+        }
+
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; width:100%; }
         .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
@@ -135,7 +165,27 @@
         .card:hover .edit, .card:hover .delete { opacity:1; }
         .private { filter:blur(6px); user-select:none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter:none; }
-        .photos img { width:100%; max-width:280px; border-radius:12px; margin:8px 0; }
+
+        /* Modern responsive gallery */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            gap: 14px; 
+            margin: 16px 0; 
+        }
+        .gallery img { 
+            width: 100%; 
+            height: 130px; 
+            object-fit: cover; 
+            border-radius: 16px; 
+            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .gallery img:hover { 
+            transform: scale(1.08); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
         .links { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
         .links a { color:var(--coral); text-decoration:none; font-weight:600; padding:8px 14px; background:rgba(255,255,255,0.1); border-radius:20px; display:flex; align-items:center; gap:6px; }
 
@@ -159,6 +209,7 @@
             input, textarea { font-size:16px !important; }
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
         }
     </style>
 </head>
@@ -171,26 +222,26 @@
 
         <form id="authForm">
             <div class="inputForm">
-                <input id="email" placeholder="Your email" class="input" type="email" required>
+                <input id="email" placeholder="Your email" class="input" type="email" required aria-label="Email">
             </div>
 
             <div class="inputForm">
-                <input id="password" placeholder="Your password" class="input" type="password" required>
+                <input id="password" placeholder="Your password" class="input" type="password" required aria-label="Password">
             </div>
 
             <button type="submit" class="button-submit" id="authButton">Sign In</button>
         </form>
 
-        <div id="message"></div>
+        <div id="message" role="alert"></div>
 
         <p style="margin-top:20px; color:#666;">
             <span id="toggleText">Don't have an account?</span> 
-            <span class="toggle-link" onclick="toggleAuthMode()">Sign up here</span>
+            <span class="toggle-link" onclick="toggleAuthMode()" role="button" tabindex="0">Sign up here</span>
         </p>
 
         <div style="margin-top:20px;">
-            <button type="button" class="btn google" id="googleBtn">
-                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
+            <button type="button" class="btn google" id="googleBtn" aria-label="Continue with Google">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
                     <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
                     <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
                     <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
@@ -204,40 +255,48 @@
 
 <!-- DASHBOARD -->
 <div id="dashboardScreen" style="display:none;">
-    <div class="bottom-nav">
+    <nav class="bottom-nav" aria-label="Main navigation">
         <div class="nav-container">
-            <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>My Services</span></div>
-            <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>New</span></div>
-            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'"><i class="fas fa-globe"></i><span>Public</span></div>
-            <div class="nav-item" onclick="logoutAndGoHome()"><i class="fas fa-sign-out-alt"></i><span>Sign Out</span></div>
+            <div class="nav-item active" onclick="show('home')" aria-label="My Businesses"><i class="fas fa-home" aria-hidden="true"></i><span>My Businesses</span></div>
+            <div class="nav-item" onclick="show('add')" aria-label="New Business"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>New</span></div>
+            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'" aria-label="Public Page"><i class="fas fa-globe" aria-hidden="true"></i><span>Public</span></div>
+            <div class="nav-item" onclick="logoutAndGoHome()" aria-label="Sign Out"><i class="fas fa-sign-out-alt" aria-hidden="true"></i><span>Sign Out</span></div>
         </div>
-    </div>
+    </nav>
 
-    <div class="main-content">
-        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</h1>
-        <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
+    <main class="main-content">
+        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'" aria-label="TrueWebX Home">TrueWebX</h1>
+        <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg" aria-live="polite"></p>
 
-        <div id="home" class="glass">
-            <h2>My Published Services</h2>
-            <div class="services" id="list"></div>
-        </div>
+        <section id="home" class="glass" aria-labelledby="my-businesses-heading">
+            <h2 id="my-businesses-heading">My Published Businesses</h2>
+            <div class="services" id="list" role="list"></div>
+        </section>
 
-        <div id="add" class="glass" style="display:none;">
-            <h2>Publish New Service</h2>
+        <section id="add" class="glass" style="display:none;" aria-labelledby="new-business-heading">
+            <h2 id="new-business-heading">Publish New Business Profile</h2>
             <div class="form-grid">
-                <input type="text" id="name" placeholder="Full Name" required>
-                <input type="text" id="city" placeholder="City and Country" required>
-                <input type="tel" id="phone" placeholder="Phone Number" required>
-                <input type="email" id="gmail" placeholder="Email" required>
-                <input type="text" id="price" placeholder="Price (optional)">
-                <textarea id="desc" placeholder="Detailed Description" required></textarea>
-                <input type="file" id="profile" accept="image/*" required>
-                <input type="file" id="photos" accept="image/*" multiple>
+                <input type="text" id="company" placeholder="Business / Company Name" required aria-label="Business Name">
+                <input type="text" id="state" placeholder="State" required aria-label="State">
+                <input type="text" id="city" placeholder="City" required aria-label="City">
+                <input type="tel" id="phone" placeholder="Phone Number" required aria-label="Phone Number">
+                <input type="email" id="gmail" placeholder="Business Email" required aria-label="Business Email">
+                <textarea id="desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
+
+                <div class="file-input">
+                    <span style="display:block;margin-bottom:8px;">Upload Profile Photo / Logo (required)</span>
+                    <input type="file" id="profile" accept="image/*" required>
+                </div>
+
+                <div class="file-input">
+                    <span style="display:block;margin-bottom:8px;">Upload Gallery Photos (optional – multiple)</span>
+                    <input type="file" id="photos" accept="image/*" multiple>
+                </div>
 
                 <div id="social-container">
-                    <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media Links (optional)</h3>
                     <div class="social-input">
-                        <select id="social-type">
+                        <select id="social-type" aria-label="Social media platform">
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
@@ -247,33 +306,41 @@
                             <option value="whatsapp">WhatsApp</option>
                             <option value="other">Other</option>
                         </select>
-                        <input type="url" id="social-url" placeholder="Full URL (e.g. https://instagram.com/yourusername)">
-                        <button type="button" onclick="addSocialLink()">+</button>
+                        <input type="url" id="social-url" placeholder="Full URL (e.g., https://instagram.com/yourbusiness)" aria-label="Social media URL">
+                        <button type="button" onclick="addSocialLink()" aria-label="Add social link">+</button>
                     </div>
                     <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
 
                 <button id="publishBtn" onclick="addService()">PUBLISH NOW</button>
             </div>
-            <p id="msg"></p>
-        </div>
+            <p id="msg" aria-live="polite"></p>
+        </section>
 
-        <div id="edit" class="glass" style="display:none;">
-            <h2>Edit Service</h2>
+        <section id="edit" class="glass" style="display:none;" aria-labelledby="edit-business-heading">
+            <h2 id="edit-business-heading">Edit Business Profile</h2>
             <div class="form-grid">
-                <input type="text" id="edit-name" placeholder="Full Name" required>
-                <input type="text" id="edit-city" placeholder="City and Country" required>
-                <input type="tel" id="edit-phone" placeholder="Phone Number" required>
-                <input type="email" id="edit-gmail" placeholder="Email" required>
-                <input type="text" id="edit-price" placeholder="Price (optional)">
-                <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
-                <input type="file" id="edit-profile" accept="image/*">
-                <input type="file" id="edit-photos" accept="image/*" multiple>
+                <input type="text" id="edit-company" placeholder="Business / Company Name" required aria-label="Business Name">
+                <input type="text" id="edit-state" placeholder="State" required aria-label="State">
+                <input type="text" id="edit-city" placeholder="City" required aria-label="City">
+                <input type="tel" id="edit-phone" placeholder="Phone Number" required aria-label="Phone Number">
+                <input type="email" id="edit-gmail" placeholder="Business Email" required aria-label="Business Email">
+                <textarea id="edit-desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
+
+                <div class="file-input">
+                    <span style="display:block;margin-bottom:8px;">Change Profile Photo / Logo (optional)</span>
+                    <input type="file" id="edit-profile" accept="image/*">
+                </div>
+
+                <div class="file-input">
+                    <span style="display:block;margin-bottom:8px;">Add More Gallery Photos (optional)</span>
+                    <input type="file" id="edit-photos" accept="image/*" multiple>
+                </div>
 
                 <div id="edit-social-container">
-                    <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media Links</h3>
                     <div class="social-input">
-                        <select id="edit-social-type">
+                        <select id="edit-social-type" aria-label="Social media platform">
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
@@ -283,17 +350,17 @@
                             <option value="whatsapp">WhatsApp</option>
                             <option value="other">Other</option>
                         </select>
-                        <input type="url" id="edit-social-url" placeholder="Full URL">
-                        <button type="button" onclick="addSocialLink(true)">+</button>
+                        <input type="url" id="edit-social-url" placeholder="Full URL" aria-label="Social media URL">
+                        <button type="button" onclick="addSocialLink(true)" aria-label="Add social link">+</button>
                     </div>
                     <div id="edit-added-socials" style="margin-top:10px;"></div>
                 </div>
 
                 <button onclick="updateService()">SAVE CHANGES</button>
             </div>
-            <p id="edit-msg"></p>
-        </div>
-    </div>
+            <p id="edit-msg" aria-live="polite"></p>
+        </section>
+    </main>
 </div>
 
 <script>
@@ -364,37 +431,43 @@
         document.getElementById('dashboardScreen').style.display = 'block';
         welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
 
-        const { data: services } = await supabaseClient
+        const { data: services, error } = await supabaseClient
             .from('services')
             .select('*')
             .eq('owner_id', user.uid)
             .order('created_at', { ascending: false });
 
+        if (error) {
+            list.innerHTML = '<p style="text-align:center;color:red;">Error loading businesses. Please try again later.</p>';
+            console.error(error);
+            return;
+        }
+
         list.innerHTML = services && services.length > 0
             ? services.map(s => `
-                <div class="card">
-                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
-                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
-                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Profile'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
-                    <h3>${s.name || 'No name'}</h3>
-                    <p><strong>${s.city || 'No location'}</strong></p>
+                <article class="card" role="listitem">
+                    <button class="edit" onclick="editService('${s.id}')" aria-label="Edit business"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                    <button class="delete" onclick="deleteService('${s.id}')" aria-label="Delete business">×</button>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Logo'}" alt="Logo of ${s.company || 'business'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.company || 'No business name'}</h3>
+                    <p><strong>${s.state ? s.state + ', ' : ''}${s.city || 'No location'}</strong></p>
                     <p>${s.description || 'No description'}</p>
-                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
+                    <div class="gallery">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('') : ''}</div>
                     <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
                     <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Contact for price'}</strong></p>
+                    <p style="font-size:1.8rem;color:var(--coral);margin-top:16px;"><strong>Free Consultation</strong></p>
                     ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links">
                         ${s.social_links.map(link => `
-                            <a href="${link.url}" target="_blank">
-                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${link.type} profile">
+                                <i class="fab fa-${link.type.toLowerCase()}" aria-hidden="true"></i> ${link.type}
                             </a>
                         `).join('')}
                     </div>
                     ` : ''}
-                </div>
+                </article>
             `).join('')
-            : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
+            : '<p style="text-align:center;">You have no published business profiles yet. Create one now!</p>';
     }
 
     function show(section) {
@@ -420,7 +493,7 @@
             updateAddedSocials(isEdit);
             input.value = '';
         } else if (url) {
-            alert('Please enter a valid URL (with https://)');
+            alert('Please enter a valid URL (starting with https://)');
         }
     }
 
@@ -428,9 +501,9 @@
         const container = isEdit ? 'edit-added-socials' : 'added-socials';
         document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
             <div class="added-link">
-                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <i class="fab fa-${link.type.toLowerCase()}" aria-hidden="true"></i>
                 <span>${link.type}: ${link.url}</span>
-                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+                <button onclick="removeSocialLink(${i}, ${isEdit})" aria-label="Remove link">×</button>
             </div>
         `).join('');
     }
@@ -443,16 +516,16 @@
     async function addService() {
         if (isPublishing) return;
         
-        const name = document.getElementById('name').value.trim();
+        const company = document.getElementById('company').value.trim();
+        const state = document.getElementById('state').value.trim();
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
-        const price = document.getElementById('price').value.trim();
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
 
-        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">All fields are required except price and additional photos!</p>';
+        if (!company || !state || !city || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">All fields are required except gallery photos!</p>';
             return;
         }
 
@@ -460,73 +533,87 @@
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
         publishBtn.textContent = 'PUBLISHING...';
+        msg.innerHTML = '';
 
         const user = auth.currentUser;
-        if (!user) return;
-
-        const fileExt = profileFile.name.split('.').pop();
-        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-        if (profileError) {
-            msg.innerHTML = `<p style="color:red;">Error uploading profile: ${profileError.message}</p>`;
+        if (!user) {
+            msg.innerHTML = '<p style="color:red;">User not authenticated.</p>';
             isPublishing = false;
             publishBtn.disabled = false;
             publishBtn.textContent = 'PUBLISH NOW';
             return;
         }
-        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-        const profileUrl = profileData.publicUrl;
 
-        const photoFiles = document.getElementById('photos').files;
-        const photosUrls = [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) continue;
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
+        try {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (profileError) throw profileError;
+            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            const profileUrl = profileData.publicUrl;
 
-        const service = {
-            id: crypto.randomUUID(),
-            owner_id: user.uid,
-            name, city, phone, gmail,
-            price: price || null,
-            description: desc,
-            profile: profileUrl,
-            photos: photosUrls,
-            social_links: currentSocialLinks,
-            created_at: new Date().toISOString()
-        };
+            const photoFiles = document.getElementById('photos').files;
+            const photosUrls = [];
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) {
+                        console.error('Photo upload error:', error);
+                        continue;
+                    }
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
 
-        const { error } = await supabaseClient.from('services').insert(service);
-        if (error) {
-            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-        } else {
+            const service = {
+                id: crypto.randomUUID(),
+                owner_id: user.uid,
+                company,
+                state,
+                city,
+                phone,
+                gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks,
+                created_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient.from('services').insert(service);
+            if (error) throw error;
+
             msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
             document.querySelector('.form-grid').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
-        }
-
-        setTimeout(() => {
+        } catch (err) {
+            msg.innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
+        } finally {
             isPublishing = false;
             publishBtn.disabled = false;
             publishBtn.textContent = 'PUBLISH NOW';
-        }, 5000);
+        }
     }
 
     async function editService(id) {
         currentEditId = id;
-        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+        const { data: service, error } = await supabaseClient.from('services').select('*').eq('id', id).single();
+        if (error) {
+            alert('Error loading business for edit: ' + error.message);
+            return;
+        }
 
-        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-company').value = service.company || '';
+        document.getElementById('edit-state').value = service.state || '';
         document.getElementById('edit-city').value = service.city || '';
         document.getElementById('edit-phone').value = service.phone || '';
         document.getElementById('edit-gmail').value = service.gmail || '';
-        document.getElementById('edit-price').value = service.price || '';
         document.getElementById('edit-desc').value = service.description || '';
 
         currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
@@ -538,69 +625,77 @@
     async function updateService() {
         if (!currentEditId) return;
 
-        const name = document.getElementById('edit-name').value.trim();
+        const company = document.getElementById('edit-company').value.trim();
+        const state = document.getElementById('edit-state').value.trim();
         const city = document.getElementById('edit-city').value.trim();
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
-        const price = document.getElementById('edit-price').value.trim();
         const desc = document.getElementById('edit-desc').value.trim();
 
-        if (!name || !city || !phone || !gmail || !desc) {
+        if (!company || !state || !city || !phone || !gmail || !desc) {
             document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
             return;
         }
 
-        const profileFile = document.getElementById('edit-profile').files[0];
-        const photoFiles = document.getElementById('edit-photos').files;
+        document.getElementById('edit-msg').innerHTML = '';
 
-        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+        try {
+            const profileFile = document.getElementById('edit-profile').files[0];
 
-        let profileUrl = current.profile;
-        if (profileFile) {
-            const fileExt = profileFile.name.split('.').pop();
-            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+            let profileUrl = current.profile;
+            if (profileFile) {
+                const fileExt = profileFile.name.split('.').pop();
+                const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                profileUrl = data.publicUrl;
+            }
+
+            let photosUrls = current.photos || [];
+            const photoFiles = document.getElementById('edit-photos').files;
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) throw error;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const updates = {
+                company, state, city, phone, gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks
+            };
+
+            const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
             if (error) throw error;
-            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-            profileUrl = data.publicUrl;
+
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
+            currentEditId = null;
+            currentSocialLinks = [];
+            setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+        } catch (err) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
         }
-
-        let photosUrls = current.photos || [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) throw error;
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
-
-        const updates = {
-            name, city, phone, gmail,
-            price: price || null,
-            description: desc,
-            profile: profileUrl,
-            photos: photosUrls,
-            social_links: currentSocialLinks
-        };
-
-        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
-        if (error) {
-            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-            return;
-        }
-
-        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
-        currentEditId = null;
-        currentSocialLinks = [];
-        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
     }
 
     async function deleteService(id) {
-        if (confirm('Are you sure you want to delete this service?')) {
+        if (confirm('Are you sure you want to delete this business profile?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
-            if (error) alert('Error: ' + error.message);
-            loadDashboard();
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                loadDashboard();
+            }
         }
     }
 </script>
