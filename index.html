@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrueWebX – Promote Your Business Worldwide</title>
-    <meta name="description" content="Plataforma global para promover tu negocio y conectar con clientes en todo el mundo. Publica tu servicio y destaca.">
-    <meta property="og:title" content="TrueWebX – Servicios Globales">
-    <meta property="og:description" content="Promueve tu negocio en TrueWebX y llega a clientes internacionales.">
+    <title>TrueWebX – Global Business Directory | Find Local Services Worldwide</title>
+    <meta name="description" content="TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
+    <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="TrueWebX – Global Business Directory">
+    <meta property="og:description" content="Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/">
+    <meta property="og:image" content="https://truewebx.site/og-image.jpg">
+    <link rel="canonical" href="https://truewebx.site/">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -50,7 +54,7 @@
         .tagline { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 600; margin-bottom: 10px; }
         .subtitle { font-size: clamp(0.95rem, 3.5vw, 1.35rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.6; }
 
-        /* BARRA DE BÚSQUEDA */
+        /* SEARCH BAR */
         .search-container {
             max-width: 700px;
             margin: 20px auto;
@@ -131,38 +135,52 @@
 </head>
 <body>
 <div class="container">
-    <div class="header-wrapper" id="header">
+    <header class="header-wrapper" id="header" role="banner">
         <h1 class="logo">TrueWebX</h1>
-        <button class="login-btn" onclick="window.location.href='dashboard.html'">
-            <i class="fas fa-user-circle"></i> Login / Sign Up
-        </button>
-    </div>
+        <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up to publish your business">
+            <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
+        </a>
+    </header>
 
-    <div class="main-content">
-        <div class="hero">
-            <div class="tagline">Promueve tu Negocio en Todo el Mundo</div>
+    <main class="main-content" role="main">
+        <section class="hero" aria-labelledby="hero-tagline">
+            <h2 id="hero-tagline" class="tagline">Promote Your Business Worldwide</h2>
             <p class="subtitle">
-                Plataforma todo-en-uno para publicar, crecer y conectar tu negocio con clientes globales.<br>
-                <strong>Todo lo que necesitas para destacar</strong>
+                TrueWebX is the global business directory connecting customers with trusted local services and companies everywhere.<br>
+                <strong>Find professionals offering free consultations today.</strong>
             </p>
+        </section>
+
+        <!-- SEARCH BAR -->
+        <div class="search-container" role="search">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by business name, service, or city (e.g. plumber Miami, web design New York...)" aria-label="Search businesses">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
 
-        <!-- BARRA DE BÚSQUEDA -->
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-box" placeholder="Buscar por nombre del negocio o ciudad (ej: Miami, New York, plomero...)">
-            <i class="fas fa-search search-icon"></i>
-        </div>
+        <section class="glass" aria-labelledby="services-heading">
+            <h2 id="services-heading">Available Services Worldwide</h2>
+            <div class="services" id="list" role="list"></div>
+        </section>
+    </main>
 
-        <div class="glass">
-            <h2>Servicios Disponibles en Todo el Mundo</h2>
-            <div class="services" id="list"></div>
-        </div>
-
-        <footer>
-            © 2025 TrueWebX – La plataforma global para emprendedores y negocios
-        </footer>
-    </div>
+    <footer role="contentinfo">
+        © 2025 TrueWebX – The global directory for businesses and professional services
+    </footer>
 </div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "TrueWebX",
+  "url": "https://truewebx.site/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://truewebx.site/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 
 <script>
     window.addEventListener('scroll', () => {
@@ -173,7 +191,7 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let allServices = []; // Guardaremos todos los servicios aquí
+    let allServices = [];
 
     async function loadServices() {
         const { data: services, error } = await supabaseClient
@@ -184,30 +202,45 @@
         const list = document.getElementById('list');
 
         if (error || !services || services.length === 0) {
-            list.innerHTML = '<p class="no-services">Aún no hay servicios publicados. ¡Sé el primero en unirte a TrueWebX!</p>';
+            list.innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
             allServices = [];
+            addStructuredData([]);
             return;
         }
 
         allServices = services;
-
         renderServices(services);
+        addStructuredData(services);
+    }
 
-        // SEO Structured Data (mantiene tu optimización)
+    function addStructuredData(services) {
+        // Remove old schema if exists
+        const oldScript = document.querySelector('script[type="application/ld+json"]:not([src])');
+        if (oldScript) oldScript.remove();
+
+        const schemaItems = services.map(s => ({
+            "@type": "ProfessionalService",
+            "name": s.name || "Business on TrueWebX",
+            "description": s.description || "Professional service listed on TrueWebX global directory",
+            "telephone": s.phone || "",
+            "email": s.gmail || "",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": s.city || "Worldwide"
+            },
+            "image": s.profile || "https://truewebx.site/default-profile.jpg",
+            "offers": {
+                "@type": "Offer",
+                "name": "Free Consultation"
+            },
+            "url": "https://truewebx.site/",
+            "sameAs": s.social_links ? s.social_links.map(l => l.url) : [],
+            "datePublished": s.created_at || new Date().toISOString()
+        }));
+
         const schema = {
             "@context": "https://schema.org",
-            "@graph": services.map(s => ({
-                "@type": "LocalBusiness",
-                "name": s.name || 'Negocio en TrueWebX',
-                "description": s.description || 'Servicio disponible en TrueWebX',
-                "telephone": s.phone || '',
-                "email": s.gmail || '',
-                "address": { "@type": "PostalAddress", "addressLocality": s.city || 'Desconocida' },
-                "image": s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX',
-                "priceRange": s.price ? s.price : 'Consultar',
-                "url": s.social_links && s.social_links.length > 0 ? s.social_links[0].url : 'https://truewebx.site/',
-                "datePublished": s.created_at || new Date().toISOString()
-            }))
+            "@graph": schemaItems
         };
 
         const script = document.createElement('script');
@@ -219,32 +252,34 @@
     function renderServices(services) {
         const list = document.getElementById('list');
         if (services.length === 0) {
-            list.innerHTML = '<p class="no-services">No se encontraron resultados para tu búsqueda.</p>';
+            list.innerHTML = '<p class="no-services">No results found for your search.</p>';
             return;
         }
 
         list.innerHTML = services.map(s => `
-            <div class="card">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Foto de perfil de ${s.name || 'negocio'}">
-                <h3>${s.name || 'Sin nombre'}</h3>
-                <p><strong>${s.city || 'Sin ubicación'}</strong></p>
-                <p>${s.description || 'Sin descripción'}</p>
-                <div class="photos">${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Foto ${i+1}">`).join('') : ''}</div>
-                <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
-                <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
-                <p class="price">${s.price || 'Consultar precio'}</p>
+            <article class="card" itemscope itemtype="https://schema.org/ProfessionalService">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name || 'business'}" itemprop="image">
+                <h3 itemprop="name">${s.name || 'Unnamed Business'}</h3>
+                <p><strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong></p>
+                <p itemprop="description">${s.description || 'No description provided'}</p>
+                <div class="photos" aria-label="Gallery photos">
+                    ${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1} of ${s.name || 'business'}">`).join('') : ''}
+                </div>
+                <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Not available'}</span></p>
+                <p>Email: <span class="private" itemprop="email">${s.gmail || 'Not available'}</span></p>
+                <p class="price"><strong>Free Consultation</strong></p>
                 ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                <div class="links">
-                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
+                <div class="links" itemprop="sameAs" content="${s.social_links.map(l => l.url).join(' ')}">
+                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" aria-label="Visit ${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
                 </div>` : ''}
                 <small style="opacity:0.85;display:block;margin-top:12px;">
-                    Publicado: ${new Date(s.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'})}
+                    Published: ${new Date(s.created_at).toLocaleDateString('en-US', {day:'numeric', month:'long', year:'numeric'})}
                 </small>
-            </div>
+            </article>
         `).join('');
     }
 
-    // Búsqueda en tiempo real
+    // Real-time search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
 
@@ -255,7 +290,8 @@
 
         const filtered = allServices.filter(service => 
             (service.name && service.name.toLowerCase().includes(query)) ||
-            (service.city && service.city.toLowerCase().includes(query))
+            (service.city && service.city.toLowerCase().includes(query)) ||
+            (service.description && service.description.toLowerCase().includes(query))
         );
 
         renderServices(filtered);
@@ -264,4 +300,4 @@
     loadServices();
 </script>
 </body>
-</html> 
+</html>
