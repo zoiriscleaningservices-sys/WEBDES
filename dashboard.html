@@ -50,9 +50,7 @@
             color:#151717;
             outline:none;
         }
-        .input::placeholder {
-            color:#aaa;
-        }
+        .input::placeholder { color:#aaa; }
         .button-submit { 
             background:#151717; 
             color:white; 
@@ -113,6 +111,7 @@
             color:transparent; 
             text-align:center; 
             margin:20px 0; 
+            cursor:pointer;
         }
         .glass { 
             background:rgba(255,255,255,0.15); 
@@ -123,65 +122,32 @@
             width:100%;
             max-width:600px;
         }
-        .form-grid { 
-            display:grid; 
-            gap:16px; 
-            width:100%;
-        }
-        input, textarea, button { 
-            padding:16px; 
-            border-radius:16px; 
-            border:none; 
-            font-size:16px; 
-        }
-        input, textarea { 
-            background:rgba(255,255,255,0.25); 
-            color:white; 
-            backdrop-filter:blur(10px);
-            width:100%;
-        }
-        input::placeholder, textarea::placeholder {
-            color:rgba(255,255,255,0.7);
-        }
+        .form-grid { display:grid; gap:16px; width:100%; }
+        input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
+        input, textarea { background:rgba(255,255,255,0.25); color:white; backdrop-filter:blur(10px); width:100%; }
+        input::placeholder, textarea::placeholder { color:rgba(255,255,255,0.7); }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
-        .services { 
-            display:grid; 
-            grid-template-columns:1fr; 
-            gap:24px; 
-            margin-top:20px; 
-            width:100%;
-        }
-        .card { 
-            background:rgba(255,255,255,0.15); 
-            border-radius:24px; 
-            padding:20px; 
-            position:relative; 
-            width:100%;
-        }
-        .edit, .delete { 
-            position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; 
-        }
+        button:disabled { background:#888; cursor:not-allowed; }
+        .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
+        .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; width:100%; }
+        .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
         .delete { background:red; color:white; right:60px; }
         .card:hover .edit, .card:hover .delete { opacity:1; }
         .private { filter:blur(6px); user-select:none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter:none; }
         .photos img { width:100%; max-width:280px; border-radius:12px; margin:8px 0; }
         .links { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
-        .links a { 
-            color:var(--coral); 
-            text-decoration:none; 
-            font-weight:600; 
-            padding:8px 14px; 
-            background:rgba(255,255,255,0.1); 
-            border-radius:20px; 
-            display:flex; 
-            align-items:center; 
-            gap:6px; 
-        }
+        .links a { color:var(--coral); text-decoration:none; font-weight:600; padding:8px 14px; background:rgba(255,255,255,0.1); border-radius:20px; display:flex; align-items:center; gap:6px; }
 
-        .social-input { display:flex; gap:10px; margin-bottom:10px; }
-        .social-input select, .social-input input { flex:1; }
-        .social-input button { flex:0 0 40px; background:#0d9488; color:white; font-size:20px; padding:0; border:none; border-radius:8px; cursor:pointer; }
+        .social-input { display:flex; gap:10px; margin-bottom:10px; align-items:center; }
+        .social-input select, .social-input input { flex:1; padding:16px; border-radius:16px; border:none; font-size:16px; background:rgba(255,255,255,0.25); color:white; }
+        .social-input button { flex:0 0 50px; height:50px; background:#0d9488; color:white; font-size:24px; border:none; border-radius:16px; cursor:pointer; display:grid; place-items:center; }
+
+        .added-link { 
+            display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; 
+        }
+        .added-link i { font-size:20px; }
+        .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
@@ -189,6 +155,7 @@
             .services { grid-template-columns:1fr; }
             .edit, .delete { opacity:1; }
             .social-input { flex-direction:column; }
+            .social-input button { height:50px; width:100%; }
             input, textarea { font-size:16px !important; }
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
@@ -241,12 +208,13 @@
         <div class="nav-container">
             <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>Mis Servicios</span></div>
             <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>Nuevo</span></div>
-            <div class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Salir</span></div>
+            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'"><i class="fas fa-globe"></i><span>Pública</span></div>
+            <div class="nav-item" onclick="logoutAndGoHome()"><i class="fas fa-sign-out-alt"></i><span>Salir</span></div>
         </div>
     </div>
 
     <div class="main-content">
-        <h1 class="logo">TrueWebX</h1>
+        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</h1>
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
 
         <div id="home" class="glass">
@@ -261,12 +229,11 @@
                 <input type="text" id="city" placeholder="Ciudad y País" required>
                 <input type="tel" id="phone" placeholder="Teléfono" required>
                 <input type="email" id="gmail" placeholder="Gmail" required>
-                <input type="text" id="price" placeholder="Precio" required>
+                <input type="text" id="price" placeholder="Precio (opcional)">
                 <textarea id="desc" placeholder="Descripción detallada" required></textarea>
-                <input type="file" id="profile" accept="image/*">
+                <input type="file" id="profile" accept="image/*" required>
                 <input type="file" id="photos" accept="image/*" multiple>
 
-                <!-- Sección de Redes Sociales -->
                 <div id="social-container">
                     <h3 style="color:white; margin:20px 0 10px;">Redes Sociales (opcional)</h3>
                     <div class="social-input">
@@ -286,12 +253,11 @@
                     <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <button onclick="addService()">PUBLICAR AHORA</button>
+                <button id="publishBtn" onclick="addService()">PUBLICAR AHORA</button>
             </div>
             <p id="msg"></p>
         </div>
 
-        <!-- EDIT SECTION -->
         <div id="edit" class="glass" style="display:none;">
             <h2>Editar Servicio</h2>
             <div class="form-grid">
@@ -299,7 +265,7 @@
                 <input type="text" id="edit-city" placeholder="Ciudad y País" required>
                 <input type="tel" id="edit-phone" placeholder="Teléfono" required>
                 <input type="email" id="edit-gmail" placeholder="Gmail" required>
-                <input type="text" id="edit-price" placeholder="Precio" required>
+                <input type="text" id="edit-price" placeholder="Precio (opcional)">
                 <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="edit-profile" accept="image/*">
                 <input type="file" id="edit-photos" accept="image/*" multiple>
@@ -352,6 +318,7 @@
     let currentEditId = null;
     let currentSocialLinks = [];
     let isSignupMode = false;
+    let isPublishing = false;
 
     function toggleAuthMode() {
         isSignupMode = !isSignupMode;
@@ -381,8 +348,10 @@
             .then(() => loadDashboard());
     };
 
-    function logout() {
-        auth.signOut().then(() => location.reload());
+    function logoutAndGoHome() {
+        auth.signOut().then(() => {
+            window.location.href = 'https://truewebx.site/';
+        });
     }
 
     auth.onAuthStateChanged(user => {
@@ -413,14 +382,16 @@
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
                     <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Consultar precio'}</strong></p>
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links">
-                        ${Array.isArray(s.social_links) ? s.social_links.map(link => `
+                        ${s.social_links.map(link => `
                             <a href="${link.url}" target="_blank">
                                 <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
                             </a>
-                        `).join('') : ''}
+                        `).join('')}
                     </div>
+                    ` : ''}
                 </div>
             `).join('')
             : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
@@ -435,6 +406,7 @@
         if (section === 'add') {
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('publishBtn').disabled = false;
         }
     }
 
@@ -455,10 +427,10 @@
     function updateAddedSocials(isEdit = false) {
         const container = isEdit ? 'edit-added-socials' : 'added-socials';
         document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:8px; border-radius:12px;">
+            <div class="added-link">
                 <i class="fab fa-${link.type.toLowerCase()}"></i>
                 <span>${link.type}: ${link.url}</span>
-                <button onclick="removeSocialLink(${i}, ${isEdit})" style="background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">×</button>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
             </div>
         `).join('');
     }
@@ -469,28 +441,51 @@
     }
 
     async function addService() {
+        if (isPublishing) return;
+        
+        const name = document.getElementById('name').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const gmail = document.getElementById('gmail').value.trim();
+        const price = document.getElementById('price').value.trim(); // Ahora opcional
+        const desc = document.getElementById('desc').value.trim();
+        const profileFile = document.getElementById('profile').files[0];
+
+        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio y las fotos adicionales!</p>';
+            return;
+        }
+
+        isPublishing = true;
+        const publishBtn = document.getElementById('publishBtn');
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'PUBLICANDO...';
+
         const user = auth.currentUser;
         if (!user) return;
 
-        const profileFile = document.getElementById('profile').files[0];
-        const photoFiles = document.getElementById('photos').files;
-
-        let profileUrl = 'https://via.placeholder.com/300?text=Perfil';
-        if (profileFile) {
-            const fileExt = profileFile.name.split('.').pop();
-            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; return; }
-            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-            profileUrl = data.publicUrl;
+        // Subir foto de perfil (obligatoria)
+        const fileExt = profileFile.name.split('.').pop();
+        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+        if (profileError) {
+            msg.innerHTML = `<p style="color:red;">Error al subir perfil: ${profileError.message}</p>`;
+            isPublishing = false;
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'PUBLICAR AHORA';
+            return;
         }
+        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+        const profileUrl = profileData.publicUrl;
 
+        // Subir fotos adicionales (opcionales)
+        const photoFiles = document.getElementById('photos').files;
         const photosUrls = [];
         for (let file of photoFiles) {
             const fileExt = file.name.split('.').pop();
             const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) { msg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; return; }
+            if (error) continue;
             const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
             photosUrls.push(data.publicUrl);
         }
@@ -498,40 +493,46 @@
         const service = {
             id: crypto.randomUUID(),
             owner_id: user.uid,
-            name: document.getElementById('name').value.trim(),
-            city: document.getElementById('city').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            gmail: document.getElementById('gmail').value.trim(),
-            price: document.getElementById('price').value.trim(),
-            description: document.getElementById('desc').value.trim(),
+            name, city, phone, gmail,
+            price: price || null, // Si está vacío, guardamos null
+            description: desc,
             profile: profileUrl,
             photos: photosUrls,
-            social_links: currentSocialLinks.length > 0 ? currentSocialLinks : [],
+            social_links: currentSocialLinks,
             created_at: new Date().toISOString()
         };
 
         const { error } = await supabaseClient.from('services').insert(service);
-        if (error) { msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
+        if (error) {
+            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        } else {
+            msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
+            document.querySelector('.form-grid').reset();
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+        }
 
-        msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
-        document.querySelector('.form-grid').reset();
-        currentSocialLinks = [];
-        updateAddedSocials();
-        setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+        // Anti-spam: botón bloqueado 5 segundos
+        setTimeout(() => {
+            isPublishing = false;
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'PUBLICAR AHORA';
+        }, 5000);
     }
 
     async function editService(id) {
         currentEditId = id;
         const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
 
-        document.getElementById('edit-name').value = service.name;
-        document.getElementById('edit-city').value = service.city;
-        document.getElementById('edit-phone').value = service.phone;
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-phone').value = service.phone || '';
         document.getElementById('edit-gmail').value = service.gmail || '';
-        document.getElementById('edit-price').value = service.price;
-        document.getElementById('edit-desc').value = service.description;
+        document.getElementById('edit-price').value = service.price || '';
+        document.getElementById('edit-desc').value = service.description || '';
 
-        currentSocialLinks = service.social_links || [];
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
         updateAddedSocials(true);
 
         show('edit');
@@ -539,6 +540,18 @@
 
     async function updateService() {
         if (!currentEditId) return;
+
+        const name = document.getElementById('edit-name').value.trim();
+        const city = document.getElementById('edit-city').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const gmail = document.getElementById('edit-gmail').value.trim();
+        const price = document.getElementById('edit-price').value.trim(); // opcional
+        const desc = document.getElementById('edit-desc').value.trim();
+
+        if (!name || !city || !phone || !gmail || !desc) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Los campos obligatorios no pueden estar vacíos</p>';
+            return;
+        }
 
         const profileFile = document.getElementById('edit-profile').files[0];
         const photoFiles = document.getElementById('edit-photos').files;
@@ -566,12 +579,9 @@
         }
 
         const updates = {
-            name: document.getElementById('edit-name').value.trim(),
-            city: document.getElementById('edit-city').value.trim(),
-            phone: document.getElementById('edit-phone').value.trim(),
-            gmail: document.getElementById('edit-gmail').value.trim(),
-            price: document.getElementById('edit-price').value.trim(),
-            description: document.getElementById('edit-desc').value.trim(),
+            name, city, phone, gmail,
+            price: price || null,
+            description: desc,
             profile: profileUrl,
             photos: photosUrls,
             social_links: currentSocialLinks
