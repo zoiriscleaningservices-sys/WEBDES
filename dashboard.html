@@ -150,16 +150,10 @@
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
-        .premium-option {
-            background:rgba(255,255,255,0.1);
-            padding:20px;
-            border-radius:16px;
-            margin:20px 0;
-            text-align:center;
+        .payment-options {
+            background:rgba(255,255,255,0.1); padding:20px; border-radius:16px; margin:20px 0;
         }
-        .premium-option label {
-            display:flex; align-items:center; justify-content:center; gap:12px; cursor:pointer; font-size:1.1rem;
-        }
+        .payment-options label { display:block; margin-bottom:12px; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; gap:12px; }
 
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
@@ -265,25 +259,56 @@
                     <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <!-- OPCIÓN PREMIUM -->
-                <div class="premium-option">
+                <!-- OPCIONES DE PAGO -->
+                <div class="payment-options">
+                    <h3 style="color:white; margin-bottom:15px;">Elige tu plan</h3>
                     <label>
-                        <input type="checkbox" id="premiumListing">
-                        <span>✨ Hacer este listing PREMIUM ($9.99/mes) – Aparece primero, badge destacado y más visibilidad</span>
+                        <input type="radio" name="paymentType" value="basic" checked>
+                        <span>Publicación Básica ($15 una vez)</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="paymentType" value="sponsored">
+                        <span>Publicación Certificada/Sponsorizada ($50 por 5 días, luego básica)</span>
                     </label>
                 </div>
 
-                <button id="publishBtn" onclick="addService()">PUBLICAR AHORA</button>
+                <button id="publishBtn" onclick="addService()">PUBLICAR Y PAGAR</button>
             </div>
             <p id="msg"></p>
         </div>
 
-        <!-- EDITAR (mantiene tu código actual) -->
         <div id="edit" class="glass" style="display:none;">
-            <!-- Tu sección de editar actual -->
             <h2>Editar Servicio</h2>
             <div class="form-grid">
-                <!-- ... todos tus inputs de editar ... -->
+                <input type="text" id="edit-name" placeholder="Nombre completo" required>
+                <input type="text" id="edit-city" placeholder="Ciudad y País" required>
+                <input type="tel" id="edit-phone" placeholder="Teléfono" required>
+                <input type="email" id="edit-gmail" placeholder="Gmail" required>
+                <input type="text" id="edit-price" placeholder="Precio (opcional)">
+                <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
+                <input type="file" id="edit-profile" accept="image/*">
+                <input type="file" id="edit-photos" accept="image/*" multiple>
+
+                <div id="edit-social-container">
+                    <h3 style="color:white; margin:20px 0 10px;">Redes Sociales</h3>
+                    <div class="social-input">
+                        <select id="edit-social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Otro</option>
+                        </select>
+                        <input type="url" id="edit-social-url" placeholder="URL completa">
+                        <button type="button" onclick="addSocialLink(true)">+</button>
+                    </div>
+                    <div id="edit-added-socials" style="margin-top:10px;"></div>
+                </div>
+
+                <button onclick="updateService()">GUARDAR CAMBIOS</button>
             </div>
             <p id="edit-msg"></p>
         </div>
@@ -306,11 +331,12 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // TU PUBLISHABLE KEY DE STRIPE (pública, es segura mostrarla)
-    const stripe = Stripe('pk_test_51YOURPUBLISHABLEKEYHERE'); // ← Cambia por tu pk_test_...
+    // TU STRIPE PUBLISHABLE KEY (pública)
+    const stripe = Stripe('pk_test_YOURPUBLISHABLEKEYHERE'); // ← Reemplaza con tu pk_test_...
 
-    // TU PRICE ID DE STRIPE (crea un producto de $9.99/mes en Stripe Dashboard)
-    const PREMIUM_PRICE_ID = 'price_1YOURPRICEIDHERE'; // ← Cambia por tu price_...
+    // PRICE IDs DE STRIPE (crea dos productos en Stripe Dashboard)
+    const BASIC_PRICE_ID = 'price_1YOURBASIC15IDHERE'; // ← $15 one-time
+    const SPONSORED_PRICE_ID = 'price_1YOURSPONSORED50IDHERE'; // ← $50 one-time
 
     const list = document.getElementById('list');
     const msg = document.getElementById('msg');
@@ -320,11 +346,129 @@
     let isSignupMode = false;
     let isPublishing = false;
 
-    // ... (todo tu código actual de auth, loadDashboard, show, addSocialLink, etc. permanece igual)
+    function toggleAuthMode() {
+        isSignupMode = !isSignupMode;
+        document.getElementById('formTitle').textContent = isSignupMode ? 'Crear Cuenta' : 'Iniciar Sesión';
+        document.getElementById('authButton').textContent = isSignupMode ? 'Registrarme' : 'Entrar';
+        document.getElementById('toggleText').textContent = isSignupMode ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
+    }
+
+    document.getElementById('authForm').onsubmit = e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (isSignupMode) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        }
+    };
+
+    document.getElementById('googleBtn').onclick = () => {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(() => loadDashboard());
+    };
+
+    function logoutAndGoHome() {
+        auth.signOut().then(() => {
+            window.location.href = 'https://truewebx.site/';
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) loadDashboard(user);
+    });
+
+    async function loadDashboard(user = auth.currentUser) {
+        if (!user) return;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        welcomeMsg.textContent = `¡Hola ${user.displayName || user.email.split('@')[0]}!`;
+
+        const { data: services } = await supabaseClient
+            .from('services')
+            .select('*')
+            .eq('owner_id', user.uid)
+            .order('created_at', { ascending: false });
+
+        list.innerHTML = services && services.length > 0
+            ? services.map(s => `
+                <div class="card">
+                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
+                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.name || 'Sin nombre'}</h3>
+                    <p><strong>${s.city || 'Sin ubicación'}</strong></p>
+                    <p>${s.description || 'Sin descripción'}</p>
+                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
+                    <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
+                    <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Consultar precio'}</strong></p>
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                    <div class="links">
+                        ${s.social_links.map(link => `
+                            <a href="${link.url}" target="_blank">
+                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            </a>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('')
+            : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
+    }
+
+    function show(section) {
+        document.getElementById('home').style.display = section === 'home' ? 'block' : 'none';
+        document.getElementById('add').style.display = section === 'add' ? 'block' : 'none';
+        document.getElementById('edit').style.display = section === 'edit' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === (section === 'home' ? 0 : 1)));
+        if (section === 'home') loadDashboard();
+        if (section === 'add') {
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('publishBtn').disabled = false;
+        }
+    }
+
+    function addSocialLink(isEdit = false) {
+        const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+        const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+        const type = select.value;
+        const url = input.value.trim();
+        if (url && url.startsWith('http')) {
+            currentSocialLinks.push({ type, url });
+            updateAddedSocials(isEdit);
+            input.value = '';
+        } else if (url) {
+            alert('Por favor ingresa una URL válida (con https://)');
+        }
+    }
+
+    function updateAddedSocials(isEdit = false) {
+        const container = isEdit ? 'edit-added-socials' : 'added-socials';
+        document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
+            <div class="added-link">
+                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <span>${link.type}: ${link.url}</span>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+            </div>
+        `).join('');
+    }
+
+    function removeSocialLink(index, isEdit = false) {
+        currentSocialLinks.splice(index, 1);
+        updateAddedSocials(isEdit);
+    }
 
     async function addService() {
         if (isPublishing) return;
-
+        
         const name = document.getElementById('name').value.trim();
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
@@ -332,47 +476,45 @@
         const price = document.getElementById('price').value.trim();
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
-        const isPremium = document.getElementById('premiumListing').checked;
+        const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
 
         if (!name || !city || !phone || !gmail || !desc || !profileFile) {
             msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio!</p>';
             return;
         }
 
-        if (isPremium) {
-            // Redirigir a Stripe Checkout
-            msg.innerHTML = '<p style="color:#0f0;">Redirigiendo a pago seguro con Stripe...</p>';
-            const { error } = await stripe.redirectToCheckout({
-                lineItems: [{ price: PREMIUM_PRICE_ID, quantity: 1 }],
-                mode: 'subscription',
-                successUrl: window.location.origin + '/dashboard.html?premium=success',
-                cancelUrl: window.location.origin + '/dashboard.html?premium=cancel',
-                clientReferenceId: auth.currentUser.uid,
-                customerEmail: auth.currentUser.email
-            });
-
-            if (error) {
-                msg.innerHTML = '<p style="color:red;">Error con Stripe: ' + error.message + '</p>';
-            }
-            return;
-        }
-
-        // Publicación gratis (tu código actual)
         isPublishing = true;
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
-        publishBtn.textContent = 'PUBLICANDO...';
+        publishBtn.textContent = 'REDIRIGIENDO A PAGO...';
 
-        // ... (tu código actual de subir imágenes y guardar en Supabase) ...
+        // Determinar price ID basado en selección
+        let selectedPriceId;
+        if (paymentType === 'basic') {
+            selectedPriceId = BASIC_PRICE_ID;
+        } else {
+            selectedPriceId = SPONSORED_PRICE_ID;
+        }
 
-        setTimeout(() => {
+        // Redirigir a Stripe Checkout
+        const { error } = await stripe.redirectToCheckout({
+            lineItems: [{ price: selectedPriceId, quantity: 1 }],
+            mode: 'payment', // One-time payment
+            successUrl: window.location.origin + '/dashboard.html?payment=success',
+            cancelUrl: window.location.origin + '/dashboard.html?payment=cancel',
+            clientReferenceId: auth.currentUser.uid,
+            customerEmail: auth.currentUser.email
+        });
+
+        if (error) {
+            msg.innerHTML = '<p style="color:red;">Error con Stripe: ' + error.message + '</p>';
             isPublishing = false;
             publishBtn.disabled = false;
-            publishBtn.textContent = 'PUBLICAR AHORA';
-        }, 5000);
+            publishBtn.textContent = 'PUBLICAR Y PAGAR';
+        }
     }
 
-    // ... (resto de tus funciones: editService, updateService, deleteService, etc.)
+    // ... (el resto de tu código actual: editService, updateService, deleteService, etc. permanece igual)
 </script>
 </body>
 </html>
