@@ -179,9 +179,15 @@
             gap:6px; 
         }
 
-        .social-input { display:flex; gap:10px; margin-bottom:10px; }
-        .social-input select, .social-input input { flex:1; }
-        .social-input button { flex:0 0 40px; background:#0d9488; color:white; font-size:20px; padding:0; border:none; border-radius:8px; cursor:pointer; }
+        .social-input { display:flex; gap:10px; margin-bottom:10px; align-items:center; }
+        .social-input select, .social-input input { flex:1; padding:16px; border-radius:16px; border:none; font-size:16px; background:rgba(255,255,255,0.25); color:white; }
+        .social-input button { flex:0 0 50px; height:50px; background:#0d9488; color:white; font-size:24px; border:none; border-radius:16px; cursor:pointer; display:grid; place-items:center; }
+
+        .added-link { 
+            display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; 
+        }
+        .added-link i { font-size:20px; }
+        .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
@@ -189,6 +195,7 @@
             .services { grid-template-columns:1fr; }
             .edit, .delete { opacity:1; }
             .social-input { flex-direction:column; }
+            .social-input button { height:50px; width:100%; }
             input, textarea { font-size:16px !important; }
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
@@ -455,10 +462,10 @@
     function updateAddedSocials(isEdit = false) {
         const container = isEdit ? 'edit-added-socials' : 'added-socials';
         document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:8px; border-radius:12px;">
+            <div class="added-link">
                 <i class="fab fa-${link.type.toLowerCase()}"></i>
                 <span>${link.type}: ${link.url}</span>
-                <button onclick="removeSocialLink(${i}, ${isEdit})" style="background:red; color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer;">×</button>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
             </div>
         `).join('');
     }
@@ -516,7 +523,7 @@
         msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
         document.querySelector('.form-grid').reset();
         currentSocialLinks = [];
-        updateAddedSocials();
+        document.getElementById('added-socials').innerHTML = '';
         setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
     }
 
