@@ -8,7 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://js.stripe.com/v3/"></script> <!-- Stripe JS -->
     <style>
         :root { --coral: #ff6b6b; --turquoise: #0d9488; }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -153,7 +152,9 @@
         .payment-options {
             background:rgba(255,255,255,0.1); padding:20px; border-radius:16px; margin:20px 0;
         }
-        .payment-options label { display:block; margin-bottom:12px; cursor:pointer; font-size:1.1rem; display:flex; align-items:center; gap:12px; }
+        .payment-options h3 { color:white; margin-bottom:15px; text-align:center; }
+        .payment-options label { display:flex; align-items:center; gap:12px; cursor:pointer; font-size:1.1rem; margin-bottom:12px; padding:12px; background:rgba(255,255,255,0.05); border-radius:12px; }
+        .payment-options label:hover { background:rgba(255,255,255,0.15); }
 
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
@@ -259,20 +260,20 @@
                     <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <!-- OPCIONES DE PAGO -->
+                <!-- PLANES DE PAGO -->
                 <div class="payment-options">
-                    <h3 style="color:white; margin-bottom:15px;">Elige tu plan</h3>
+                    <h3>Elige tu plan</h3>
                     <label>
-                        <input type="radio" name="paymentType" value="basic" checked>
-                        <span>Publicación Básica ($15 una vez)</span>
+                        <input type="radio" name="plan" value="basic" checked>
+                        <span>Post Básico – $15 (pago único)</span>
                     </label>
                     <label>
-                        <input type="radio" name="paymentType" value="sponsored">
-                        <span>Publicación Certificada/Sponsorizada ($50 por 5 días, luego básica)</span>
+                        <input type="radio" name="plan" value="sponsored">
+                        <span>Post Certificado/Sponsorizado – $50 (destacado 5 días)</span>
                     </label>
                 </div>
 
-                <button id="publishBtn" onclick="addService()">PUBLICAR Y PAGAR</button>
+                <button id="publishBtn" onclick="addService()">PUBLICAR AHORA</button>
             </div>
             <p id="msg"></p>
         </div>
@@ -330,13 +331,6 @@
     const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // TU STRIPE PUBLISHABLE KEY (pública)
-    const stripe = Stripe('pk_test_YOURPUBLISHABLEKEYHERE'); // ← Reemplaza con tu pk_test_...
-
-    // PRICE IDs DE STRIPE (crea dos productos en Stripe Dashboard)
-    const BASIC_PRICE_ID = 'price_1YOURBASIC15IDHERE'; // ← $15 one-time
-    const SPONSORED_PRICE_ID = 'price_1YOURSPONSORED50IDHERE'; // ← $50 one-time
 
     const list = document.getElementById('list');
     const msg = document.getElementById('msg');
@@ -473,48 +467,164 @@
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
-        const price = document.getElementById('price').value.trim();
+        const price = document.getElementById('price').value.trim(); // opcional
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
-        const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
 
         if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio!</p>';
+            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio y las fotos adicionales!</p>';
             return;
         }
 
         isPublishing = true;
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
-        publishBtn.textContent = 'REDIRIGIENDO A PAGO...';
+        publishBtn.textContent = 'PUBLICANDO...';
 
-        // Determinar price ID basado en selección
-        let selectedPriceId;
-        if (paymentType === 'basic') {
-            selectedPriceId = BASIC_PRICE_ID;
-        } else {
-            selectedPriceId = SPONSORED_PRICE_ID;
-        }
+        const user = auth.currentUser;
+        if (!user) return;
 
-        // Redirigir a Stripe Checkout
-        const { error } = await stripe.redirectToCheckout({
-            lineItems: [{ price: selectedPriceId, quantity: 1 }],
-            mode: 'payment', // One-time payment
-            successUrl: window.location.origin + '/dashboard.html?payment=success',
-            cancelUrl: window.location.origin + '/dashboard.html?payment=cancel',
-            clientReferenceId: auth.currentUser.uid,
-            customerEmail: auth.currentUser.email
-        });
-
-        if (error) {
-            msg.innerHTML = '<p style="color:red;">Error con Stripe: ' + error.message + '</p>';
+        // Subir foto de perfil
+        const fileExt = profileFile.name.split('.').pop();
+        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+        if (profileError) {
+            msg.innerHTML = `<p style="color:red;">Error al subir perfil: ${profileError.message}</p>`;
             isPublishing = false;
             publishBtn.disabled = false;
-            publishBtn.textContent = 'PUBLICAR Y PAGAR';
+            publishBtn.textContent = 'PUBLICAR AHORA';
+            return;
         }
+        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+        const profileUrl = profileData.publicUrl;
+
+        // Subir fotos adicionales
+        const photoFiles = document.getElementById('photos').files;
+        const photosUrls = [];
+        for (let file of photoFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+            if (error) continue;
+            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+            photosUrls.push(data.publicUrl);
+        }
+
+        const service = {
+            id: crypto.randomUUID(),
+            owner_id: user.uid,
+            name, city, phone, gmail,
+            price: price || null,
+            description: desc,
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks,
+            created_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient.from('services').insert(service);
+        if (error) {
+            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        } else {
+            msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
+            document.querySelector('.form-grid').reset();
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+        }
+
+        setTimeout(() => {
+            isPublishing = false;
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'PUBLICAR AHORA';
+        }, 5000);
     }
 
-    // ... (el resto de tu código actual: editService, updateService, deleteService, etc. permanece igual)
+    async function editService(id) {
+        currentEditId = id;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-phone').value = service.phone || '';
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-price').value = service.price || '';
+        document.getElementById('edit-desc').value = service.description || '';
+
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+        updateAddedSocials(true);
+
+        show('edit');
+    }
+
+    async function updateService() {
+        if (!currentEditId) return;
+
+        const name = document.getElementById('edit-name').value.trim();
+        const city = document.getElementById('edit-city').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const gmail = document.getElementById('edit-gmail').value.trim();
+        const price = document.getElementById('edit-price').value.trim(); // opcional
+        const desc = document.getElementById('edit-desc').value.trim();
+
+        if (!name || !city || !phone || !gmail || !desc) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Los campos obligatorios no pueden estar vacíos</p>';
+            return;
+        }
+
+        const profileFile = document.getElementById('edit-profile').files[0];
+        const photoFiles = document.getElementById('edit-photos').files;
+
+        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+        let profileUrl = current.profile;
+        if (profileFile) {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            profileUrl = data.publicUrl;
+        }
+
+        let photosUrls = current.photos || [];
+        for (let file of photoFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+            photosUrls.push(data.publicUrl);
+        }
+
+        const updates = {
+            name, city, phone, gmail,
+            price: price || null,
+            description: desc,
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks
+        };
+
+        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+        if (error) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            return;
+        }
+
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
+        currentEditId = null;
+        currentSocialLinks = [];
+        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+    }
+
+    async function deleteService(id) {
+        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+            const { error } = await supabaseClient.from('services').delete().eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadDashboard();
+        }
+    }
 </script>
 </body>
 </html>
