@@ -129,7 +129,7 @@
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
 
-        /* Fixed & Modern Photo Upload */
+        /* Modern Photo Upload */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
@@ -174,7 +174,6 @@
             z-index: 10;
         }
 
-        /* File name display after selection */
         .file-name {
             margin-top: 12px;
             font-size: 14px;
@@ -280,7 +279,7 @@
 
         <div id="add" class="glass" style="display:none;">
             <h2>Publish New Service</h2>
-            <div class="form-grid">
+            <form class="form-grid" id="addForm">
                 <input type="text" id="name" placeholder="Full Name" required>
                 <input type="text" id="city" placeholder="City and Country" required>
                 <input type="tel" id="phone" placeholder="Phone Number" required>
@@ -324,21 +323,20 @@
                     <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <button id="publishBtn" onclick="addService()">PUBLISH NOW</button>
-            </div>
+                <button type="button" id="publishBtn">PUBLISH NOW</button>
+            </form>
             <p id="msg"></p>
         </div>
 
         <div id="edit" class="glass" style="display:none;">
             <h2>Edit Service</h2>
-            <div class="form-grid">
+            <form class="form-grid" id="editForm">
                 <input type="text" id="edit-name" placeholder="Full Name" required>
                 <input type="text" id="edit-city" placeholder="City and Country" required>
                 <input type="tel" id="edit-phone" placeholder="Phone Number" required>
                 <input type="email" id="edit-gmail" placeholder="Email" required>
                 <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
 
-                <!-- Edit Profile -->
                 <div class="photo-upload" id="editProfileBox">
                     <i class="fas fa-camera"></i>
                     <span>Change Profile Photo</span>
@@ -347,7 +345,6 @@
                     <div class="file-name" id="editProfileName"></div>
                 </div>
 
-                <!-- Edit Gallery -->
                 <div class="photo-upload" id="editPhotosBox">
                     <i class="fas fa-images"></i>
                     <span>Add More Gallery Photos</span>
@@ -375,8 +372,8 @@
                     <div id="edit-added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <button onclick="updateService()">SAVE CHANGES</button>
-            </div>
+                <button type="button" onclick="updateService()">SAVE CHANGES</button>
+            </form>
             <p id="edit-msg"></p>
         </div>
     </div>
@@ -522,6 +519,7 @@
             document.getElementById('publishBtn').disabled = false;
             document.getElementById('profileName').textContent = '';
             document.getElementById('photosName').textContent = '';
+            document.getElementById('addForm').reset();
         }
     }
 
@@ -554,6 +552,8 @@
         currentSocialLinks.splice(index, 1);
         updateAddedSocials(isEdit);
     }
+
+    document.getElementById('publishBtn').onclick = addService;
 
     async function addService() {
         if (isPublishing) return;
@@ -615,7 +615,7 @@
             if (error) throw error;
 
             msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
-            document.querySelector('.form-grid').reset();
+            document.getElementById('addForm').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             document.getElementById('profileName').textContent = '';
