@@ -129,7 +129,6 @@
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
 
-        /* Photo Upload Styles (your original) */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
@@ -140,19 +139,63 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
         .photo-upload:hover {
             background: rgba(255,255,255,0.25);
             border-color: var(--coral);
             transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
         }
-        .photo-upload i { font-size: 48px; color: var(--coral); margin-bottom: 12px; }
-        .photo-upload span { font-size: 16px; font-weight: 600; display: block; margin-bottom: 8px; }
-        .photo-upload small { font-size: 14px; opacity: 0.8; display: block; margin-bottom: 12px; }
-        .photo-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10; }
-        .preview-container { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-        .preview-img { max-width: 120px; max-height: 120px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .profile-preview { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 4px solid var(--coral); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .photo-upload i {
+            font-size: 48px;
+            color: var(--coral);
+            margin-bottom: 12px;
+        }
+        .photo-upload span {
+            font-size: 16px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .photo-upload small {
+            font-size: 14px;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .photo-upload input[type="file"] {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .preview-container {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .preview-img {
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .profile-preview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--coral);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
 
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; width:100%; }
@@ -175,7 +218,7 @@
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
-        /* Messages Tab */
+        /* Messages Tab Styles */
         .inbox-list { display: grid; gap: 16px; }
         .inbox-item {
             background: rgba(255,255,255,0.15);
@@ -186,7 +229,6 @@
         }
         .inbox-item:hover { background: rgba(255,255,255,0.25); transform: translateY(-4px); }
         .inbox-item.unread { border-left: 4px solid var(--coral); }
-        .chat-preview { opacity: 0.9; font-size: 0.95rem; margin-top: 6px; }
 
         .chat-window {
             display: none;
@@ -214,7 +256,6 @@
             padding: 12px 18px;
             border-radius: 20px;
             line-height: 1.4;
-            word-wrap: break-word;
         }
         .message.client { align-self: flex-end; background: var(--coral); color: white; }
         .message.owner { align-self: flex-start; background: rgba(255,255,255,0.3); }
@@ -281,7 +322,12 @@
 
         <div style="margin-top:20px;">
             <button type="button" class="btn google" id="googleBtn">
-                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">/* Google SVG */</svg>
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
+                    <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
+                    <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
+                    <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path>
+                </svg>
                 Continue with Google
             </button>
         </div>
@@ -310,15 +356,104 @@
         </div>
 
         <div id="add" class="glass" style="display:none;">
-            <!-- Your full original "Publish New Service" form here (unchanged) -->
-            <!-- ... all your add form code ... -->
+            <h2>Publish New Service</h2>
+            <form class="form-grid" id="addForm">
+                <input type="text" id="name" placeholder="Business / Company Name" required>
+                <input type="text" id="city" placeholder="City and Country" required>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <input type="email" id="gmail" placeholder="Email" required>
+                <textarea id="desc" placeholder="Detailed Description" required></textarea>
+
+                <div class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Upload Profile Photo / Logo</span>
+                    <small>(Required – one image)</small>
+                    <input type="file" id="profile" accept="image/*" required>
+                    <div class="preview-container" id="profilePreview"></div>
+                </div>
+
+                <div class="photo-upload">
+                    <i class="fas fa-images"></i>
+                    <span>Upload Gallery Photos</span>
+                    <small>(Optional – select multiple)</small>
+                    <input type="file" id="photos" accept="image/*" multiple>
+                    <div class="preview-container" id="galleryPreview"></div>
+                </div>
+
+                <div id="social-container">
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
+                    <div class="social-input">
+                        <select id="social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="url" id="social-url" placeholder="Full URL (e.g. https://instagram.com/yourbusiness)">
+                        <button type="button" onclick="addSocialLink()">+</button>
+                    </div>
+                    <div id="added-socials" style="margin-top:10px;"></div>
+                </div>
+
+                <button type="button" id="publishBtn">PUBLISH NOW</button>
+            </form>
+            <p id="msg"></p>
         </div>
 
         <div id="edit" class="glass" style="display:none;">
-            <!-- Your full original edit form here -->
+            <h2>Edit Service</h2>
+            <form class="form-grid" id="editForm">
+                <input type="text" id="edit-name" placeholder="Business / Company Name" required>
+                <input type="text" id="edit-city" placeholder="City and Country" required>
+                <input type="tel" id="edit-phone" placeholder="Phone Number" required>
+                <input type="email" id="edit-gmail" placeholder="Email" required>
+                <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
+
+                <div class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Change Profile Photo / Logo</span>
+                    <small>(Optional – leave blank to keep current)</small>
+                    <input type="file" id="edit-profile" accept="image/*">
+                    <div class="preview-container" id="editProfilePreview"></div>
+                </div>
+
+                <div class="photo-upload">
+                    <i class="fas fa-images"></i>
+                    <span>Add More Gallery Photos</span>
+                    <small>(Optional – select multiple)</small>
+                    <input type="file" id="edit-photos" accept="image/*" multiple>
+                    <div class="preview-container" id="editGalleryPreview"></div>
+                </div>
+
+                <div id="edit-social-container">
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
+                    <div class="social-input">
+                        <select id="edit-social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="url" id="edit-social-url" placeholder="Full URL">
+                        <button type="button" onclick="addSocialLink(true)">+</button>
+                    </div>
+                    <div id="edit-added-socials" style="margin-top:10px;"></div>
+                </div>
+
+                <button type="button" onclick="updateService()">SAVE CHANGES</button>
+            </form>
+            <p id="edit-msg"></p>
         </div>
 
-        <!-- NEW: Messages Section -->
+        <!-- Messages Tab -->
         <div id="messages" class="glass" style="display:none;">
             <h2>Messages</h2>
             <div id="inboxList" class="inbox-list"></div>
@@ -327,8 +462,8 @@
                 <div class="chat-header" id="chatHeader">Select a conversation</div>
                 <div class="chat-body" id="chatBody"></div>
                 <div class="chat-input">
-                    <input type="text" id="ownerReply" placeholder="Type your reply...">
-                    <button onclick="sendOwnerReply()"><i class="fas fa-paper-plane"></i></button>
+                    <input type="text" id="replyInput" placeholder="Type your reply...">
+                    <button onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
@@ -336,9 +471,14 @@
 </div>
 
 <script>
-    // Your full original script (Firebase, Supabase, auth, publish, edit, etc.) + new messaging code below
-
-    const firebaseConfig = { /* your config */ };
+    const firebaseConfig = {
+        apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
+        authDomain: "truewebx-78890.firebaseapp.com",
+        projectId: "truewebx-78890",
+        storageBucket: "truewebx-78890.firebasestorage.app",
+        messagingSenderId: "578628752073",
+        appId: "1:578628752073:web:c916cc3f234865a2947318"
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
@@ -346,22 +486,343 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ... (keep ALL your original functions: toggleAuthMode, auth, loadDashboard, show, addService, editService, etc.) ...
-
+    const list = document.getElementById('list');
+    const msg = document.getElementById('msg');
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    let currentEditId = null;
+    let currentSocialLinks = [];
+    let isSignupMode = false;
+    let isPublishing = false;
     let currentChatServiceId = null;
 
-    function show(section) {
-        ['home', 'add', 'edit', 'messages'].forEach(s => {
-            document.getElementById(s).style.display = s === section ? 'block' : 'none';
-        });
-        document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', 
-            i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'messages' ? 2 : 3)
-        ));
-
-        if (section === 'messages') loadInbox();
-        if (section === 'home') loadDashboard();
+    // Your original preview functions (unchanged)
+    function previewImage(file, containerId, isProfile = false) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = isProfile ? 'profile-preview' : 'preview-img';
+            document.getElementById(containerId).innerHTML = '';
+            document.getElementById(containerId).appendChild(img);
+        };
+        reader.readAsDataURL(file);
     }
 
+    function previewMultipleImages(files, containerId) {
+        document.getElementById(containerId).innerHTML = '';
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img';
+                document.getElementById(containerId).appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    document.getElementById('profile').addEventListener('change', e => e.target.files[0] && previewImage(e.target.files[0], 'profilePreview', true));
+    document.getElementById('photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'galleryPreview'));
+    document.getElementById('edit-profile').addEventListener('change', e => e.target.files[0] ? previewImage(e.target.files[0], 'editProfilePreview', true) : document.getElementById('editProfilePreview').innerHTML = '');
+    document.getElementById('edit-photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'editGalleryPreview'));
+
+    function toggleAuthMode() {
+        isSignupMode = !isSignupMode;
+        document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Sign In';
+        document.getElementById('authButton').textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+    }
+
+    document.getElementById('authForm').onsubmit = e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (isSignupMode) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        }
+    };
+
+    document.getElementById('googleBtn').onclick = () => {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(() => loadDashboard());
+    };
+
+    function logoutAndGoHome() {
+        auth.signOut().then(() => {
+            window.location.href = 'index.html';
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) loadDashboard(user);
+    });
+
+    async function loadDashboard(user = auth.currentUser) {
+        if (!user) return;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
+
+        const { data: services } = await supabaseClient
+            .from('services')
+            .select('*')
+            .eq('owner_id', user.uid)
+            .order('created_at', { ascending: false });
+
+        list.innerHTML = services && services.length > 0
+            ? services.map(s => `
+                <div class="card">
+                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
+                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Logo'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.name || 'No business name'}</h3>
+                    <p><strong>${s.city || 'No location'}</strong></p>
+                    <p>${s.description || 'No description'}</p>
+                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
+                    <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
+                    <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>Free Consultation</strong></p>
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                    <div class="links">
+                        ${s.social_links.map(link => `
+                            <a href="${link.url}" target="_blank">
+                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            </a>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('')
+            : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
+    }
+
+    function show(section) {
+        ['home', 'add', 'edit', 'messages'].forEach(s => document.getElementById(s).style.display = s === section ? 'block' : 'none');
+        document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'messages' ? 2 : 3)));
+        if (section === 'home') loadDashboard();
+        if (section === 'add') {
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('publishBtn').disabled = false;
+            document.getElementById('addForm').reset();
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
+        }
+        if (section === 'messages') loadInbox();
+    }
+
+    // Your original social link functions (unchanged)
+    function addSocialLink(isEdit = false) {
+        const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+        const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+        const type = select.value;
+        const url = input.value.trim();
+        if (url && url.startsWith('http')) {
+            currentSocialLinks.push({ type, url });
+            updateAddedSocials(isEdit);
+            input.value = '';
+        } else if (url) {
+            alert('Please enter a valid URL (starting with https://)');
+        }
+    }
+
+    function updateAddedSocials(isEdit = false) {
+        const container = isEdit ? 'edit-added-socials' : 'added-socials';
+        document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
+            <div class="added-link">
+                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <span>${link.type}: ${link.url}</span>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+            </div>
+        `).join('');
+    }
+
+    function removeSocialLink(index, isEdit = false) {
+        currentSocialLinks.splice(index, 1);
+        updateAddedSocials(isEdit);
+    }
+
+    document.getElementById('publishBtn').onclick = addService;
+
+    // Your original addService, editService, updateService, deleteService functions (unchanged)
+    async function addService() {
+        if (isPublishing) return;
+        
+        const name = document.getElementById('name').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const gmail = document.getElementById('gmail').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const profileFile = document.getElementById('profile').files[0];
+
+        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">All fields are required except additional photos!</p>';
+            return;
+        }
+
+        isPublishing = true;
+        const publishBtn = document.getElementById('publishBtn');
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'PUBLISHING...';
+        msg.innerHTML = '';
+
+        const user = auth.currentUser;
+        if (!user) return;
+
+        try {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (profileError) throw profileError;
+            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            const profileUrl = profileData.publicUrl;
+
+            const photoFiles = document.getElementById('photos').files;
+            const photosUrls = [];
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) continue;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const service = {
+                id: crypto.randomUUID(),
+                owner_id: user.uid,
+                name, city, phone, gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks,
+                created_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient.from('services').insert(service);
+            if (error) throw error;
+
+            msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
+            document.getElementById('addForm').reset();
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+        } catch (err) {
+            msg.innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
+        } finally {
+            isPublishing = false;
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'PUBLISH NOW';
+        }
+    }
+
+    async function editService(id) {
+        currentEditId = id;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-phone').value = service.phone || '';
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-desc').value = service.description || '';
+
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+        updateAddedSocials(true);
+        document.getElementById('editProfilePreview').innerHTML = '';
+        document.getElementById('editGalleryPreview').innerHTML = '';
+
+        show('edit');
+    }
+
+    async function updateService() {
+        if (!currentEditId) return;
+
+        const name = document.getElementById('edit-name').value.trim();
+        const city = document.getElementById('edit-city').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const gmail = document.getElementById('edit-gmail').value.trim();
+        const desc = document.getElementById('edit-desc').value.trim();
+
+        if (!name || !city || !phone || !gmail || !desc) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
+            return;
+        }
+
+        document.getElementById('edit-msg').innerHTML = '';
+
+        try {
+            const profileFile = document.getElementById('edit-profile').files[0];
+
+            const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+            let profileUrl = current.profile;
+            if (profileFile) {
+                const fileExt = profileFile.name.split('.').pop();
+                const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                profileUrl = data.publicUrl;
+            }
+
+            let photosUrls = current.photos || [];
+            const photoFiles = document.getElementById('edit-photos').files;
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) throw error;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const updates = {
+                name, city, phone, gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks
+            };
+
+            const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+            if (error) throw error;
+
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
+            currentEditId = null;
+            currentSocialLinks = [];
+            document.getElementById('editProfilePreview').innerHTML = '';
+            document.getElementById('editGalleryPreview').innerHTML = '';
+            setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+        } catch (err) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
+        }
+    }
+
+    async function deleteService(id) {
+        if (confirm('Are you sure you want to delete this service?')) {
+            const { error } = await supabaseClient.from('services').delete().eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadDashboard();
+        }
+    }
+
+    // Messaging Functions
     async function loadInbox() {
         const user = auth.currentUser;
         if (!user) return;
@@ -372,20 +833,17 @@
             return;
         }
 
-        const serviceIds = services.map(s => s.id);
-
-        const { data: msgs } = await supabaseClient
-            .from('messages')
+        const { data: messages } = await supabaseClient.from('messages')
             .select('service_id, text, created_at, is_from_owner')
-            .in('service_id', serviceIds)
+            .in('service_id', services.map(s => s.id))
             .order('created_at', { ascending: false });
 
         const chats = {};
-        msgs.forEach(m => {
+        messages.forEach(m => {
             if (!chats[m.service_id]) {
                 chats[m.service_id] = {
                     name: services.find(s => s.id === m.service_id)?.name || 'Unknown',
-                    lastText: m.text,
+                    lastMessage: m.text,
                     time: m.created_at,
                     unread: !m.is_from_owner
                 };
@@ -394,24 +852,23 @@
 
         document.getElementById('inboxList').innerHTML = Object.keys(chats).length ? 
             Object.values(chats).map(chat => `
-                <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openOwnerChat('${services.find(s => s.name === chat.name)?.id}', '${chat.name}')">
+                <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openChat('${services.find(s => s.name === chat.name)?.id}', '${chat.name.replace(/'/g, "\\'")}')">
                     <strong>${chat.name}</strong>
-                    <div class="chat-preview">${chat.lastText}</div>
+                    <div style="opacity:0.9;font-size:0.95rem;margin-top:6px;">${chat.lastMessage}</div>
                     <small>${new Date(chat.time).toLocaleString()}</small>
                 </div>
             `).join('') : '<p style="text-align:center; opacity:0.8;">No messages yet</p>';
     }
 
-    async function openOwnerChat(serviceId, name) {
+    async function openChat(serviceId, name) {
         currentChatServiceId = serviceId;
-        document.getElementById('chatHeader').textContent = `Chat with client – ${name}`;
+        document.getElementById('chatHeader').textContent = `Chat – ${name}`;
         document.getElementById('chatWindow').style.display = 'flex';
-        loadOwnerChat();
+        loadChatMessages();
     }
 
-    async function loadOwnerChat() {
-        const { data } = await supabaseClient
-            .from('messages')
+    async function loadChatMessages() {
+        const { data } = await supabaseClient.from('messages')
             .select('*')
             .eq('service_id', currentChatServiceId)
             .order('created_at', { ascending: true });
@@ -426,32 +883,24 @@
         body.scrollTop = body.scrollHeight;
     }
 
-    async function sendOwnerReply() {
-        const input = document.getElementById('ownerReply');
+    async function sendReply() {
+        const input = document.getElementById('replyInput');
         const text = input.value.trim();
         if (!text || !currentChatServiceId) return;
 
         await supabaseClient.from('messages').insert({
             service_id: currentChatServiceId,
             text,
-            is_from_owner: true,
-            created_at: new Date().toISOString()
+            is_from_owner: true
         });
 
         input.value = '';
-        loadOwnerChat();
+        loadChatMessages();
     }
 
-    document.getElementById('ownerReply')?.addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendOwnerReply();
+    document.getElementById('replyInput')?.addEventListener('keypress', e => {
+        if (e.key === 'Enter') sendReply();
     });
-
-    // Your original auth and loadDashboard code remains fully intact
-    auth.onAuthStateChanged(user => {
-        if (user) loadDashboard(user);
-    });
-
-    // ... rest of your original script ...
 </script>
 </body>
 </html>
