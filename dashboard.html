@@ -149,13 +149,6 @@
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
-        .payment-options {
-            background:rgba(255,255,255,0.1); padding:20px; border-radius:16px; margin:20px 0;
-        }
-        .payment-options h3 { color:white; margin-bottom:15px; text-align:center; }
-        .payment-options label { display:flex; align-items:center; gap:12px; cursor:pointer; font-size:1.1rem; margin-bottom:12px; padding:12px; background:rgba(255,255,255,0.05); border-radius:12px; }
-        .payment-options label:hover { background:rgba(255,255,255,0.15); }
-
         @media (max-width: 768px) {
             .nav-container { gap:30px; padding:10px 20px; }
             .form-grid { padding:0 10px; }
@@ -258,19 +251,6 @@
                         <button type="button" onclick="addSocialLink()">+</button>
                     </div>
                     <div id="added-socials" style="margin-top:10px;"></div>
-                </div>
-
-                <!-- PLANES DE PAGO -->
-                <div class="payment-options">
-                    <h3>Elige tu plan</h3>
-                    <label>
-                        <input type="radio" name="plan" value="basic" checked>
-                        <span>Post Básico – $15 (pago único)</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="plan" value="sponsored">
-                        <span>Post Certificado/Sponsorizado – $50 (destacado 5 días)</span>
-                    </label>
                 </div>
 
                 <button id="publishBtn" onclick="addService()">PUBLICAR AHORA</button>
