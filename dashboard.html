@@ -208,13 +208,13 @@
         <div class="nav-container">
             <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>Mis Servicios</span></div>
             <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>Nuevo</span></div>
-            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'"><i class="fas fa-globe"></i><span>Pública</span></div>
+            <div class="nav-item" onclick="window.location.href='index.html'"><i class="fas fa-globe"></i><span>Pública</span></div>
             <div class="nav-item" onclick="logoutAndGoHome()"><i class="fas fa-sign-out-alt"></i><span>Salir</span></div>
         </div>
     </div>
 
     <div class="main-content">
-        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</h1>
+        <h1 class="logo" onclick="window.location.href='index.html'">TrueWebX</h1>
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
 
         <div id="home" class="glass">
@@ -297,8 +297,320 @@
 </div>
 
 <script>
-    // Todo tu script original, con el cambio en addService para slug
-    // ... (copia tu script original, y reemplaza addService con el de arriba) ...
+    const firebaseConfig = {
+        apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
+        authDomain: "truewebx-78890.firebaseapp.com",
+        projectId: "truewebx-78890",
+        storageBucket: "truewebx-78890.firebasestorage.app",
+        messagingSenderId: "578628752073",
+        appId: "1:578628752073:web:c916cc3f234865a2947318"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const list = document.getElementById('list');
+    const msg = document.getElementById('msg');
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    let currentEditId = null;
+    let currentSocialLinks = [];
+    let isSignupMode = false;
+    let isPublishing = false;
+
+    function toggleAuthMode() {
+        isSignupMode = !isSignupMode;
+        document.getElementById('formTitle').textContent = isSignupMode ? 'Crear Cuenta' : 'Iniciar Sesión';
+        document.getElementById('authButton').textContent = isSignupMode ? 'Registrarme' : 'Entrar';
+        document.getElementById('toggleText').textContent = isSignupMode ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
+    }
+
+    document.getElementById('authForm').onsubmit = e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (isSignupMode) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        }
+    };
+
+    document.getElementById('googleBtn').onclick = () => {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(() => loadDashboard());
+    };
+
+    function logoutAndGoHome() {
+        auth.signOut().then(() => {
+            window.location.href = 'index.html';
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) loadDashboard(user);
+    });
+
+    async function loadDashboard(user = auth.currentUser) {
+        if (!user) return;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        welcomeMsg.textContent = `¡Hola ${user.displayName || user.email.split('@')[0]}!`;
+
+        const { data: services } = await supabaseClient
+            .from('services')
+            .select('*')
+            .eq('owner_id', user.uid)
+            .order('created_at', { ascending: false });
+
+        list.innerHTML = services && services.length > 0
+            ? services.map(s => `
+                <div class="card">
+                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
+                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.name || 'Sin nombre'}</h3>
+                    <p><strong>${s.city || 'Sin ubicación'}</strong></p>
+                    <p>${s.description || 'Sin descripción'}</p>
+                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
+                    <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
+                    <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Consultar precio'}</strong></p>
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                    <div class="links">
+                        ${s.social_links.map(link => `
+                            <a href="${link.url}" target="_blank">
+                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            </a>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                    <p style="margin-top:20px;text-align:center;">
+                        <a href="service.html?slug=${s.slug}" target="_blank" style="color:#ffeb3b; text-decoration:underline;">
+                            Ver página individual (SEO)
+                        </a>
+                    </p>
+                </div>
+            `).join('')
+            : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
+    }
+
+    function show(section) {
+        document.getElementById('home').style.display = section === 'home' ? 'block' : 'none';
+        document.getElementById('add').style.display = section === 'add' ? 'block' : 'none';
+        document.getElementById('edit').style.display = section === 'edit' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === (section === 'home' ? 0 : 1)));
+        if (section === 'home') loadDashboard();
+        if (section === 'add') {
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('publishBtn').disabled = false;
+        }
+    }
+
+    function addSocialLink(isEdit = false) {
+        const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+        const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+        const type = select.value;
+        const url = input.value.trim();
+        if (url && url.startsWith('http')) {
+            currentSocialLinks.push({ type, url });
+            updateAddedSocials(isEdit);
+            input.value = '';
+        } else if (url) {
+            alert('Por favor ingresa una URL válida (con https://)');
+        }
+    }
+
+    function updateAddedSocials(isEdit = false) {
+        const container = isEdit ? 'edit-added-socials' : 'added-socials';
+        document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
+            <div class="added-link">
+                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <span>${link.type}: ${link.url}</span>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+            </div>
+        `).join('');
+    }
+
+    function removeSocialLink(index, isEdit = false) {
+        currentSocialLinks.splice(index, 1);
+        updateAddedSocials(isEdit);
+    }
+
+    async function addService() {
+        if (isPublishing) return;
+        
+        const name = document.getElementById('name').value.trim();
+        const city = document.getElementById('city').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const gmail = document.getElementById('gmail').value.trim();
+        const price = document.getElementById('price').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const profileFile = document.getElementById('profile').files[0];
+
+        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio y las fotos adicionales!</p>';
+            return;
+        }
+
+        isPublishing = true;
+        const publishBtn = document.getElementById('publishBtn');
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'PUBLICANDO...';
+
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const fileExt = profileFile.name.split('.').pop();
+        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+        if (profileError) {
+            msg.innerHTML = `<p style="color:red;">Error al subir perfil: ${profileError.message}</p>`;
+            isPublishing = false;
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'PUBLICAR AHORA';
+            return;
+        }
+        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+        const profileUrl = profileData.publicUrl;
+
+        const photoFiles = document.getElementById('photos').files;
+        const photosUrls = [];
+        for (let file of photoFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+            if (error) continue;
+            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+            photosUrls.push(data.publicUrl);
+        }
+
+        const tempId = crypto.randomUUID();
+        const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${tempId.slice(-8)}`;
+
+        const service = {
+            id: tempId,
+            owner_id: user.uid,
+            name, city, phone, gmail,
+            price: price || null,
+            description: desc,
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks,
+            slug: slug,
+            created_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient.from('services').insert(service);
+        if (error) {
+            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+        } else {
+            msg.innerHTML = `<p style="color:#0f0;">¡Publicado con éxito!</p>
+                <p>Página individual: <a href="service.html?slug=${slug}" target="_blank" style="color:#ffeb3b;">Abrir página SEO</a></p>`;
+            document.querySelector('.form-grid').reset();
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 5000);
+        }
+
+        isPublishing = false;
+        publishBtn.disabled = false;
+        publishBtn.textContent = 'PUBLICAR AHORA';
+    }
+
+    async function editService(id) {
+        currentEditId = id;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-phone').value = service.phone || '';
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-price').value = service.price || '';
+        document.getElementById('edit-desc').value = service.description || '';
+
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+        updateAddedSocials(true);
+
+        show('edit');
+    }
+
+    async function updateService() {
+        if (!currentEditId) return;
+
+        const name = document.getElementById('edit-name').value.trim();
+        const city = document.getElementById('edit-city').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const gmail = document.getElementById('edit-gmail').value.trim();
+        const price = document.getElementById('edit-price').value.trim();
+        const desc = document.getElementById('edit-desc').value.trim();
+
+        if (!name || !city || !phone || !gmail || !desc) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Los campos obligatorios no pueden estar vacíos</p>';
+            return;
+        }
+
+        const profileFile = document.getElementById('edit-profile').files[0];
+        const photoFiles = document.getElementById('edit-photos').files;
+
+        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+        let profileUrl = current.profile;
+        if (profileFile) {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            profileUrl = data.publicUrl;
+        }
+
+        let photosUrls = current.photos || [];
+        for (let file of photoFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+            photosUrls.push(data.publicUrl);
+        }
+
+        const updates = {
+            name, city, phone, gmail,
+            price: price || null,
+            description: desc,
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks
+        };
+
+        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+        if (error) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            return;
+        }
+
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
+        currentEditId = null;
+        currentSocialLinks = [];
+        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+    }
+
+    async function deleteService(id) {
+        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+            const { error } = await supabaseClient.from('services').delete().eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadDashboard();
+        }
+    }
 </script>
 </body>
 </html>
