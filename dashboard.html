@@ -455,11 +455,17 @@
         document.getElementById('dashboardScreen').style.display = 'block';
         welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
 
-        const { data: services } = await supabaseClient
+        const { data: services, error } = await supabaseClient
             .from('services')
             .select('*')
             .eq('owner_id', user.uid)
             .order('created_at', { ascending: false });
+
+        if (error) {
+            list.innerHTML = '<p style="text-align:center;color:red;">Error loading data. Please try again later.</p>';
+            console.error(error);
+            return;
+        }
 
         list.innerHTML = services && services.length > 0
             ? services.map(s => `
@@ -551,66 +557,81 @@
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
         publishBtn.textContent = 'PUBLISHING...';
+        msg.innerHTML = '';
 
         const user = auth.currentUser;
-        if (!user) return;
-
-        const fileExt = profileFile.name.split('.').pop();
-        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-        if (profileError) {
-            msg.innerHTML = `<p style="color:red;">Error uploading profile: ${profileError.message}</p>`;
+        if (!user) {
+            msg.innerHTML = '<p style="color:red;">User not authenticated.</p>';
             isPublishing = false;
             publishBtn.disabled = false;
             publishBtn.textContent = 'PUBLISH NOW';
             return;
         }
-        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-        const profileUrl = profileData.publicUrl;
 
-        const photoFiles = document.getElementById('photos').files;
-        const photosUrls = [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) continue;
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
+        try {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (profileError) throw profileError;
+            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            const profileUrl = profileData.publicUrl;
 
-        const service = {
-            id: crypto.randomUUID(),
-            owner_id: user.uid,
-            company, state, city, phone, gmail,
-            description: desc,
-            profile: profileUrl,
-            photos: photosUrls,
-            social_links: currentSocialLinks,
-            created_at: new Date().toISOString()
-        };
+            const photoFiles = document.getElementById('photos').files;
+            const photosUrls = [];
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) {
+                        console.error('Photo upload error:', error);
+                        continue;
+                    }
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
 
-        const { error } = await supabaseClient.from('services').insert(service);
-        if (error) {
-            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-        } else {
+            const service = {
+                id: crypto.randomUUID(),
+                owner_id: user.uid,
+                company,
+                state,
+                city,
+                phone,
+                gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks,
+                created_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient.from('services').insert(service);
+            if (error) throw error;
+
             msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
             document.querySelector('.form-grid').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
-        }
-
-        setTimeout(() => {
+        } catch (err) {
+            msg.innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
+        } finally {
             isPublishing = false;
             publishBtn.disabled = false;
             publishBtn.textContent = 'PUBLISH NOW';
-        }, 5000);
+        }
     }
 
     async function editService(id) {
         currentEditId = id;
-        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+        const { data: service, error } = await supabaseClient.from('services').select('*').eq('id', id).single();
+        if (error) {
+            alert('Error loading service for edit: ' + error.message);
+            return;
+        }
 
         document.getElementById('edit-company').value = service.company || '';
         document.getElementById('edit-state').value = service.state || '';
@@ -640,56 +661,65 @@
             return;
         }
 
-        const profileFile = document.getElementById('edit-profile').files[0];
-        const photoFiles = document.getElementById('edit-photos').files;
+        document.getElementById('edit-msg').innerHTML = '';
 
-        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+        try {
+            const profileFile = document.getElementById('edit-profile').files[0];
 
-        let profileUrl = current.profile;
-        if (profileFile) {
-            const fileExt = profileFile.name.split('.').pop();
-            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+            let profileUrl = current.profile;
+            if (profileFile) {
+                const fileExt = profileFile.name.split('.').pop();
+                const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                profileUrl = data.publicUrl;
+            }
+
+            let photosUrls = current.photos || [];
+            const photoFiles = document.getElementById('edit-photos').files;
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) throw error;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const updates = {
+                company, state, city, phone, gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks
+            };
+
+            const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
             if (error) throw error;
-            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-            profileUrl = data.publicUrl;
+
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
+            currentEditId = null;
+            currentSocialLinks = [];
+            setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+        } catch (err) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
         }
-
-        let photosUrls = current.photos || [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) throw error;
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
-
-        const updates = {
-            company, state, city, phone, gmail,
-            description: desc,
-            profile: profileUrl,
-            photos: photosUrls,
-            social_links: currentSocialLinks
-        };
-
-        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
-        if (error) {
-            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-            return;
-        }
-
-        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
-        currentEditId = null;
-        currentSocialLinks = [];
-        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
     }
 
     async function deleteService(id) {
         if (confirm('Are you sure you want to delete this business profile?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
-            if (error) alert('Error: ' + error.message);
-            loadDashboard();
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                loadDashboard();
+            }
         }
     }
 </script>
