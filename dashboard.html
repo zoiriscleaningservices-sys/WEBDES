@@ -129,7 +129,7 @@
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
 
-        /* Modern updated photo upload boxes */
+        /* Fixed & Modern Photo Upload */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
@@ -166,11 +166,20 @@
         }
         .photo-upload input[type="file"] {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            inset: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
             cursor: pointer;
+            z-index: 10;
+        }
+
+        /* File name display after selection */
+        .file-name {
+            margin-top: 12px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+            word-break: break-all;
         }
 
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
@@ -278,20 +287,22 @@
                 <input type="email" id="gmail" placeholder="Email" required>
                 <textarea id="desc" placeholder="Detailed Description" required></textarea>
 
-                <!-- Modern Profile Photo Upload -->
-                <div class="photo-upload">
+                <!-- Profile Photo -->
+                <div class="photo-upload" id="profileBox">
                     <i class="fas fa-camera"></i>
                     <span>Upload Profile Photo</span>
                     <small>(Required – one image)</small>
                     <input type="file" id="profile" accept="image/*" required>
+                    <div class="file-name" id="profileName"></div>
                 </div>
 
-                <!-- Modern Gallery Upload -->
-                <div class="photo-upload">
+                <!-- Gallery Photos -->
+                <div class="photo-upload" id="photosBox">
                     <i class="fas fa-images"></i>
                     <span>Upload Gallery Photos</span>
                     <small>(Optional – select multiple)</small>
                     <input type="file" id="photos" accept="image/*" multiple>
+                    <div class="file-name" id="photosName"></div>
                 </div>
 
                 <div id="social-container">
@@ -327,20 +338,22 @@
                 <input type="email" id="edit-gmail" placeholder="Email" required>
                 <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
 
-                <!-- Modern Profile Change -->
-                <div class="photo-upload">
+                <!-- Edit Profile -->
+                <div class="photo-upload" id="editProfileBox">
                     <i class="fas fa-camera"></i>
                     <span>Change Profile Photo</span>
                     <small>(Optional – leave blank to keep current)</small>
                     <input type="file" id="edit-profile" accept="image/*">
+                    <div class="file-name" id="editProfileName"></div>
                 </div>
 
-                <!-- Modern Gallery Add -->
-                <div class="photo-upload">
+                <!-- Edit Gallery -->
+                <div class="photo-upload" id="editPhotosBox">
                     <i class="fas fa-images"></i>
                     <span>Add More Gallery Photos</span>
                     <small>(Optional – select multiple)</small>
                     <input type="file" id="edit-photos" accept="image/*" multiple>
+                    <div class="file-name" id="editPhotosName"></div>
                 </div>
 
                 <div id="edit-social-container">
@@ -392,6 +405,33 @@
     let currentSocialLinks = [];
     let isSignupMode = false;
     let isPublishing = false;
+
+    // Photo selection feedback
+    document.getElementById('profile').addEventListener('change', function(e) {
+        const name = e.target.files.length > 0 ? e.target.files[0].name : '';
+        document.getElementById('profileName').textContent = name || '';
+    });
+
+    document.getElementById('photos').addEventListener('change', function(e) {
+        const files = e.target.files;
+        const name = files.length > 0 
+            ? (files.length === 1 ? files[0].name : `${files.length} photos selected`)
+            : '';
+        document.getElementById('photosName').textContent = name || '';
+    });
+
+    document.getElementById('edit-profile').addEventListener('change', function(e) {
+        const name = e.target.files.length > 0 ? e.target.files[0].name : '';
+        document.getElementById('editProfileName').textContent = name || '';
+    });
+
+    document.getElementById('edit-photos').addEventListener('change', function(e) {
+        const files = e.target.files;
+        const name = files.length > 0 
+            ? (files.length === 1 ? files[0].name : `${files.length} photos selected`)
+            : '';
+        document.getElementById('editPhotosName').textContent = name || '';
+    });
 
     function toggleAuthMode() {
         isSignupMode = !isSignupMode;
@@ -480,6 +520,8 @@
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             document.getElementById('publishBtn').disabled = false;
+            document.getElementById('profileName').textContent = '';
+            document.getElementById('photosName').textContent = '';
         }
     }
 
@@ -532,61 +574,61 @@
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
         publishBtn.textContent = 'PUBLISHING...';
+        msg.innerHTML = '';
 
         const user = auth.currentUser;
         if (!user) return;
 
-        const fileExt = profileFile.name.split('.').pop();
-        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-        if (profileError) {
-            msg.innerHTML = `<p style="color:red;">Error uploading profile: ${profileError.message}</p>`;
-            isPublishing = false;
-            publishBtn.disabled = false;
-            publishBtn.textContent = 'PUBLISH NOW';
-            return;
-        }
-        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-        const profileUrl = profileData.publicUrl;
+        try {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (profileError) throw profileError;
+            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            const profileUrl = profileData.publicUrl;
 
-        const photoFiles = document.getElementById('photos').files;
-        const photosUrls = [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) continue;
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
+            const photoFiles = document.getElementById('photos').files;
+            const photosUrls = [];
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) continue;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
 
-        const service = {
-            id: crypto.randomUUID(),
-            owner_id: user.uid,
-            name, city, phone, gmail,
-            description: desc,
-            profile: profileUrl,
-            photos: photosUrls,
-            social_links: currentSocialLinks,
-            created_at: new Date().toISOString()
-        };
+            const service = {
+                id: crypto.randomUUID(),
+                owner_id: user.uid,
+                name, city, phone, gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks,
+                created_at: new Date().toISOString()
+            };
 
-        const { error } = await supabaseClient.from('services').insert(service);
-        if (error) {
-            msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-        } else {
+            const { error } = await supabaseClient.from('services').insert(service);
+            if (error) throw error;
+
             msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
             document.querySelector('.form-grid').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('profileName').textContent = '';
+            document.getElementById('photosName').textContent = '';
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
-        }
-
-        setTimeout(() => {
+        } catch (err) {
+            msg.innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
+        } finally {
             isPublishing = false;
             publishBtn.disabled = false;
             publishBtn.textContent = 'PUBLISH NOW';
-        }, 5000);
+        }
     }
 
     async function editService(id) {
@@ -601,6 +643,8 @@
 
         currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
         updateAddedSocials(true);
+        document.getElementById('editProfileName').textContent = '';
+        document.getElementById('editPhotosName').textContent = '';
 
         show('edit');
     }
@@ -619,49 +663,57 @@
             return;
         }
 
-        const profileFile = document.getElementById('edit-profile').files[0];
-        const photoFiles = document.getElementById('edit-photos').files;
+        document.getElementById('edit-msg').innerHTML = '';
 
-        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+        try {
+            const profileFile = document.getElementById('edit-profile').files[0];
 
-        let profileUrl = current.profile;
-        if (profileFile) {
-            const fileExt = profileFile.name.split('.').pop();
-            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+            let profileUrl = current.profile;
+            if (profileFile) {
+                const fileExt = profileFile.name.split('.').pop();
+                const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                profileUrl = data.publicUrl;
+            }
+
+            let photosUrls = current.photos || [];
+            const photoFiles = document.getElementById('edit-photos').files;
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) throw error;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const updates = {
+                name, city, phone, gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks
+            };
+
+            const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
             if (error) throw error;
-            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-            profileUrl = data.publicUrl;
+
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
+            currentEditId = null;
+            currentSocialLinks = [];
+            document.getElementById('editProfileName').textContent = '';
+            document.getElementById('editPhotosName').textContent = '';
+            setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+        } catch (err) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+            console.error(err);
         }
-
-        let photosUrls = current.photos || [];
-        for (let file of photoFiles) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) throw error;
-            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-            photosUrls.push(data.publicUrl);
-        }
-
-        const updates = {
-            name, city, phone, gmail,
-            description: desc,
-            profile: profileUrl,
-            photos: photosUrls,
-            social_links: currentSocialLinks
-        };
-
-        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
-        if (error) {
-            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-            return;
-        }
-
-        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
-        currentEditId = null;
-        currentSocialLinks = [];
-        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
     }
 
     async function deleteService(id) {
