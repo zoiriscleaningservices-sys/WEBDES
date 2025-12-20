@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrueWebX – Global Business Directory | Find Local Services Worldwide</title>
     <meta name="description" content="TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
-    <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="TrueWebX – Global Business Directory">
-    <meta property="og:description" content="Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://truewebx.site/">
-    <meta property="og:image" content="https://truewebx.site/og-image.jpg">
-    <link rel="canonical" href="https://truewebx.site/">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -54,7 +46,6 @@
         .tagline { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 600; margin-bottom: 10px; }
         .subtitle { font-size: clamp(0.95rem, 3.5vw, 1.35rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.6; }
 
-        /* SEARCH BAR */
         .search-container {
             max-width: 700px;
             margin: 20px auto;
@@ -71,22 +62,9 @@
             color: white;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        .search-box::placeholder {
-            color: rgba(255,255,255,0.7);
-        }
-        .search-box:focus {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(255,107,107,0.3);
-        }
-        .search-icon {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.8rem;
-            color: rgba(255,255,255,0.8);
-            pointer-events: none;
-        }
+        .search-box::placeholder { color: rgba(255,255,255,0.7); }
+        .search-box:focus { outline: none; box-shadow: 0 0 0 4px rgba(255,107,107,0.3); }
+        .search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; color: rgba(255,255,255,0.8); pointer-events: none; }
 
         .glass { 
             background: var(--light-glass);
@@ -103,9 +81,8 @@
         .card { 
             background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
             padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
-            transition: transform 0.3s ease; opacity: 1;
+            transition: transform 0.3s ease;
         }
-        .card.hidden { display: none; }
         .card:hover { transform: translateY(-6px); }
         .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
         .card h3 { font-size: 1.6rem; margin: 10px 0; }
@@ -113,6 +90,32 @@
         .private { filter: blur(6px); user-select: none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter: none; }
         .price { font-size: 1.8rem !important; color: var(--coral) !important; font-weight: 800; margin: 16px 0; }
+
+        .reach-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--coral);
+            color: white;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 20px auto 10px;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            justify-content: center;
+        }
+        .reach-btn:hover {
+            background: #ff5252;
+            transform: translateY(-3px);
+        }
+        .reach-btn i { font-size: 1.3rem; }
+
         .photos { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 14px 0; }
         .photos img { width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .links { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 12px; }
@@ -121,66 +124,71 @@
         .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
         footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
 
+        /* Message Modal */
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); align-items:center; justify-content:center; z-index:9999; }
+        .modal-content { background:var(--card-glass); backdrop-filter:blur(20px); border-radius:28px; width:90%; max-width:500px; max-height:90vh; display:flex; flex-direction:column; }
+        .modal-header { padding:20px; border-bottom:1px solid rgba(255,255,255,0.2); text-align:center; font-size:1.4rem; }
+        .chat-messages { flex:1; padding:20px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; }
+        .message { max-width:80%; padding:12px 18px; border-radius:20px; line-height:1.4; }
+        .message.client { align-self:flex-end; background:var(--coral); color:white; }
+        .message.owner { align-self:flex-start; background:rgba(255,255,255,0.3); }
+        .message-input { display:flex; padding:16px; border-top:1px solid rgba(255,255,255,0.2); gap:10px; }
+        .message-input input { flex:1; padding:14px; border-radius:50px; border:none; background:rgba(255,255,255,0.2); color:white; }
+        .message-input input::placeholder { color:rgba(255,255,255,0.7); }
+        .message-input button { width:50px; height:50px; border-radius:50%; background:var(--coral); color:white; border:none; font-size:1.4rem; cursor:pointer; }
+
         @media (min-width: 640px) {
             .services { grid-template-columns: repeat(2,1fr); gap: 24px; }
-            .glass { padding: 40px 30px; }
             .photos { grid-template-columns: repeat(3,1fr); }
         }
         @media (min-width: 1024px) {
             .services { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); }
-            .hero { padding: 60px 20px 50px; }
-            .glass { padding: 50px 40px; border-radius: 32px; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <header class="header-wrapper" id="header" role="banner">
+    <header class="header-wrapper" id="header">
         <h1 class="logo">TrueWebX</h1>
-        <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up to publish your business">
-            <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
+        <a href="dashboard.html" class="login-btn">
+            <i class="fas fa-user-circle"></i> Login / Sign Up
         </a>
     </header>
 
-    <main class="main-content" role="main">
-        <section class="hero" aria-labelledby="hero-tagline">
-            <h2 id="hero-tagline" class="tagline">Promote Your Business Worldwide</h2>
+    <main class="main-content">
+        <section class="hero">
+            <h2 class="tagline">Promote Your Business Worldwide</h2>
             <p class="subtitle">
                 TrueWebX is the global business directory connecting customers with trusted local services and companies everywhere.<br>
                 <strong>Find professionals offering free consultations today.</strong>
             </p>
         </section>
 
-        <!-- SEARCH BAR -->
-        <div class="search-container" role="search">
-            <input type="text" id="searchInput" class="search-box" placeholder="Search by business name, service, or city (e.g. plumber Miami, web design New York...)" aria-label="Search businesses">
-            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by business name, service, or city...">
+            <i class="fas fa-search search-icon"></i>
         </div>
 
-        <section class="glass" aria-labelledby="services-heading">
-            <h2 id="services-heading">Available Services Worldwide</h2>
-            <div class="services" id="list" role="list"></div>
+        <section class="glass">
+            <h2>Available Services Worldwide</h2>
+            <div class="services" id="list"></div>
         </section>
     </main>
 
-    <footer role="contentinfo">
-        © 2025 TrueWebX – The global directory for businesses and professional services
-    </footer>
+    <footer>© 2025 TrueWebX – The global directory for businesses and professional services</footer>
 </div>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "TrueWebX",
-  "url": "https://truewebx.site/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://truewebx.site/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-</script>
+<!-- Message Modal -->
+<div id="messageModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" id="modalTitle">Message <span id="businessName"></span></div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="message-input">
+            <input type="text" id="messageText" placeholder="Type your message..." autocomplete="off">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
 
 <script>
     window.addEventListener('scroll', () => {
@@ -192,109 +200,119 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allServices = [];
+    let currentServiceId = null;
 
     async function loadServices() {
-        const { data: services, error } = await supabaseClient
+        const { data: services } = await supabaseClient
             .from('services')
             .select('*')
             .order('created_at', { ascending: false });
 
-        const list = document.getElementById('list');
-
-        if (error || !services || services.length === 0) {
-            list.innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
-            allServices = [];
-            addStructuredData([]);
-            return;
-        }
-
-        allServices = services;
-        renderServices(services);
-        addStructuredData(services);
-    }
-
-    function addStructuredData(services) {
-        // Remove old schema if exists
-        const oldScript = document.querySelector('script[type="application/ld+json"]:not([src])');
-        if (oldScript) oldScript.remove();
-
-        const schemaItems = services.map(s => ({
-            "@type": "ProfessionalService",
-            "name": s.name || "Business on TrueWebX",
-            "description": s.description || "Professional service listed on TrueWebX global directory",
-            "telephone": s.phone || "",
-            "email": s.gmail || "",
-            "address": {
-                "@type": "PostalAddress",
-                "addressLocality": s.city || "Worldwide"
-            },
-            "image": s.profile || "https://truewebx.site/default-profile.jpg",
-            "offers": {
-                "@type": "Offer",
-                "name": "Free Consultation"
-            },
-            "url": "https://truewebx.site/",
-            "sameAs": s.social_links ? s.social_links.map(l => l.url) : [],
-            "datePublished": s.created_at || new Date().toISOString()
-        }));
-
-        const schema = {
-            "@context": "https://schema.org",
-            "@graph": schemaItems
-        };
-
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.text = JSON.stringify(schema);
-        document.head.appendChild(script);
+        allServices = services || [];
+        renderServices(allServices);
     }
 
     function renderServices(services) {
         const list = document.getElementById('list');
         if (services.length === 0) {
-            list.innerHTML = '<p class="no-services">No results found for your search.</p>';
+            list.innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
             return;
         }
 
         list.innerHTML = services.map(s => `
-            <article class="card" itemscope itemtype="https://schema.org/ProfessionalService">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name || 'business'}" itemprop="image">
-                <h3 itemprop="name">${s.name || 'Unnamed Business'}</h3>
-                <p><strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong></p>
-                <p itemprop="description">${s.description || 'No description provided'}</p>
-                <div class="photos" aria-label="Gallery photos">
-                    ${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1} of ${s.name || 'business'}">`).join('') : ''}
+            <article class="card">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="${s.name}">
+                <h3>${s.name || 'Unnamed Business'}</h3>
+                <p><strong>${s.city || 'Location not specified'}</strong></p>
+                <p>${s.description || 'No description provided'}</p>
+                <div class="photos">
+                    ${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Gallery">`).join('') : ''}
                 </div>
-                <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Not available'}</span></p>
-                <p>Email: <span class="private" itemprop="email">${s.gmail || 'Not available'}</span></p>
+                <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
+                <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
                 <p class="price"><strong>Free Consultation</strong></p>
+
+                <button class="reach-btn" onclick="openChat('${s.id}', '${s.name.replace(/'/g, "\\'")}')">
+                    <i class="fas fa-comment-dots"></i> Message Business
+                </button>
+
                 ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                <div class="links" itemprop="sameAs" content="${s.social_links.map(l => l.url).join(' ')}">
-                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" aria-label="Visit ${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
+                <div class="links">
+                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
                 </div>` : ''}
-                <small style="opacity:0.85;display:block;margin-top:12px;">
-                    Published: ${new Date(s.created_at).toLocaleDateString('en-US', {day:'numeric', month:'long', year:'numeric'})}
-                </small>
             </article>
         `).join('');
     }
 
-    // Real-time search
+    // Search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
-
-        if (query === '') {
-            renderServices(allServices);
-            return;
-        }
-
-        const filtered = allServices.filter(service => 
-            (service.name && service.name.toLowerCase().includes(query)) ||
-            (service.city && service.city.toLowerCase().includes(query)) ||
-            (service.description && service.description.toLowerCase().includes(query))
-        );
-
+        const filtered = query ? allServices.filter(s => 
+            (s.name?.toLowerCase().includes(query)) ||
+            (s.city?.toLowerCase().includes(query)) ||
+            (s.description?.toLowerCase().includes(query))
+        ) : allServices;
         renderServices(filtered);
+    });
+
+    // Messaging
+    function openChat(serviceId, businessName) {
+        currentServiceId = serviceId;
+        document.getElementById('businessName').textContent = businessName;
+        document.getElementById('messageModal').style.display = 'flex';
+        document.getElementById('messageText').focus();
+        loadMessages();
+    }
+
+    function closeModal() {
+        document.getElementById('messageModal').style.display = 'none';
+        currentServiceId = null;
+    }
+
+    async function loadMessages() {
+        const { data } = await supabaseClient
+            .from('messages')
+            .select('*')
+            .eq('service_id', currentServiceId)
+            .order('created_at', { ascending: true });
+
+        const chat = document.getElementById('chatMessages');
+        chat.innerHTML = data?.map(m => `
+            <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
+                ${m.text}
+                <small style="display:block; margin-top:6px; opacity:0.7; font-size:0.8em;">
+                    ${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                </small>
+            </div>
+        `).join('') || '<p style="text-align:center; opacity:0.7;">Start the conversation!</p>';
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('messageText');
+        const text = input.value.trim();
+        if (!text || !currentServiceId) return;
+
+        await supabaseClient.from('messages').insert({
+            service_id: currentServiceId,
+            text,
+            is_from_owner: false,
+            created_at: new Date().toISOString()
+        });
+
+        input.value = '';
+        loadMessages();
+    }
+
+    // Allow Enter to send
+    document.getElementById('messageText').addEventListener('keypress', e => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // Close modal on click outside
+    document.getElementById('messageModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('messageModal')) closeModal();
     });
 
     loadServices();
