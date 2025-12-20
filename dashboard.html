@@ -464,7 +464,6 @@
         const user = auth.currentUser;
         if (!user) return;
 
-        // Subir foto de perfil (obligatoria)
         const fileExt = profileFile.name.split('.').pop();
         const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
         const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
@@ -478,7 +477,6 @@
         const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
         const profileUrl = profileData.publicUrl;
 
-        // Subir fotos adicionales (opcionales)
         const photoFiles = document.getElementById('photos').files;
         const photosUrls = [];
         for (let file of photoFiles) {
@@ -492,7 +490,7 @@
 
         const service = {
             id: crypto.randomUUID(),
-            owner_id: user.uid.toString(), // ← EL FIX QUE SOLUCIONA TODO
+            owner_id: user.uid.toString(),  // ← LA LÍNEA QUE ARREGLA EL ERROR RLS
             name, city, phone, gmail,
             price: price || null,
             description: desc,
