@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Cargando... | TrueWebX</title>
-    <meta name="description" id="pageDesc" content="Servicio profesional">
+    <meta name="description" id="pageDesc" content="Servicio profesional en TrueWebX">
     <meta property="og:title" id="ogTitle" content="Servicio">
     <meta property="og:description" id="ogDesc" content="Detalles del servicio">
     <meta property="og:image" id="ogImage" content="">
@@ -46,7 +46,7 @@
             <p style="text-align:center; font-size:1.5rem;">Cargando servicio...</p>
         </div>
         <div class="back">
-            <a href="https://truewebx.site/">← Volver al directorio</a>
+            <a href="index.html">← Volver al directorio</a>
         </div>
     </div>
 
@@ -72,33 +72,30 @@
                 return;
             }
 
-            // SEO Dinámico
             document.title = `${service.name} - ${service.city} | TrueWebX`;
-            document.getElementById('pageDesc').content = service.description?.substring(0,160) || `Servicio de ${service.name} en ${service.city}`;
+            document.getElementById('pageDesc').content = service.description?.substring(0,160) || `Servicio profesional de ${service.name} en ${service.city}`;
             document.getElementById('ogTitle').content = `${service.name} en ${service.city}`;
             document.getElementById('ogDesc').content = service.description || 'Servicio profesional';
             document.getElementById('ogImage').content = service.profile;
             document.getElementById('ogUrl').content = window.location.href;
 
-            // Contenido
             document.getElementById('serviceContent').innerHTML = `
                 <img src="${service.profile}" class="profile-img" alt="${service.name}">
                 <h1>${service.name}</h1>
                 <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.city}</p>
-                <p class="desc">${service.description || 'Sin descripción'}</p>
+                <p class="desc">${service.description || 'Sin descripción disponible'}</p>
                 <div class="price">${service.price || 'Consultar precio'}</div>
                 <div class="contact">
                     <p>Teléfono: <span class="private">${service.phone || 'No disponible'}</span></p>
                     <p>Email: <span class="private">${service.gmail || 'No disponible'}</span></p>
                 </div>
-                ${service.photos?.length ? `<div class="photos">${service.photos.map(p => `<img src="${p}" alt="Foto">`).join('')}</div>` : ''}
+                ${service.photos?.length ? `<div class="photos">${service.photos.map(p => `<img src="${p}" alt="Galería">`).join('')}</div>` : ''}
                 ${service.social_links?.length ? `
                 <div class="links">
                     ${service.social_links.map(l => `<a href="${l.url}" target="_blank"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
                 </div>` : ''}
             `;
 
-            // JSON-LD para Google
             const jsonLd = {
                 "@context": "https://schema.org",
                 "@type": "LocalBusiness",
