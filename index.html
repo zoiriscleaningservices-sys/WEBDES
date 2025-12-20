@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrueWebX – Promote Your Business Worldwide</title>
+    <meta name="description" content="Plataforma global para promover tu negocio y conectar con clientes en todo el mundo. Publica tu servicio y destaca.">
+    <meta property="og:title" content="TrueWebX – Servicios Globales">
+    <meta property="og:description" content="Promueve tu negocio en TrueWebX y llega a clientes internacionales.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://truewebx.site/">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -284,14 +289,14 @@
 
         list.innerHTML = services.map(s => `
             <div class="card">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Foto de perfil del negocio">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Foto de perfil de ${s.name || 'negocio'} en TrueWebX">
                 <h3>${s.name || 'Sin nombre'}</h3>
                 <p><strong>${s.city || 'Sin ubicación'}</strong></p>
                 <p>${s.description || 'Sin descripción'}</p>
                 
                 <div class="photos">
                     ${Array.isArray(s.photos) && s.photos.length > 0 
-                        ? s.photos.map(p => `<img src="${p}" alt="Foto del servicio">`).join('') 
+                        ? s.photos.map((p, i) => `<img src="${p}" alt="Foto ${i+1} del servicio de ${s.name || 'negocio'}">`).join('') 
                         : ''}
                 </div>
                 
@@ -314,6 +319,31 @@
                 </small>
             </div>
         `).join('');
+
+        // Agregar Structured Data SEO para cada negocio (JSON-LD)
+        const schema = {
+            "@context": "https://schema.org",
+            "@graph": services.map(s => ({
+                "@type": "LocalBusiness",
+                "name": s.name || 'Negocio en TrueWebX',
+                "description": s.description || 'Servicio disponible en TrueWebX',
+                "telephone": s.phone || '',
+                "email": s.gmail || '',
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": s.city || 'Desconocida'
+                },
+                "image": s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX',
+                "priceRange": s.price ? s.price : 'Consultar',
+                "url": s.social_links && s.social_links.length > 0 ? s.social_links[0].url : 'https://truewebx.site/',
+                "datePublished": s.created_at || new Date().toISOString()
+            }))
+        };
+
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify(schema);
+        document.head.appendChild(script);
     }
 
     loadServices();
