@@ -122,12 +122,57 @@
             width:100%;
             max-width:600px;
         }
-        .form-grid { display:grid; gap:16px; width:100%; }
+        .form-grid { display:grid; gap:18px; width:100%; }
         input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
         input, textarea { background:rgba(255,255,255,0.25); color:white; backdrop-filter:blur(10px); width:100%; }
         input::placeholder, textarea::placeholder { color:rgba(255,255,255,0.7); }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
+
+        /* Modern updated photo upload boxes */
+        .photo-upload {
+            position: relative;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 24px;
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .photo-upload:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: var(--coral);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+        }
+        .photo-upload i {
+            font-size: 48px;
+            color: var(--coral);
+            margin-bottom: 12px;
+            display: block;
+        }
+        .photo-upload span {
+            font-size: 16px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .photo-upload small {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .photo-upload input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; width:100%; }
         .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
@@ -159,6 +204,8 @@
             input, textarea { font-size:16px !important; }
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
+            .photo-upload { padding: 24px 16px; }
+            .photo-upload i { font-size: 40px; }
         }
     </style>
 </head>
@@ -230,8 +277,22 @@
                 <input type="tel" id="phone" placeholder="Phone Number" required>
                 <input type="email" id="gmail" placeholder="Email" required>
                 <textarea id="desc" placeholder="Detailed Description" required></textarea>
-                <input type="file" id="profile" accept="image/*" required>
-                <input type="file" id="photos" accept="image/*" multiple>
+
+                <!-- Modern Profile Photo Upload -->
+                <div class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Upload Profile Photo</span>
+                    <small>(Required – one image)</small>
+                    <input type="file" id="profile" accept="image/*" required>
+                </div>
+
+                <!-- Modern Gallery Upload -->
+                <div class="photo-upload">
+                    <i class="fas fa-images"></i>
+                    <span>Upload Gallery Photos</span>
+                    <small>(Optional – select multiple)</small>
+                    <input type="file" id="photos" accept="image/*" multiple>
+                </div>
 
                 <div id="social-container">
                     <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
@@ -265,8 +326,22 @@
                 <input type="tel" id="edit-phone" placeholder="Phone Number" required>
                 <input type="email" id="edit-gmail" placeholder="Email" required>
                 <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
-                <input type="file" id="edit-profile" accept="image/*">
-                <input type="file" id="edit-photos" accept="image/*" multiple>
+
+                <!-- Modern Profile Change -->
+                <div class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Change Profile Photo</span>
+                    <small>(Optional – leave blank to keep current)</small>
+                    <input type="file" id="edit-profile" accept="image/*">
+                </div>
+
+                <!-- Modern Gallery Add -->
+                <div class="photo-upload">
+                    <i class="fas fa-images"></i>
+                    <span>Add More Gallery Photos</span>
+                    <small>(Optional – select multiple)</small>
+                    <input type="file" id="edit-photos" accept="image/*" multiple>
+                </div>
 
                 <div id="edit-social-container">
                     <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
