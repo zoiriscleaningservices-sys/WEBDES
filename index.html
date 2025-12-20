@@ -360,18 +360,21 @@
         `).join('');
     }
 
-    // Search
+    // Real-time search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
+
         if (query === '') {
             renderServices(allServices);
             return;
         }
+
         const filtered = allServices.filter(service => 
             (service.name && service.name.toLowerCase().includes(query)) ||
             (service.city && service.city.toLowerCase().includes(query)) ||
             (service.description && service.description.toLowerCase().includes(query))
         );
+
         renderServices(filtered);
     });
 
