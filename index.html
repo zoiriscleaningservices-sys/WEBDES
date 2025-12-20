@@ -99,9 +99,8 @@
         .card { 
             background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
             padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
-            transition: transform 0.3s ease; opacity: 1;
+            transition: transform 0.3s ease; opacity: 1; text-decoration: none; color: inherit;
         }
-        .card.hidden { display: none; }
         .card:hover { transform: translateY(-6px); }
         .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
         .card h3 { font-size: 1.6rem; margin: 10px 0; }
@@ -173,7 +172,7 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let allServices = []; // Guardaremos todos los servicios aquí
+    let allServices = [];
 
     async function loadServices() {
         const { data: services, error } = await supabaseClient
@@ -190,30 +189,7 @@
         }
 
         allServices = services;
-
         renderServices(services);
-
-        // SEO Structured Data (mantiene tu optimización)
-        const schema = {
-            "@context": "https://schema.org",
-            "@graph": services.map(s => ({
-                "@type": "LocalBusiness",
-                "name": s.name || 'Negocio en TrueWebX',
-                "description": s.description || 'Servicio disponible en TrueWebX',
-                "telephone": s.phone || '',
-                "email": s.gmail || '',
-                "address": { "@type": "PostalAddress", "addressLocality": s.city || 'Desconocida' },
-                "image": s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX',
-                "priceRange": s.price ? s.price : 'Consultar',
-                "url": s.social_links && s.social_links.length > 0 ? s.social_links[0].url : 'https://truewebx.site/',
-                "datePublished": s.created_at || new Date().toISOString()
-            }))
-        };
-
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.text = JSON.stringify(schema);
-        document.head.appendChild(script);
     }
 
     function renderServices(services) {
@@ -224,27 +200,28 @@
         }
 
         list.innerHTML = services.map(s => `
-            <div class="card">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="Foto de perfil de ${s.name || 'negocio'}">
+            <a href="service.html?slug=${s.slug}" class="card">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Perfil+TrueWebX'}" alt="${s.name}">
                 <h3>${s.name || 'Sin nombre'}</h3>
                 <p><strong>${s.city || 'Sin ubicación'}</strong></p>
                 <p>${s.description || 'Sin descripción'}</p>
-                <div class="photos">${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Foto ${i+1}">`).join('') : ''}</div>
+                <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Foto">`).join('') : ''}</div>
                 <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
                 <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
                 <p class="price">${s.price || 'Consultar precio'}</p>
                 ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                 <div class="links">
-                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
+                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank" onclick="event.stopPropagation();">
+                        <i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}
+                    </a>`).join('')}
                 </div>` : ''}
                 <small style="opacity:0.85;display:block;margin-top:12px;">
                     Publicado: ${new Date(s.created_at).toLocaleDateString('es-ES', {day:'numeric',month:'long',year:'numeric'})}
                 </small>
-            </div>
+            </a>
         `).join('');
     }
 
-    // Búsqueda en tiempo real
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
 
