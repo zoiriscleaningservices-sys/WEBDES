@@ -129,14 +129,14 @@
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
 
-        /* Modern Photo Upload */
+        /* Modern Photo Upload with Preview */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(12px);
             border: 2px dashed rgba(255,255,255,0.4);
             border-radius: 24px;
-            padding: 32px 20px;
+            padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -152,7 +152,6 @@
             font-size: 48px;
             color: var(--coral);
             margin-bottom: 12px;
-            display: block;
         }
         .photo-upload span {
             font-size: 16px;
@@ -163,6 +162,8 @@
         .photo-upload small {
             font-size: 14px;
             opacity: 0.8;
+            display: block;
+            margin-bottom: 12px;
         }
         .photo-upload input[type="file"] {
             position: absolute;
@@ -174,11 +175,28 @@
             z-index: 10;
         }
 
-        .file-name {
+        /* Preview Styles */
+        .preview-container {
             margin-top: 12px;
-            font-size: 14px;
-            color: rgba(255,255,255,0.9);
-            word-break: break-all;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .preview-img {
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .profile-preview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid var(--coral);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
@@ -203,17 +221,10 @@
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
         @media (max-width: 768px) {
-            .nav-container { gap:30px; padding:10px 20px; }
-            .form-grid { padding:0 10px; }
-            .services { grid-template-columns:1fr; }
-            .edit, .delete { opacity:1; }
-            .social-input { flex-direction:column; }
-            .social-input button { height:50px; width:100%; }
-            input, textarea { font-size:16px !important; }
-            .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
-            .glass { padding:20px; }
-            .photo-upload { padding: 24px 16px; }
+            .photo-upload { padding: 20px 16px; }
             .photo-upload i { font-size: 40px; }
+            .preview-img { max-width: 100px; max-height: 100px; }
+            .profile-preview { width: 120px; height: 120px; }
         }
     </style>
 </head>
@@ -280,28 +291,28 @@
         <div id="add" class="glass" style="display:none;">
             <h2>Publish New Service</h2>
             <form class="form-grid" id="addForm">
-                <input type="text" id="name" placeholder="Full Name" required>
+                <input type="text" id="name" placeholder="Business / Company Name" required>
                 <input type="text" id="city" placeholder="City and Country" required>
                 <input type="tel" id="phone" placeholder="Phone Number" required>
                 <input type="email" id="gmail" placeholder="Email" required>
                 <textarea id="desc" placeholder="Detailed Description" required></textarea>
 
-                <!-- Profile Photo -->
-                <div class="photo-upload" id="profileBox">
+                <!-- Profile Photo with Preview -->
+                <div class="photo-upload">
                     <i class="fas fa-camera"></i>
-                    <span>Upload Profile Photo</span>
+                    <span>Upload Profile Photo / Logo</span>
                     <small>(Required – one image)</small>
                     <input type="file" id="profile" accept="image/*" required>
-                    <div class="file-name" id="profileName"></div>
+                    <div class="preview-container" id="profilePreview"></div>
                 </div>
 
-                <!-- Gallery Photos -->
-                <div class="photo-upload" id="photosBox">
+                <!-- Gallery Photos with Preview -->
+                <div class="photo-upload">
                     <i class="fas fa-images"></i>
                     <span>Upload Gallery Photos</span>
                     <small>(Optional – select multiple)</small>
                     <input type="file" id="photos" accept="image/*" multiple>
-                    <div class="file-name" id="photosName"></div>
+                    <div class="preview-container" id="galleryPreview"></div>
                 </div>
 
                 <div id="social-container">
@@ -317,7 +328,7 @@
                             <option value="whatsapp">WhatsApp</option>
                             <option value="other">Other</option>
                         </select>
-                        <input type="url" id="social-url" placeholder="Full URL (e.g. https://instagram.com/yourusername)">
+                        <input type="url" id="social-url" placeholder="Full URL (e.g. https://instagram.com/yourbusiness)">
                         <button type="button" onclick="addSocialLink()">+</button>
                     </div>
                     <div id="added-socials" style="margin-top:10px;"></div>
@@ -331,26 +342,26 @@
         <div id="edit" class="glass" style="display:none;">
             <h2>Edit Service</h2>
             <form class="form-grid" id="editForm">
-                <input type="text" id="edit-name" placeholder="Full Name" required>
+                <input type="text" id="edit-name" placeholder="Business / Company Name" required>
                 <input type="text" id="edit-city" placeholder="City and Country" required>
                 <input type="tel" id="edit-phone" placeholder="Phone Number" required>
                 <input type="email" id="edit-gmail" placeholder="Email" required>
                 <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
 
-                <div class="photo-upload" id="editProfileBox">
+                <div class="photo-upload">
                     <i class="fas fa-camera"></i>
-                    <span>Change Profile Photo</span>
+                    <span>Change Profile Photo / Logo</span>
                     <small>(Optional – leave blank to keep current)</small>
                     <input type="file" id="edit-profile" accept="image/*">
-                    <div class="file-name" id="editProfileName"></div>
+                    <div class="preview-container" id="editProfilePreview"></div>
                 </div>
 
-                <div class="photo-upload" id="editPhotosBox">
+                <div class="photo-upload">
                     <i class="fas fa-images"></i>
                     <span>Add More Gallery Photos</span>
                     <small>(Optional – select multiple)</small>
                     <input type="file" id="edit-photos" accept="image/*" multiple>
-                    <div class="file-name" id="editPhotosName"></div>
+                    <div class="preview-container" id="editGalleryPreview"></div>
                 </div>
 
                 <div id="edit-social-container">
@@ -403,31 +414,59 @@
     let isSignupMode = false;
     let isPublishing = false;
 
-    // Photo selection feedback
+    // Preview Functions
+    function previewImage(file, containerId, isProfile = false) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = isProfile ? 'profile-preview' : 'preview-img';
+            document.getElementById(containerId).innerHTML = '';
+            document.getElementById(containerId).appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function previewMultipleImages(files, containerId) {
+        document.getElementById(containerId).innerHTML = '';
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img';
+                document.getElementById(containerId).appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Add Form Previews
     document.getElementById('profile').addEventListener('change', function(e) {
-        const name = e.target.files.length > 0 ? e.target.files[0].name : '';
-        document.getElementById('profileName').textContent = name || '';
+        if (e.target.files[0]) {
+            previewImage(e.target.files[0], 'profilePreview', true);
+        }
     });
 
     document.getElementById('photos').addEventListener('change', function(e) {
-        const files = e.target.files;
-        const name = files.length > 0 
-            ? (files.length === 1 ? files[0].name : `${files.length} photos selected`)
-            : '';
-        document.getElementById('photosName').textContent = name || '';
+        if (e.target.files.length > 0) {
+            previewMultipleImages(e.target.files, 'galleryPreview');
+        }
     });
 
+    // Edit Form Previews
     document.getElementById('edit-profile').addEventListener('change', function(e) {
-        const name = e.target.files.length > 0 ? e.target.files[0].name : '';
-        document.getElementById('editProfileName').textContent = name || '';
+        if (e.target.files[0]) {
+            previewImage(e.target.files[0], 'editProfilePreview', true);
+        } else {
+            document.getElementById('editProfilePreview').innerHTML = '';
+        }
     });
 
     document.getElementById('edit-photos').addEventListener('change', function(e) {
-        const files = e.target.files;
-        const name = files.length > 0 
-            ? (files.length === 1 ? files[0].name : `${files.length} photos selected`)
-            : '';
-        document.getElementById('editPhotosName').textContent = name || '';
+        if (e.target.files.length > 0) {
+            previewMultipleImages(e.target.files, 'editGalleryPreview');
+        }
     });
 
     function toggleAuthMode() {
@@ -485,8 +524,8 @@
                 <div class="card">
                     <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
                     <div class="delete" onclick="deleteService('${s.id}')">×</div>
-                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Profile'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
-                    <h3>${s.name || 'No name'}</h3>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Logo'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.name || 'No business name'}</h3>
                     <p><strong>${s.city || 'No location'}</strong></p>
                     <p>${s.description || 'No description'}</p>
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
@@ -517,9 +556,9 @@
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             document.getElementById('publishBtn').disabled = false;
-            document.getElementById('profileName').textContent = '';
-            document.getElementById('photosName').textContent = '';
             document.getElementById('addForm').reset();
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
         }
     }
 
@@ -618,8 +657,8 @@
             document.getElementById('addForm').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
-            document.getElementById('profileName').textContent = '';
-            document.getElementById('photosName').textContent = '';
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
         } catch (err) {
             msg.innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
@@ -643,8 +682,8 @@
 
         currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
         updateAddedSocials(true);
-        document.getElementById('editProfileName').textContent = '';
-        document.getElementById('editPhotosName').textContent = '';
+        document.getElementById('editProfilePreview').innerHTML = '';
+        document.getElementById('editGalleryPreview').innerHTML = '';
 
         show('edit');
     }
@@ -707,8 +746,8 @@
             document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
             currentEditId = null;
             currentSocialLinks = [];
-            document.getElementById('editProfileName').textContent = '';
-            document.getElementById('editPhotosName').textContent = '';
+            document.getElementById('editProfilePreview').innerHTML = '';
+            document.getElementById('editGalleryPreview').innerHTML = '';
             setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
         } catch (err) {
             document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
