@@ -421,13 +421,15 @@
                     <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
                     <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links">
-                        ${Array.isArray(s.social_links) ? s.social_links.map(link => `
+                        ${s.social_links.map(link => `
                             <a href="${link.url}" target="_blank">
                                 <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
                             </a>
-                        `).join('') : ''}
+                        `).join('')}
                     </div>
+                    ` : ''}
                 </div>
             `).join('')
             : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
@@ -513,7 +515,7 @@
             description: document.getElementById('desc').value.trim(),
             profile: profileUrl,
             photos: photosUrls,
-            social_links: currentSocialLinks.length > 0 ? currentSocialLinks : [],
+            social_links: currentSocialLinks, // Siempre guarda el array (vacío si no hay)
             created_at: new Date().toISOString()
         };
 
@@ -531,14 +533,14 @@
         currentEditId = id;
         const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
 
-        document.getElementById('edit-name').value = service.name;
-        document.getElementById('edit-city').value = service.city;
-        document.getElementById('edit-phone').value = service.phone;
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-phone').value = service.phone || '';
         document.getElementById('edit-gmail').value = service.gmail || '';
-        document.getElementById('edit-price').value = service.price;
-        document.getElementById('edit-desc').value = service.description;
+        document.getElementById('edit-price').value = service.price || '';
+        document.getElementById('edit-desc').value = service.description || '';
 
-        currentSocialLinks = service.social_links || [];
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
         updateAddedSocials(true);
 
         show('edit');
