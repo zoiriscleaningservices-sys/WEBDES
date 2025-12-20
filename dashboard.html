@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TrueWebX Business Dashboard – Publish and manage your professional business profile. Add company name, location, contact details, free consultation info, gallery photos, and social links for maximum visibility.">
-    <meta name="keywords" content="TrueWebX, business profile, company listing, professional dashboard, free consultation, business directory, local services, portfolio management">
+    <meta name="description" content="TrueWebX Business Dashboard – Publish and manage your professional business profile. Add company name, state, city, contact details, free consultation info, modern photo gallery, and social links for maximum visibility.">
+    <meta name="keywords" content="TrueWebX, business profile, company listing, professional dashboard, free consultation, business directory, local business, portfolio management, local services">
     <meta name="robots" content="index, follow">
     <meta name="author" content="TrueWebX">
     <meta property="og:title" content="TrueWebX – Business Dashboard">
-    <meta property="og:description" content="Easily create and manage your professional business profile with TrueWebX – featuring free consultation and modern photo gallery.">
+    <meta property="og:description" content="Create and manage your business profile with TrueWebX – featuring free consultation and a modern photo gallery.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/dashboard">
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
@@ -143,7 +143,7 @@
         .file-upload-wrapper {
             position: relative;
             width: 100%;
-            height: 120px;
+            height: 130px;
             border: 2px dashed rgba(255,255,255,0.4);
             border-radius: 20px;
             background: rgba(255,255,255,0.1);
@@ -159,13 +159,14 @@
             border-color: var(--coral);
         }
         .file-upload-wrapper i {
-            font-size: 32px;
-            margin-bottom: 8px;
+            font-size: 36px;
+            margin-bottom: 10px;
             color: var(--coral);
         }
         .file-upload-wrapper span {
-            font-size: 14px;
+            font-size: 15px;
             text-align: center;
+            padding: 0 20px;
         }
         .file-upload-wrapper input[type="file"] {
             position: absolute;
@@ -183,22 +184,25 @@
         .private { filter:blur(6px); user-select:none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter:none; }
 
-        /* Modern gallery in card */
+        /* Modern responsive gallery */
         .gallery { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-            gap: 12px; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            gap: 14px; 
             margin: 16px 0; 
         }
         .gallery img { 
             width: 100%; 
-            height: 120px; 
+            height: 130px; 
             object-fit: cover; 
             border-radius: 16px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .gallery img:hover { transform: scale(1.05); }
+        .gallery img:hover { 
+            transform: scale(1.08); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
 
         .links { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
         .links a { color:var(--coral); text-decoration:none; font-weight:600; padding:8px 14px; background:rgba(255,255,255,0.1); border-radius:20px; display:flex; align-items:center; gap:6px; }
@@ -224,6 +228,8 @@
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
             .gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+            .file-upload-wrapper { height: 110px; }
+            .file-upload-wrapper i { font-size: 30px; }
         }
     </style>
 </head>
@@ -282,13 +288,13 @@
         <h1 class="logo" onclick="window.location.href='https://truewebx.site/'" aria-label="TrueWebX Home">TrueWebX</h1>
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg" aria-live="polite"></p>
 
-        <section id="home" class="glass" aria-labelledby="my-services-heading">
-            <h2 id="my-services-heading">My Published Businesses</h2>
+        <section id="home" class="glass" aria-labelledby="my-businesses-heading">
+            <h2 id="my-businesses-heading">My Published Businesses</h2>
             <div class="services" id="list" role="list"></div>
         </section>
 
-        <section id="add" class="glass" style="display:none;" aria-labelledby="new-service-heading">
-            <h2 id="new-service-heading">Publish New Business Profile</h2>
+        <section id="add" class="glass" style="display:none;" aria-labelledby="new-business-heading">
+            <h2 id="new-business-heading">Publish New Business Profile</h2>
             <div class="form-grid">
                 <input type="text" id="company" placeholder="Business / Company Name" required aria-label="Business Name">
                 <input type="text" id="state" placeholder="State" required aria-label="State">
@@ -333,8 +339,8 @@
             <p id="msg" aria-live="polite"></p>
         </section>
 
-        <section id="edit" class="glass" style="display:none;" aria-labelledby="edit-service-heading">
-            <h2 id="edit-service-heading">Edit Business Profile</h2>
+        <section id="edit" class="glass" style="display:none;" aria-labelledby="edit-business-heading">
+            <h2 id="edit-business-heading">Edit Business Profile</h2>
             <div class="form-grid">
                 <input type="text" id="edit-company" placeholder="Business / Company Name" required aria-label="Business Name">
                 <input type="text" id="edit-state" placeholder="State" required aria-label="State">
@@ -344,13 +350,13 @@
                 <textarea id="edit-desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
 
                 <div class="file-upload-wrapper">
-                    <input type="file" id="edit-profile" accept="image/*" aria-label="New Profile / Logo Photo">
+                    <input type="file" id="edit-profile" accept="image/*" aria-label="Change Profile / Logo Photo">
                     <i class="fas fa-camera"></i>
                     <span>Change Profile Photo / Logo (optional)</span>
                 </div>
 
                 <div class="file-upload-wrapper">
-                    <input type="file" id="edit-photos" accept="image/*" multiple aria-label="Additional Gallery Photos">
+                    <input type="file" id="edit-photos" accept="image/*" multiple aria-label="Add More Gallery Photos">
                     <i class="fas fa-images"></i>
                     <span>Add More Gallery Photos (optional)</span>
                 </div>
@@ -462,7 +468,7 @@
                     <button class="delete" onclick="deleteService('${s.id}')" aria-label="Delete business">×</button>
                     <img src="${s.profile || 'https://via.placeholder.com/300?text=Logo'}" alt="Logo of ${s.company || 'business'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
                     <h3>${s.company || 'No business name'}</h3>
-                    <p><strong>${s.state || ''} ${s.city || 'No location'}</strong></p>
+                    <p><strong>${s.state ? s.state + ', ' : ''}${s.city || 'No location'}</strong></p>
                     <p>${s.description || 'No description'}</p>
                     <div class="gallery">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('') : ''}</div>
                     <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
@@ -537,7 +543,7 @@
         const profileFile = document.getElementById('profile').files[0];
 
         if (!company || !state || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">All fields are required except additional gallery photos!</p>';
+            msg.innerHTML = '<p style="color:red;">All fields are required except gallery photos!</p>';
             return;
         }
 
