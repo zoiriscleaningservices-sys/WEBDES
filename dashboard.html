@@ -139,41 +139,44 @@
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
 
-        /* Modern file upload styling */
-        .file-upload-wrapper {
-            position: relative;
-            width: 100%;
-            height: 130px;
-            border: 2px dashed rgba(255,255,255,0.4);
-            border-radius: 20px;
-            background: rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        /* Fixed file upload - back to simple reliable inputs */
+        .file-input {
+            background: rgba(255,255,255,0.25);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
-        .file-upload-wrapper:hover {
+        .file-input input[type="file"] {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .file-input-label {
+            display: block;
+            position: relative;
+            padding: 20px;
+            border: 2px dashed rgba(255,255,255,0.5);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        .file-input-label:hover {
             background: rgba(255,255,255,0.2);
             border-color: var(--coral);
         }
-        .file-upload-wrapper i {
-            font-size: 36px;
-            margin-bottom: 10px;
+        .file-input-label i {
+            font-size: 32px;
+            margin-bottom: 8px;
+            display: block;
             color: var(--coral);
-        }
-        .file-upload-wrapper span {
-            font-size: 15px;
-            text-align: center;
-            padding: 0 20px;
-        }
-        .file-upload-wrapper input[type="file"] {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
         }
 
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
@@ -228,8 +231,6 @@
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
             .gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
-            .file-upload-wrapper { height: 110px; }
-            .file-upload-wrapper i { font-size: 30px; }
         }
     </style>
 </head>
@@ -303,16 +304,21 @@
                 <input type="email" id="gmail" placeholder="Business Email" required aria-label="Business Email">
                 <textarea id="desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
 
-                <div class="file-upload-wrapper">
-                    <input type="file" id="profile" accept="image/*" required aria-label="Profile / Logo Photo">
-                    <i class="fas fa-camera"></i>
-                    <span>Upload Profile Photo / Logo (required)</span>
+                <!-- Fixed reliable file upload (like original working version) -->
+                <div class="file-input">
+                    <label class="file-input-label">
+                        <i class="fas fa-camera"></i>
+                        <span>Upload Profile Photo / Logo (required)</span>
+                        <input type="file" id="profile" accept="image/*" required>
+                    </label>
                 </div>
 
-                <div class="file-upload-wrapper">
-                    <input type="file" id="photos" accept="image/*" multiple aria-label="Gallery Photos">
-                    <i class="fas fa-images"></i>
-                    <span>Upload Gallery Photos (optional – multiple)</span>
+                <div class="file-input">
+                    <label class="file-input-label">
+                        <i class="fas fa-images"></i>
+                        <span>Upload Gallery Photos (optional – multiple)</span>
+                        <input type="file" id="photos" accept="image/*" multiple>
+                    </label>
                 </div>
 
                 <div id="social-container">
@@ -349,16 +355,21 @@
                 <input type="email" id="edit-gmail" placeholder="Business Email" required aria-label="Business Email">
                 <textarea id="edit-desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
 
-                <div class="file-upload-wrapper">
-                    <input type="file" id="edit-profile" accept="image/*" aria-label="Change Profile / Logo Photo">
-                    <i class="fas fa-camera"></i>
-                    <span>Change Profile Photo / Logo (optional)</span>
+                <!-- Same reliable upload for edit -->
+                <div class="file-input">
+                    <label class="file-input-label">
+                        <i class="fas fa-camera"></i>
+                        <span>Change Profile Photo / Logo (optional)</span>
+                        <input type="file" id="edit-profile" accept="image/*">
+                    </label>
                 </div>
 
-                <div class="file-upload-wrapper">
-                    <input type="file" id="edit-photos" accept="image/*" multiple aria-label="Add More Gallery Photos">
-                    <i class="fas fa-images"></i>
-                    <span>Add More Gallery Photos (optional)</span>
+                <div class="file-input">
+                    <label class="file-input-label">
+                        <i class="fas fa-images"></i>
+                        <span>Add More Gallery Photos (optional)</span>
+                        <input type="file" id="edit-photos" accept="image/*" multiple>
+                    </label>
                 </div>
 
                 <div id="edit-social-container">
