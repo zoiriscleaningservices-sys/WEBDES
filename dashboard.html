@@ -57,7 +57,7 @@
             height:56px; 
             border-radius:12px; 
             font-weight:600; 
-            font-size:16px; 
+            font-size:16px;
             cursor:pointer; 
             width:100%; 
             margin:20px 0;
@@ -129,6 +129,7 @@
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
 
+        /* Modern Photo Upload with Preview */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
@@ -174,6 +175,7 @@
             z-index: 10;
         }
 
+        /* Preview Styles */
         .preview-container {
             margin-top: 12px;
             display: flex;
@@ -217,74 +219,6 @@
         }
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
-
-        /* Messages Tab Styles */
-        .inbox-list { display: grid; gap: 16px; }
-        .inbox-item {
-            background: rgba(255,255,255,0.15);
-            border-radius: 20px;
-            padding: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .inbox-item:hover { background: rgba(255,255,255,0.25); transform: translateY(-4px); }
-        .inbox-item.unread { border-left: 4px solid var(--coral); }
-
-        .chat-window {
-            display: none;
-            flex-direction: column;
-            height: 70vh;
-            margin-top: 20px;
-        }
-        .chat-header {
-            padding: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        .chat-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .message {
-            max-width: 80%;
-            padding: 12px 18px;
-            border-radius: 20px;
-            line-height: 1.4;
-        }
-        .message.client { align-self: flex-end; background: var(--coral); color: white; }
-        .message.owner { align-self: flex-start; background: rgba(255,255,255,0.3); }
-        .message small { display: block; margin-top: 6px; opacity: 0.7; font-size: 0.8em; }
-        .chat-input {
-            display: flex;
-            padding: 16px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            gap: 10px;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 14px;
-            border-radius: 50px;
-            border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        .chat-input input::placeholder { color: rgba(255,255,255,0.7); }
-        .chat-input button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--coral);
-            color: white;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-        }
 
         @media (max-width: 768px) {
             .photo-upload { padding: 20px 16px; }
@@ -340,14 +274,13 @@
         <div class="nav-container">
             <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>My Services</span></div>
             <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>New</span></div>
-            <div class="nav-item" onclick="show('messages')"><i class="fas fa-envelope"></i><span>Messages</span></div>
-            <div class="nav-item" onclick="window.location.href='index.html'"><i class="fas fa-globe"></i><span>Public</span></div>
+            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'"><i class="fas fa-globe"></i><span>Public</span></div>
             <div class="nav-item" onclick="logoutAndGoHome()"><i class="fas fa-sign-out-alt"></i><span>Sign Out</span></div>
         </div>
     </div>
 
     <div class="main-content">
-        <h1 class="logo" onclick="window.location.href='index.html'">TrueWebX</h1>
+        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</h1>
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
 
         <div id="home" class="glass">
@@ -364,6 +297,7 @@
                 <input type="email" id="gmail" placeholder="Email" required>
                 <textarea id="desc" placeholder="Detailed Description" required></textarea>
 
+                <!-- Profile Photo with Preview -->
                 <div class="photo-upload">
                     <i class="fas fa-camera"></i>
                     <span>Upload Profile Photo / Logo</span>
@@ -372,6 +306,7 @@
                     <div class="preview-container" id="profilePreview"></div>
                 </div>
 
+                <!-- Gallery Photos with Preview -->
                 <div class="photo-upload">
                     <i class="fas fa-images"></i>
                     <span>Upload Gallery Photos</span>
@@ -452,21 +387,6 @@
             </form>
             <p id="edit-msg"></p>
         </div>
-
-        <!-- Messages Tab -->
-        <div id="messages" class="glass" style="display:none;">
-            <h2>Messages</h2>
-            <div id="inboxList" class="inbox-list"></div>
-
-            <div id="chatWindow" class="glass chat-window">
-                <div class="chat-header" id="chatHeader">Select a conversation</div>
-                <div class="chat-body" id="chatBody"></div>
-                <div class="chat-input">
-                    <input type="text" id="replyInput" placeholder="Type your reply...">
-                    <button onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -493,9 +413,8 @@
     let currentSocialLinks = [];
     let isSignupMode = false;
     let isPublishing = false;
-    let currentChatServiceId = null;
 
-    // Your original preview functions (unchanged)
+    // Preview Functions
     function previewImage(file, containerId, isProfile = false) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -522,10 +441,33 @@
         });
     }
 
-    document.getElementById('profile').addEventListener('change', e => e.target.files[0] && previewImage(e.target.files[0], 'profilePreview', true));
-    document.getElementById('photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'galleryPreview'));
-    document.getElementById('edit-profile').addEventListener('change', e => e.target.files[0] ? previewImage(e.target.files[0], 'editProfilePreview', true) : document.getElementById('editProfilePreview').innerHTML = '');
-    document.getElementById('edit-photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'editGalleryPreview'));
+    // Add Form Previews
+    document.getElementById('profile').addEventListener('change', function(e) {
+        if (e.target.files[0]) {
+            previewImage(e.target.files[0], 'profilePreview', true);
+        }
+    });
+
+    document.getElementById('photos').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            previewMultipleImages(e.target.files, 'galleryPreview');
+        }
+    });
+
+    // Edit Form Previews
+    document.getElementById('edit-profile').addEventListener('change', function(e) {
+        if (e.target.files[0]) {
+            previewImage(e.target.files[0], 'editProfilePreview', true);
+        } else {
+            document.getElementById('editProfilePreview').innerHTML = '';
+        }
+    });
+
+    document.getElementById('edit-photos').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            previewMultipleImages(e.target.files, 'editGalleryPreview');
+        }
+    });
 
     function toggleAuthMode() {
         isSignupMode = !isSignupMode;
@@ -557,7 +499,7 @@
 
     function logoutAndGoHome() {
         auth.signOut().then(() => {
-            window.location.href = 'index.html';
+            window.location.href = 'https://truewebx.site/';
         });
     }
 
@@ -605,8 +547,10 @@
     }
 
     function show(section) {
-        ['home', 'add', 'edit', 'messages'].forEach(s => document.getElementById(s).style.display = s === section ? 'block' : 'none');
-        document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'messages' ? 2 : 3)));
+        document.getElementById('home').style.display = section === 'home' ? 'block' : 'none';
+        document.getElementById('add').style.display = section === 'add' ? 'block' : 'none';
+        document.getElementById('edit').style.display = section === 'edit' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === (section === 'home' ? 0 : 1)));
         if (section === 'home') loadDashboard();
         if (section === 'add') {
             currentSocialLinks = [];
@@ -616,10 +560,8 @@
             document.getElementById('profilePreview').innerHTML = '';
             document.getElementById('galleryPreview').innerHTML = '';
         }
-        if (section === 'messages') loadInbox();
     }
 
-    // Your original social link functions (unchanged)
     function addSocialLink(isEdit = false) {
         const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
         const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
@@ -652,7 +594,6 @@
 
     document.getElementById('publishBtn').onclick = addService;
 
-    // Your original addService, editService, updateService, deleteService functions (unchanged)
     async function addService() {
         if (isPublishing) return;
         
@@ -821,86 +762,6 @@
             loadDashboard();
         }
     }
-
-    // Messaging Functions
-    async function loadInbox() {
-        const user = auth.currentUser;
-        if (!user) return;
-
-        const { data: services } = await supabaseClient.from('services').select('id, name').eq('owner_id', user.uid);
-        if (!services || services.length === 0) {
-            document.getElementById('inboxList').innerHTML = '<p style="text-align:center;">No services yet</p>';
-            return;
-        }
-
-        const { data: messages } = await supabaseClient.from('messages')
-            .select('service_id, text, created_at, is_from_owner')
-            .in('service_id', services.map(s => s.id))
-            .order('created_at', { ascending: false });
-
-        const chats = {};
-        messages.forEach(m => {
-            if (!chats[m.service_id]) {
-                chats[m.service_id] = {
-                    name: services.find(s => s.id === m.service_id)?.name || 'Unknown',
-                    lastMessage: m.text,
-                    time: m.created_at,
-                    unread: !m.is_from_owner
-                };
-            }
-        });
-
-        document.getElementById('inboxList').innerHTML = Object.keys(chats).length ? 
-            Object.values(chats).map(chat => `
-                <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openChat('${services.find(s => s.name === chat.name)?.id}', '${chat.name.replace(/'/g, "\\'")}')">
-                    <strong>${chat.name}</strong>
-                    <div style="opacity:0.9;font-size:0.95rem;margin-top:6px;">${chat.lastMessage}</div>
-                    <small>${new Date(chat.time).toLocaleString()}</small>
-                </div>
-            `).join('') : '<p style="text-align:center; opacity:0.8;">No messages yet</p>';
-    }
-
-    async function openChat(serviceId, name) {
-        currentChatServiceId = serviceId;
-        document.getElementById('chatHeader').textContent = `Chat – ${name}`;
-        document.getElementById('chatWindow').style.display = 'flex';
-        loadChatMessages();
-    }
-
-    async function loadChatMessages() {
-        const { data } = await supabaseClient.from('messages')
-            .select('*')
-            .eq('service_id', currentChatServiceId)
-            .order('created_at', { ascending: true });
-
-        const body = document.getElementById('chatBody');
-        body.innerHTML = data.map(m => `
-            <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
-                ${m.text}
-                <small>${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>
-            </div>
-        `).join('');
-        body.scrollTop = body.scrollHeight;
-    }
-
-    async function sendReply() {
-        const input = document.getElementById('replyInput');
-        const text = input.value.trim();
-        if (!text || !currentChatServiceId) return;
-
-        await supabaseClient.from('messages').insert({
-            service_id: currentChatServiceId,
-            text,
-            is_from_owner: true
-        });
-
-        input.value = '';
-        loadChatMessages();
-    }
-
-    document.getElementById('replyInput')?.addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendReply();
-    });
 </script>
 </body>
 </html>
