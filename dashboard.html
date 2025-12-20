@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrueWebX – Mi Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <meta name="description" content="TrueWebX – Manage and publish your personal services. Create, edit, and showcase your profile with photos, contact details, and social media links.">
+    <meta name="keywords" content="TrueWebX, personal services, publish profile, freelance dashboard, service listing, portfolio management">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="TrueWebX">
+    <meta property="og:title" content="TrueWebX – My Dashboard">
+    <meta property="og:description" content="Manage and publish your personal services easily with TrueWebX.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://truewebx.site/dashboard">
+    <meta property="og:image" content="https://truewebx.site/og-image.jpg">
+    <title>TrueWebX – My Dashboard</title>
+    <link rel="canonical" href="https://truewebx.site/dashboard">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,7 +22,7 @@
         :root { --coral: #ff6b6b; --turquoise: #0d9488; }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { 
-            font-family: system-ui, sans-serif; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
             color:white; 
             min-height:100vh; 
@@ -167,36 +177,36 @@
 <!-- LOGIN / SIGN UP -->
 <div id="loginScreen" class="login-container">
     <div class="form">
-        <h2 style="margin-bottom:30px; color:#151717;" id="formTitle">Iniciar Sesión</h2>
+        <h2 style="margin-bottom:30px; color:#151717;" id="formTitle">Sign In</h2>
 
         <form id="authForm">
             <div class="inputForm">
-                <input id="email" placeholder="Tu email" class="input" type="email" required>
+                <input id="email" placeholder="Your email" class="input" type="email" required aria-label="Email">
             </div>
 
             <div class="inputForm">
-                <input id="password" placeholder="Tu contraseña" class="input" type="password" required>
+                <input id="password" placeholder="Your password" class="input" type="password" required aria-label="Password">
             </div>
 
-            <button type="submit" class="button-submit" id="authButton">Entrar</button>
+            <button type="submit" class="button-submit" id="authButton">Sign In</button>
         </form>
 
-        <div id="message"></div>
+        <div id="message" role="alert"></div>
 
         <p style="margin-top:20px; color:#666;">
-            <span id="toggleText">¿No tienes cuenta?</span> 
-            <span class="toggle-link" onclick="toggleAuthMode()">Regístrate aquí</span>
+            <span id="toggleText">Don't have an account?</span> 
+            <span class="toggle-link" onclick="toggleAuthMode()" role="button" tabindex="0">Sign up here</span>
         </p>
 
         <div style="margin-top:20px;">
-            <button type="button" class="btn google" id="googleBtn">
-                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
+            <button type="button" class="btn google" id="googleBtn" aria-label="Continue with Google">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true">
                     <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
                     <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
                     <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
                     <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path>
                 </svg>
-                Continuar con Google
+                Continue with Google
             </button>
         </div>
     </div>
@@ -204,40 +214,40 @@
 
 <!-- DASHBOARD -->
 <div id="dashboardScreen" style="display:none;">
-    <div class="bottom-nav">
+    <nav class="bottom-nav" aria-label="Main navigation">
         <div class="nav-container">
-            <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>Mis Servicios</span></div>
-            <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>Nuevo</span></div>
-            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'"><i class="fas fa-globe"></i><span>Pública</span></div>
-            <div class="nav-item" onclick="logoutAndGoHome()"><i class="fas fa-sign-out-alt"></i><span>Salir</span></div>
+            <div class="nav-item active" onclick="show('home')" aria-label="My Services"><i class="fas fa-home" aria-hidden="true"></i><span>My Services</span></div>
+            <div class="nav-item" onclick="show('add')" aria-label="New Service"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>New</span></div>
+            <div class="nav-item" onclick="window.location.href='https://truewebx.site/'" aria-label="Public Page"><i class="fas fa-globe" aria-hidden="true"></i><span>Public</span></div>
+            <div class="nav-item" onclick="logoutAndGoHome()" aria-label="Sign Out"><i class="fas fa-sign-out-alt" aria-hidden="true"></i><span>Sign Out</span></div>
         </div>
-    </div>
+    </nav>
 
-    <div class="main-content">
-        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</h1>
-        <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
+    <main class="main-content">
+        <h1 class="logo" onclick="window.location.href='https://truewebx.site/'" aria-label="TrueWebX Home">TrueWebX</h1>
+        <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg" aria-live="polite"></p>
 
-        <div id="home" class="glass">
-            <h2>Mis Servicios Publicados</h2>
-            <div class="services" id="list"></div>
-        </div>
+        <section id="home" class="glass" aria-labelledby="my-services-heading">
+            <h2 id="my-services-heading">My Published Services</h2>
+            <div class="services" id="list" role="list"></div>
+        </section>
 
-        <div id="add" class="glass" style="display:none;">
-            <h2>Publicar Nuevo Servicio</h2>
+        <section id="add" class="glass" style="display:none;" aria-labelledby="new-service-heading">
+            <h2 id="new-service-heading">Publish New Service</h2>
             <div class="form-grid">
-                <input type="text" id="name" placeholder="Nombre completo" required>
-                <input type="text" id="city" placeholder="Ciudad y País" required>
-                <input type="tel" id="phone" placeholder="Teléfono" required>
-                <input type="email" id="gmail" placeholder="Gmail" required>
-                <input type="text" id="price" placeholder="Precio (opcional)">
-                <textarea id="desc" placeholder="Descripción detallada" required></textarea>
-                <input type="file" id="profile" accept="image/*" required>
-                <input type="file" id="photos" accept="image/*" multiple>
+                <input type="text" id="name" placeholder="Full name" required aria-label="Full name">
+                <input type="text" id="city" placeholder="City and Country" required aria-label="City and Country">
+                <input type="tel" id="phone" placeholder="Phone number" required aria-label="Phone number">
+                <input type="email" id="gmail" placeholder="Email (Gmail)" required aria-label="Email">
+                <input type="text" id="price" placeholder="Price (optional)" aria-label="Price (optional)">
+                <textarea id="desc" placeholder="Detailed description" required aria-label="Description"></textarea>
+                <input type="file" id="profile" accept="image/*" required aria-label="Profile photo">
+                <input type="file" id="photos" accept="image/*" multiple aria-label="Additional photos">
 
                 <div id="social-container">
-                    <h3 style="color:white; margin:20px 0 10px;">Redes Sociales (opcional)</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
                     <div class="social-input">
-                        <select id="social-type">
+                        <select id="social-type" aria-label="Social media platform">
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
@@ -245,35 +255,35 @@
                             <option value="linkedin">LinkedIn</option>
                             <option value="youtube">YouTube</option>
                             <option value="whatsapp">WhatsApp</option>
-                            <option value="other">Otro</option>
+                            <option value="other">Other</option>
                         </select>
-                        <input type="url" id="social-url" placeholder="URL completa (ej: https://instagram.com/tuusuario)">
-                        <button type="button" onclick="addSocialLink()">+</button>
+                        <input type="url" id="social-url" placeholder="Full URL (e.g., https://instagram.com/yourusername)" aria-label="Social media URL">
+                        <button type="button" onclick="addSocialLink()" aria-label="Add social link">+</button>
                     </div>
                     <div id="added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <button id="publishBtn" onclick="addService()">PUBLICAR AHORA</button>
+                <button id="publishBtn" onclick="addService()">PUBLISH NOW</button>
             </div>
-            <p id="msg"></p>
-        </div>
+            <p id="msg" aria-live="polite"></p>
+        </section>
 
-        <div id="edit" class="glass" style="display:none;">
-            <h2>Editar Servicio</h2>
+        <section id="edit" class="glass" style="display:none;" aria-labelledby="edit-service-heading">
+            <h2 id="edit-service-heading">Edit Service</h2>
             <div class="form-grid">
-                <input type="text" id="edit-name" placeholder="Nombre completo" required>
-                <input type="text" id="edit-city" placeholder="Ciudad y País" required>
-                <input type="tel" id="edit-phone" placeholder="Teléfono" required>
-                <input type="email" id="edit-gmail" placeholder="Gmail" required>
-                <input type="text" id="edit-price" placeholder="Precio (opcional)">
-                <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
-                <input type="file" id="edit-profile" accept="image/*">
-                <input type="file" id="edit-photos" accept="image/*" multiple>
+                <input type="text" id="edit-name" placeholder="Full name" required aria-label="Full name">
+                <input type="text" id="edit-city" placeholder="City and Country" required aria-label="City and Country">
+                <input type="tel" id="edit-phone" placeholder="Phone number" required aria-label="Phone number">
+                <input type="email" id="edit-gmail" placeholder="Email (Gmail)" required aria-label="Email">
+                <input type="text" id="edit-price" placeholder="Price (optional)" aria-label="Price (optional)">
+                <textarea id="edit-desc" placeholder="Detailed description" required aria-label="Description"></textarea>
+                <input type="file" id="edit-profile" accept="image/*" aria-label="New profile photo">
+                <input type="file" id="edit-photos" accept="image/*" multiple aria-label="New additional photos">
 
                 <div id="edit-social-container">
-                    <h3 style="color:white; margin:20px 0 10px;">Redes Sociales</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
                     <div class="social-input">
-                        <select id="edit-social-type">
+                        <select id="edit-social-type" aria-label="Social media platform">
                             <option value="instagram">Instagram</option>
                             <option value="tiktok">TikTok</option>
                             <option value="facebook">Facebook</option>
@@ -281,19 +291,19 @@
                             <option value="linkedin">LinkedIn</option>
                             <option value="youtube">YouTube</option>
                             <option value="whatsapp">WhatsApp</option>
-                            <option value="other">Otro</option>
+                            <option value="other">Other</option>
                         </select>
-                        <input type="url" id="edit-social-url" placeholder="URL completa">
-                        <button type="button" onclick="addSocialLink(true)">+</button>
+                        <input type="url" id="edit-social-url" placeholder="Full URL" aria-label="Social media URL">
+                        <button type="button" onclick="addSocialLink(true)" aria-label="Add social link">+</button>
                     </div>
                     <div id="edit-added-socials" style="margin-top:10px;"></div>
                 </div>
 
-                <button onclick="updateService()">GUARDAR CAMBIOS</button>
+                <button onclick="updateService()">SAVE CHANGES</button>
             </div>
-            <p id="edit-msg"></p>
-        </div>
-    </div>
+            <p id="edit-msg" aria-live="polite"></p>
+        </section>
+    </main>
 </div>
 
 <script>
@@ -322,9 +332,9 @@
 
     function toggleAuthMode() {
         isSignupMode = !isSignupMode;
-        document.getElementById('formTitle').textContent = isSignupMode ? 'Crear Cuenta' : 'Iniciar Sesión';
-        document.getElementById('authButton').textContent = isSignupMode ? 'Registrarme' : 'Entrar';
-        document.getElementById('toggleText').textContent = isSignupMode ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
+        document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Sign In';
+        document.getElementById('authButton').textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
     }
 
     document.getElementById('authForm').onsubmit = e => {
@@ -362,7 +372,7 @@
         if (!user) return;
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboardScreen').style.display = 'block';
-        welcomeMsg.textContent = `¡Hola ${user.displayName || user.email.split('@')[0]}!`;
+        welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
 
         const { data: services } = await supabaseClient
             .from('services')
@@ -372,29 +382,29 @@
 
         list.innerHTML = services && services.length > 0
             ? services.map(s => `
-                <div class="card">
-                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
-                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
-                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Perfil'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
-                    <h3>${s.name || 'Sin nombre'}</h3>
-                    <p><strong>${s.city || 'Sin ubicación'}</strong></p>
-                    <p>${s.description || 'Sin descripción'}</p>
-                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
-                    <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
-                    <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Consultar precio'}</strong></p>
+                <article class="card" role="listitem">
+                    <button class="edit" onclick="editService('${s.id}')" aria-label="Edit service"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                    <button class="delete" onclick="deleteService('${s.id}')" aria-label="Delete service">×</button>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Profile'}" alt="Profile photo of ${s.name || 'user'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.name || 'No name'}</h3>
+                    <p><strong>${s.city || 'No location'}</strong></p>
+                    <p>${s.description || 'No description'}</p>
+                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Additional photo">`).join('') : ''}</div>
+                    <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
+                    <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Contact for price'}</strong></p>
                     ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links">
                         ${s.social_links.map(link => `
-                            <a href="${link.url}" target="_blank">
-                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" aria-label="Visit ${link.type} profile">
+                                <i class="fab fa-${link.type.toLowerCase()}" aria-hidden="true"></i> ${link.type}
                             </a>
                         `).join('')}
                     </div>
                     ` : ''}
-                </div>
+                </article>
             `).join('')
-            : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
+            : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
     }
 
     function show(section) {
@@ -420,7 +430,7 @@
             updateAddedSocials(isEdit);
             input.value = '';
         } else if (url) {
-            alert('Por favor ingresa una URL válida (con https://)');
+            alert('Please enter a valid URL (starting with https://)');
         }
     }
 
@@ -428,9 +438,9 @@
         const container = isEdit ? 'edit-added-socials' : 'added-socials';
         document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
             <div class="added-link">
-                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <i class="fab fa-${link.type.toLowerCase()}" aria-hidden="true"></i>
                 <span>${link.type}: ${link.url}</span>
-                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+                <button onclick="removeSocialLink(${i}, ${isEdit})" aria-label="Remove link">×</button>
             </div>
         `).join('');
     }
@@ -447,38 +457,36 @@
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
-        const price = document.getElementById('price').value.trim(); // Ahora opcional
+        const price = document.getElementById('price').value.trim();
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
 
         if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio y las fotos adicionales!</p>';
+            msg.innerHTML = '<p style="color:red;">All fields are required except price and additional photos!</p>';
             return;
         }
 
         isPublishing = true;
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
-        publishBtn.textContent = 'PUBLICANDO...';
+        publishBtn.textContent = 'PUBLISHING...';
 
         const user = auth.currentUser;
         if (!user) return;
 
-        // Subir foto de perfil (obligatoria)
         const fileExt = profileFile.name.split('.').pop();
         const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
         const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
         if (profileError) {
-            msg.innerHTML = `<p style="color:red;">Error al subir perfil: ${profileError.message}</p>`;
+            msg.innerHTML = `<p style="color:red;">Error uploading profile: ${profileError.message}</p>`;
             isPublishing = false;
             publishBtn.disabled = false;
-            publishBtn.textContent = 'PUBLICAR AHORA';
+            publishBtn.textContent = 'PUBLISH NOW';
             return;
         }
         const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
         const profileUrl = profileData.publicUrl;
 
-        // Subir fotos adicionales (opcionales)
         const photoFiles = document.getElementById('photos').files;
         const photosUrls = [];
         for (let file of photoFiles) {
@@ -494,7 +502,7 @@
             id: crypto.randomUUID(),
             owner_id: user.uid,
             name, city, phone, gmail,
-            price: price || null, // Si está vacío, guardamos null
+            price: price || null,
             description: desc,
             profile: profileUrl,
             photos: photosUrls,
@@ -506,18 +514,17 @@
         if (error) {
             msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
         } else {
-            msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
+            msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
             document.querySelector('.form-grid').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
         }
 
-        // Anti-spam: botón bloqueado 5 segundos
         setTimeout(() => {
             isPublishing = false;
             publishBtn.disabled = false;
-            publishBtn.textContent = 'PUBLICAR AHORA';
+            publishBtn.textContent = 'PUBLISH NOW';
         }, 5000);
     }
 
@@ -545,11 +552,11 @@
         const city = document.getElementById('edit-city').value.trim();
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
-        const price = document.getElementById('edit-price').value.trim(); // opcional
+        const price = document.getElementById('edit-price').value.trim();
         const desc = document.getElementById('edit-desc').value.trim();
 
         if (!name || !city || !phone || !gmail || !desc) {
-            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Los campos obligatorios no pueden estar vacíos</p>';
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
             return;
         }
 
@@ -593,14 +600,14 @@
             return;
         }
 
-        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
         currentEditId = null;
         currentSocialLinks = [];
         setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
     }
 
     async function deleteService(id) {
-        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+        if (confirm('Are you sure you want to delete this service?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
             if (error) alert('Error: ' + error.message);
             loadDashboard();
