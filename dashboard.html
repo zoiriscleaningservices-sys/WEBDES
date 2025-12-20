@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TrueWebX – Manage and publish your personal services. Create, edit, and showcase your profile with photos, contact details, and social media links.">
-    <meta name="keywords" content="TrueWebX, personal services, publish profile, freelance dashboard, service listing, portfolio management">
+    <meta name="description" content="TrueWebX Business Dashboard – Publish and manage your professional business profile. Add company name, location, contact details, free consultation info, gallery photos, and social links for maximum visibility.">
+    <meta name="keywords" content="TrueWebX, business profile, company listing, professional dashboard, free consultation, business directory, local services, portfolio management">
     <meta name="robots" content="index, follow">
     <meta name="author" content="TrueWebX">
-    <meta property="og:title" content="TrueWebX – My Dashboard">
-    <meta property="og:description" content="Manage and publish your personal services easily with TrueWebX.">
+    <meta property="og:title" content="TrueWebX – Business Dashboard">
+    <meta property="og:description" content="Easily create and manage your professional business profile with TrueWebX – featuring free consultation and modern photo gallery.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/dashboard">
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
-    <title>TrueWebX – My Dashboard</title>
+    <title>TrueWebX – Business Dashboard</title>
     <link rel="canonical" href="https://truewebx.site/dashboard">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -132,12 +132,49 @@
             width:100%;
             max-width:600px;
         }
-        .form-grid { display:grid; gap:16px; width:100%; }
+        .form-grid { display:grid; gap:18px; width:100%; }
         input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
         input, textarea { background:rgba(255,255,255,0.25); color:white; backdrop-filter:blur(10px); width:100%; }
         input::placeholder, textarea::placeholder { color:rgba(255,255,255,0.7); }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
+
+        /* Modern file upload styling */
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .file-upload-wrapper:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--coral);
+        }
+        .file-upload-wrapper i {
+            font-size: 32px;
+            margin-bottom: 8px;
+            color: var(--coral);
+        }
+        .file-upload-wrapper span {
+            font-size: 14px;
+            text-align: center;
+        }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; width:100%; }
         .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
@@ -145,7 +182,24 @@
         .card:hover .edit, .card:hover .delete { opacity:1; }
         .private { filter:blur(6px); user-select:none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter:none; }
-        .photos img { width:100%; max-width:280px; border-radius:12px; margin:8px 0; }
+
+        /* Modern gallery in card */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 12px; 
+            margin: 16px 0; 
+        }
+        .gallery img { 
+            width: 100%; 
+            height: 120px; 
+            object-fit: cover; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        .gallery img:hover { transform: scale(1.05); }
+
         .links { margin-top:15px; display:flex; flex-wrap:wrap; gap:10px; }
         .links a { color:var(--coral); text-decoration:none; font-weight:600; padding:8px 14px; background:rgba(255,255,255,0.1); border-radius:20px; display:flex; align-items:center; gap:6px; }
 
@@ -169,6 +223,7 @@
             input, textarea { font-size:16px !important; }
             .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
             .glass { padding:20px; }
+            .gallery { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
         }
     </style>
 </head>
@@ -216,8 +271,8 @@
 <div id="dashboardScreen" style="display:none;">
     <nav class="bottom-nav" aria-label="Main navigation">
         <div class="nav-container">
-            <div class="nav-item active" onclick="show('home')" aria-label="My Services"><i class="fas fa-home" aria-hidden="true"></i><span>My Services</span></div>
-            <div class="nav-item" onclick="show('add')" aria-label="New Service"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>New</span></div>
+            <div class="nav-item active" onclick="show('home')" aria-label="My Businesses"><i class="fas fa-home" aria-hidden="true"></i><span>My Businesses</span></div>
+            <div class="nav-item" onclick="show('add')" aria-label="New Business"><i class="fas fa-plus-circle" aria-hidden="true"></i><span>New</span></div>
             <div class="nav-item" onclick="window.location.href='https://truewebx.site/'" aria-label="Public Page"><i class="fas fa-globe" aria-hidden="true"></i><span>Public</span></div>
             <div class="nav-item" onclick="logoutAndGoHome()" aria-label="Sign Out"><i class="fas fa-sign-out-alt" aria-hidden="true"></i><span>Sign Out</span></div>
         </div>
@@ -228,24 +283,34 @@
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg" aria-live="polite"></p>
 
         <section id="home" class="glass" aria-labelledby="my-services-heading">
-            <h2 id="my-services-heading">My Published Services</h2>
+            <h2 id="my-services-heading">My Published Businesses</h2>
             <div class="services" id="list" role="list"></div>
         </section>
 
         <section id="add" class="glass" style="display:none;" aria-labelledby="new-service-heading">
-            <h2 id="new-service-heading">Publish New Service</h2>
+            <h2 id="new-service-heading">Publish New Business Profile</h2>
             <div class="form-grid">
-                <input type="text" id="name" placeholder="Full name" required aria-label="Full name">
-                <input type="text" id="city" placeholder="City and Country" required aria-label="City and Country">
-                <input type="tel" id="phone" placeholder="Phone number" required aria-label="Phone number">
-                <input type="email" id="gmail" placeholder="Email (Gmail)" required aria-label="Email">
-                <input type="text" id="price" placeholder="Price (optional)" aria-label="Price (optional)">
-                <textarea id="desc" placeholder="Detailed description" required aria-label="Description"></textarea>
-                <input type="file" id="profile" accept="image/*" required aria-label="Profile photo">
-                <input type="file" id="photos" accept="image/*" multiple aria-label="Additional photos">
+                <input type="text" id="company" placeholder="Business / Company Name" required aria-label="Business Name">
+                <input type="text" id="state" placeholder="State" required aria-label="State">
+                <input type="text" id="city" placeholder="City" required aria-label="City">
+                <input type="tel" id="phone" placeholder="Phone Number" required aria-label="Phone Number">
+                <input type="email" id="gmail" placeholder="Business Email" required aria-label="Business Email">
+                <textarea id="desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
+
+                <div class="file-upload-wrapper">
+                    <input type="file" id="profile" accept="image/*" required aria-label="Profile / Logo Photo">
+                    <i class="fas fa-camera"></i>
+                    <span>Upload Profile Photo / Logo (required)</span>
+                </div>
+
+                <div class="file-upload-wrapper">
+                    <input type="file" id="photos" accept="image/*" multiple aria-label="Gallery Photos">
+                    <i class="fas fa-images"></i>
+                    <span>Upload Gallery Photos (optional – multiple)</span>
+                </div>
 
                 <div id="social-container">
-                    <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media Links (optional)</h3>
                     <div class="social-input">
                         <select id="social-type" aria-label="Social media platform">
                             <option value="instagram">Instagram</option>
@@ -257,7 +322,7 @@
                             <option value="whatsapp">WhatsApp</option>
                             <option value="other">Other</option>
                         </select>
-                        <input type="url" id="social-url" placeholder="Full URL (e.g., https://instagram.com/yourusername)" aria-label="Social media URL">
+                        <input type="url" id="social-url" placeholder="Full URL (e.g., https://instagram.com/yourbusiness)" aria-label="Social media URL">
                         <button type="button" onclick="addSocialLink()" aria-label="Add social link">+</button>
                     </div>
                     <div id="added-socials" style="margin-top:10px;"></div>
@@ -269,19 +334,29 @@
         </section>
 
         <section id="edit" class="glass" style="display:none;" aria-labelledby="edit-service-heading">
-            <h2 id="edit-service-heading">Edit Service</h2>
+            <h2 id="edit-service-heading">Edit Business Profile</h2>
             <div class="form-grid">
-                <input type="text" id="edit-name" placeholder="Full name" required aria-label="Full name">
-                <input type="text" id="edit-city" placeholder="City and Country" required aria-label="City and Country">
-                <input type="tel" id="edit-phone" placeholder="Phone number" required aria-label="Phone number">
-                <input type="email" id="edit-gmail" placeholder="Email (Gmail)" required aria-label="Email">
-                <input type="text" id="edit-price" placeholder="Price (optional)" aria-label="Price (optional)">
-                <textarea id="edit-desc" placeholder="Detailed description" required aria-label="Description"></textarea>
-                <input type="file" id="edit-profile" accept="image/*" aria-label="New profile photo">
-                <input type="file" id="edit-photos" accept="image/*" multiple aria-label="New additional photos">
+                <input type="text" id="edit-company" placeholder="Business / Company Name" required aria-label="Business Name">
+                <input type="text" id="edit-state" placeholder="State" required aria-label="State">
+                <input type="text" id="edit-city" placeholder="City" required aria-label="City">
+                <input type="tel" id="edit-phone" placeholder="Phone Number" required aria-label="Phone Number">
+                <input type="email" id="edit-gmail" placeholder="Business Email" required aria-label="Business Email">
+                <textarea id="edit-desc" placeholder="Detailed Business Description & Services" rows="5" required aria-label="Description"></textarea>
+
+                <div class="file-upload-wrapper">
+                    <input type="file" id="edit-profile" accept="image/*" aria-label="New Profile / Logo Photo">
+                    <i class="fas fa-camera"></i>
+                    <span>Change Profile Photo / Logo (optional)</span>
+                </div>
+
+                <div class="file-upload-wrapper">
+                    <input type="file" id="edit-photos" accept="image/*" multiple aria-label="Additional Gallery Photos">
+                    <i class="fas fa-images"></i>
+                    <span>Add More Gallery Photos (optional)</span>
+                </div>
 
                 <div id="edit-social-container">
-                    <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media Links</h3>
                     <div class="social-input">
                         <select id="edit-social-type" aria-label="Social media platform">
                             <option value="instagram">Instagram</option>
@@ -383,16 +458,16 @@
         list.innerHTML = services && services.length > 0
             ? services.map(s => `
                 <article class="card" role="listitem">
-                    <button class="edit" onclick="editService('${s.id}')" aria-label="Edit service"><i class="fas fa-edit" aria-hidden="true"></i></button>
-                    <button class="delete" onclick="deleteService('${s.id}')" aria-label="Delete service">×</button>
-                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Profile'}" alt="Profile photo of ${s.name || 'user'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
-                    <h3>${s.name || 'No name'}</h3>
-                    <p><strong>${s.city || 'No location'}</strong></p>
+                    <button class="edit" onclick="editService('${s.id}')" aria-label="Edit business"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                    <button class="delete" onclick="deleteService('${s.id}')" aria-label="Delete business">×</button>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Logo'}" alt="Logo of ${s.company || 'business'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.company || 'No business name'}</h3>
+                    <p><strong>${s.state || ''} ${s.city || 'No location'}</strong></p>
                     <p>${s.description || 'No description'}</p>
-                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Additional photo">`).join('') : ''}</div>
+                    <div class="gallery">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('') : ''}</div>
                     <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
                     <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Contact for price'}</strong></p>
+                    <p style="font-size:1.8rem;color:var(--coral);margin-top:16px;"><strong>Free Consultation</strong></p>
                     ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links">
                         ${s.social_links.map(link => `
@@ -404,7 +479,7 @@
                     ` : ''}
                 </article>
             `).join('')
-            : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
+            : '<p style="text-align:center;">You have no published business profiles yet. Create one now!</p>';
     }
 
     function show(section) {
@@ -453,16 +528,16 @@
     async function addService() {
         if (isPublishing) return;
         
-        const name = document.getElementById('name').value.trim();
+        const company = document.getElementById('company').value.trim();
+        const state = document.getElementById('state').value.trim();
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
-        const price = document.getElementById('price').value.trim();
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
 
-        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">All fields are required except price and additional photos!</p>';
+        if (!company || !state || !city || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">All fields are required except additional gallery photos!</p>';
             return;
         }
 
@@ -501,8 +576,7 @@
         const service = {
             id: crypto.randomUUID(),
             owner_id: user.uid,
-            name, city, phone, gmail,
-            price: price || null,
+            company, state, city, phone, gmail,
             description: desc,
             profile: profileUrl,
             photos: photosUrls,
@@ -532,11 +606,11 @@
         currentEditId = id;
         const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
 
-        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-company').value = service.company || '';
+        document.getElementById('edit-state').value = service.state || '';
         document.getElementById('edit-city').value = service.city || '';
         document.getElementById('edit-phone').value = service.phone || '';
         document.getElementById('edit-gmail').value = service.gmail || '';
-        document.getElementById('edit-price').value = service.price || '';
         document.getElementById('edit-desc').value = service.description || '';
 
         currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
@@ -548,14 +622,14 @@
     async function updateService() {
         if (!currentEditId) return;
 
-        const name = document.getElementById('edit-name').value.trim();
+        const company = document.getElementById('edit-company').value.trim();
+        const state = document.getElementById('edit-state').value.trim();
         const city = document.getElementById('edit-city').value.trim();
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
-        const price = document.getElementById('edit-price').value.trim();
         const desc = document.getElementById('edit-desc').value.trim();
 
-        if (!name || !city || !phone || !gmail || !desc) {
+        if (!company || !state || !city || !phone || !gmail || !desc) {
             document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
             return;
         }
@@ -586,8 +660,7 @@
         }
 
         const updates = {
-            name, city, phone, gmail,
-            price: price || null,
+            company, state, city, phone, gmail,
             description: desc,
             profile: profileUrl,
             photos: photosUrls,
@@ -607,7 +680,7 @@
     }
 
     async function deleteService(id) {
-        if (confirm('Are you sure you want to delete this service?')) {
+        if (confirm('Are you sure you want to delete this business profile?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
             if (error) alert('Error: ' + error.message);
             loadDashboard();
