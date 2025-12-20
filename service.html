@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Cargando... | TrueWebX</title>
-    <meta name="description" id="pageDesc" content="Servicio profesional en TrueWebX">
+    <meta name="description" id="pageDesc" content="Servicio profesional">
     <meta property="og:title" id="ogTitle" content="Servicio">
     <meta property="og:description" id="ogDesc" content="Detalles del servicio">
     <meta property="og:image" id="ogImage" content="">
     <meta property="og:url" id="ogUrl" content="">
-    <meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -18,23 +17,21 @@
         .container { max-width:1200px; margin:0 auto; padding:20px; }
         .header { text-align:center; padding:40px 0; }
         .logo { font-size:4rem; font-weight:900; background:linear-gradient(45deg,#fff,#ff8fa3); -webkit-background-clip:text; color:transparent; }
-        .card { background:rgba(255,255,255,0.2); backdrop-filter:blur(20px); border-radius:32px; padding:40px; margin:20px 0; }
+        .card { background:rgba(255,255,255,0.2); backdrop-filter:blur(20px); border-radius:32px; padding:40px; }
         .profile-img { width:100%; max-width:500px; border-radius:24px; margin:0 auto 30px; display:block; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
         h1 { font-size:3rem; text-align:center; margin:20px 0; }
         .location { font-size:2rem; text-align:center; margin:15px 0; }
         .desc { font-size:1.3rem; line-height:1.8; text-align:center; max-width:900px; margin:40px auto; }
         .price { font-size:3.5rem; color:var(--coral); text-align:center; margin:40px 0; font-weight:800; }
         .contact p { font-size:1.4rem; text-align:center; margin:15px 0; }
-        .private { filter:blur(6px); transition:0.3s; }
+        .private { filter:blur(6px); transition:0.3s; cursor:pointer; }
         .private:hover { filter:none; }
         .photos { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; margin:50px 0; }
         .photos img { width:100%; border-radius:16px; box-shadow:0 8px 25px rgba(0,0,0,0.5); }
         .links { display:flex; justify-content:center; flex-wrap:wrap; gap:20px; margin:50px 0; }
         .links a { background:rgba(255,255,255,0.15); padding:16px 32px; border-radius:30px; color:#ffeb3b; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:12px; font-size:1.2rem; }
-        .links a:hover { background:rgba(255,255,255,0.3); transform:scale(1.05); }
         .back { text-align:center; margin:50px 0; }
         .back a { color:white; font-size:1.3rem; opacity:0.8; text-decoration:none; }
-        .back a:hover { opacity:1; }
     </style>
 </head>
 <body>
@@ -54,18 +51,13 @@
         const supabase = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
 
         async function loadService() {
-            const params = new URLSearchParams(window.location.search);
-            const slug = params.get('slug');
+            const slug = new URLSearchParams(window.location.search).get('slug');
             if (!slug) {
                 document.getElementById('serviceContent').innerHTML = '<p>Servicio no encontrado.</p>';
                 return;
             }
 
-            const { data: service, error } = await supabase
-                .from('services')
-                .select('*')
-                .eq('slug', slug)
-                .single();
+            const { data: service, error } = await supabase.from('services').select('*').eq('slug', slug).single();
 
             if (error || !service) {
                 document.getElementById('serviceContent').innerHTML = '<p>Servicio no encontrado.</p>';
@@ -73,8 +65,8 @@
             }
 
             document.title = `${service.name} - ${service.city} | TrueWebX`;
-            document.getElementById('pageDesc').content = service.description?.substring(0,160) || `Servicio profesional de ${service.name} en ${service.city}`;
-            document.getElementById('ogTitle').content = `${service.name} en ${service.city}`;
+            document.getElementById('pageDesc').content = service.description?.substring(0,160) || 'Servicio profesional';
+            document.getElementById('ogTitle').content = service.name;
             document.getElementById('ogDesc').content = service.description || 'Servicio profesional';
             document.getElementById('ogImage').content = service.profile;
             document.getElementById('ogUrl').content = window.location.href;
@@ -83,34 +75,18 @@
                 <img src="${service.profile}" class="profile-img" alt="${service.name}">
                 <h1>${service.name}</h1>
                 <p class="location"><i class="fas fa-map-marker-alt"></i> ${service.city}</p>
-                <p class="desc">${service.description || 'Sin descripción disponible'}</p>
+                <p class="desc">${service.description || 'Sin descripción'}</p>
                 <div class="price">${service.price || 'Consultar precio'}</div>
                 <div class="contact">
                     <p>Teléfono: <span class="private">${service.phone || 'No disponible'}</span></p>
                     <p>Email: <span class="private">${service.gmail || 'No disponible'}</span></p>
                 </div>
-                ${service.photos?.length ? `<div class="photos">${service.photos.map(p => `<img src="${p}" alt="Galería">`).join('')}</div>` : ''}
+                ${service.photos?.length ? `<div class="photos">${service.photos.map(p => `<img src="${p}" alt="Foto">`).join('')}</div>` : ''}
                 ${service.social_links?.length ? `
                 <div class="links">
                     ${service.social_links.map(l => `<a href="${l.url}" target="_blank"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
                 </div>` : ''}
             `;
-
-            const jsonLd = {
-                "@context": "https://schema.org",
-                "@type": "LocalBusiness",
-                "name": service.name,
-                "description": service.description || "Servicio profesional",
-                "image": service.profile,
-                "telephone": service.phone,
-                "email": service.gmail,
-                "address": {"@type":"PostalAddress","addressLocality":service.city},
-                "priceRange": service.price || "$$"
-            };
-            const script = document.createElement('script');
-            script.type = "application/ld+json";
-            script.text = JSON.stringify(jsonLd);
-            document.head.appendChild(script);
         }
 
         loadService();
