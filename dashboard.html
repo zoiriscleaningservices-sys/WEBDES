@@ -11,10 +11,17 @@
     <style>
         :root { --coral: #ff6b6b; --turquoise: #0d9488; }
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, var(--turquoise), var(--coral)); color:white; min-height:100vh; }
+        body { 
+            font-family: system-ui, sans-serif; 
+            background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
+            color:white; 
+            min-height:100vh; 
+            display:flex;
+            flex-direction:column;
+        }
 
         .login-container { 
-            display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px; 
+            display:flex; justify-content:center; align-items:center; flex:1; padding:20px; 
         }
         .form { 
             width:100%; max-width:450px; background:#ffffff; color:#151717; padding:40px; border-radius:20px; 
@@ -40,7 +47,7 @@
             border:none; 
             background:transparent; 
             font-size:16px; 
-            color:#151717; /* Texto negro visible */
+            color:#151717;
             outline:none;
         }
         .input::placeholder {
@@ -89,23 +96,71 @@
         .nav-item i { font-size:24px; }
         .nav-item.active, .nav-item.active i { color:var(--coral); transform:scale(1.15); }
 
-        .container { max-width:1200px; margin:0 auto; padding:20px; padding-top:80px; padding-bottom:100px; }
-        .logo { font-size: clamp(2.5rem, 8vw, 4rem); font-weight:900; background:linear-gradient(45deg,#fff,#ff8fa3); -webkit-background-clip:text; color:transparent; text-align:center; margin:20px 0; }
-        .glass { background:rgba(255,255,255,0.15); backdrop-filter:blur(20px); border-radius:32px; padding:30px; margin:20px 0; }
-        .form-grid { display:grid; gap:16px; max-width:600px; margin:0 auto; }
-        input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
+        .main-content {
+            flex:1;
+            padding:20px;
+            padding-top:80px;
+            padding-bottom:100px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+        .logo { 
+            font-size: clamp(2.5rem, 8vw, 4rem); 
+            font-weight:900; 
+            background:linear-gradient(45deg,#fff,#ff8fa3); 
+            -webkit-background-clip:text; 
+            color:transparent; 
+            text-align:center; 
+            margin:20px 0; 
+        }
+        .glass { 
+            background:rgba(255,255,255,0.15); 
+            backdrop-filter:blur(20px); 
+            border-radius:32px; 
+            padding:30px; 
+            margin:20px 0; 
+            width:100%;
+            max-width:600px;
+        }
+        .form-grid { 
+            display:grid; 
+            gap:16px; 
+            width:100%;
+        }
+        input, textarea, button { 
+            padding:16px; 
+            border-radius:16px; 
+            border:none; 
+            font-size:16px; 
+        }
         input, textarea { 
             background:rgba(255,255,255,0.25); 
             color:white; 
             backdrop-filter:blur(10px);
+            width:100%;
         }
         input::placeholder, textarea::placeholder {
             color:rgba(255,255,255,0.7);
         }
-        button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; }
-        .services { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; margin-top:20px; }
-        .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; }
-        .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
+        button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
+        .services { 
+            display:grid; 
+            grid-template-columns:1fr; 
+            gap:24px; 
+            margin-top:20px; 
+            width:100%;
+        }
+        .card { 
+            background:rgba(255,255,255,0.15); 
+            border-radius:24px; 
+            padding:20px; 
+            position:relative; 
+            width:100%;
+        }
+        .edit, .delete { 
+            position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; 
+        }
         .delete { background:red; color:white; right:60px; }
         .card:hover .edit, .card:hover .delete { opacity:1; }
         .private { filter:blur(6px); user-select:none; transition: filter 0.3s; font-weight: 500; }
@@ -134,7 +189,9 @@
             .services { grid-template-columns:1fr; }
             .edit, .delete { opacity:1; }
             .social-input { flex-direction:column; }
-            input, textarea { font-size:16px !important; } /* Evita zoom en iOS al escribir */
+            input, textarea { font-size:16px !important; }
+            .main-content { padding:15px; padding-top:70px; padding-bottom:90px; }
+            .glass { padding:20px; }
         }
     </style>
 </head>
@@ -188,7 +245,7 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="main-content">
         <h1 class="logo">TrueWebX</h1>
         <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
 
@@ -234,7 +291,7 @@
             <p id="msg"></p>
         </div>
 
-        <!-- EDIT SECTION (oculta al inicio) -->
+        <!-- EDIT SECTION -->
         <div id="edit" class="glass" style="display:none;">
             <h2>Editar Servicio</h2>
             <div class="form-grid">
@@ -296,7 +353,6 @@
     let currentSocialLinks = [];
     let isSignupMode = false;
 
-    // Toggle between Login and Sign Up
     function toggleAuthMode() {
         isSignupMode = !isSignupMode;
         document.getElementById('formTitle').textContent = isSignupMode ? 'Crear Cuenta' : 'Iniciar Sesión';
