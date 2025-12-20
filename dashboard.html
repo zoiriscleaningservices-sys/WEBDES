@@ -229,7 +229,7 @@
                 <input type="text" id="city" placeholder="Ciudad y País" required>
                 <input type="tel" id="phone" placeholder="Teléfono" required>
                 <input type="email" id="gmail" placeholder="Gmail" required>
-                <input type="text" id="price" placeholder="Precio" required>
+                <input type="text" id="price" placeholder="Precio (opcional)">
                 <textarea id="desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="profile" accept="image/*" required>
                 <input type="file" id="photos" accept="image/*" multiple>
@@ -265,7 +265,7 @@
                 <input type="text" id="edit-city" placeholder="Ciudad y País" required>
                 <input type="tel" id="edit-phone" placeholder="Teléfono" required>
                 <input type="email" id="edit-gmail" placeholder="Gmail" required>
-                <input type="text" id="edit-price" placeholder="Precio" required>
+                <input type="text" id="edit-price" placeholder="Precio (opcional)">
                 <textarea id="edit-desc" placeholder="Descripción detallada" required></textarea>
                 <input type="file" id="edit-profile" accept="image/*">
                 <input type="file" id="edit-photos" accept="image/*" multiple>
@@ -382,7 +382,7 @@
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Tel: <span class="private">${s.phone || 'No disponible'}</span></p>
                     <p>Gmail: <span class="private">${s.gmail || 'No disponible'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price || 'Consultar'}</strong></p>
+                    <p style="font-size:1.8rem;color:var(--coral);"><strong>${s.price ? s.price : 'Consultar precio'}</strong></p>
                     ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links">
                         ${s.social_links.map(link => `
@@ -447,12 +447,12 @@
         const city = document.getElementById('city').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
-        const price = document.getElementById('price').value.trim();
+        const price = document.getElementById('price').value.trim(); // Ahora opcional
         const desc = document.getElementById('desc').value.trim();
         const profileFile = document.getElementById('profile').files[0];
 
-        if (!name || !city || !phone || !gmail || !price || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios, incluyendo la foto de perfil!</p>';
+        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">¡Todos los campos son obligatorios excepto el precio y las fotos adicionales!</p>';
             return;
         }
 
@@ -464,7 +464,7 @@
         const user = auth.currentUser;
         if (!user) return;
 
-        // Subir foto de perfil
+        // Subir foto de perfil (obligatoria)
         const fileExt = profileFile.name.split('.').pop();
         const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
         const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
@@ -478,14 +478,14 @@
         const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
         const profileUrl = profileData.publicUrl;
 
-        // Subir fotos adicionales
+        // Subir fotos adicionales (opcionales)
         const photoFiles = document.getElementById('photos').files;
         const photosUrls = [];
         for (let file of photoFiles) {
             const fileExt = file.name.split('.').pop();
             const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
             const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-            if (error) continue; // Ignora errores en fotos opcionales
+            if (error) continue;
             const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
             photosUrls.push(data.publicUrl);
         }
@@ -493,7 +493,9 @@
         const service = {
             id: crypto.randomUUID(),
             owner_id: user.uid,
-            name, city, phone, gmail, price, description: desc,
+            name, city, phone, gmail,
+            price: price || null, // Si está vacío, guardamos null
+            description: desc,
             profile: profileUrl,
             photos: photosUrls,
             social_links: currentSocialLinks,
@@ -511,7 +513,7 @@
             setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
         }
 
-        // Rehabilitar botón después de 5 segundos (anti-spam)
+        // Anti-spam: botón bloqueado 5 segundos
         setTimeout(() => {
             isPublishing = false;
             publishBtn.disabled = false;
@@ -519,7 +521,6 @@
         }, 5000);
     }
 
-    // Resto de funciones (editService, updateService, deleteService) permanecen igual
     async function editService(id) {
         currentEditId = id;
         const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
@@ -544,11 +545,11 @@
         const city = document.getElementById('edit-city').value.trim();
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
-        const price = document.getElementById('edit-price').value.trim();
+        const price = document.getElementById('edit-price').value.trim(); // opcional
         const desc = document.getElementById('edit-desc').value.trim();
 
-        if (!name || !city || !phone || !gmail || !price || !desc) {
-            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Todos los campos son obligatorios</p>';
+        if (!name || !city || !phone || !gmail || !desc) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Los campos obligatorios no pueden estar vacíos</p>';
             return;
         }
 
@@ -578,7 +579,9 @@
         }
 
         const updates = {
-            name, city, phone, gmail, price, description: desc,
+            name, city, phone, gmail,
+            price: price || null,
+            description: desc,
             profile: profileUrl,
             photos: photosUrls,
             social_links: currentSocialLinks
