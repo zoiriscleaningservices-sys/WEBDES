@@ -142,7 +142,9 @@
         .social-input select, .social-input input { flex:1; padding:16px; border-radius:16px; border:none; font-size:16px; background:rgba(255,255,255,0.25); color:white; }
         .social-input button { flex:0 0 50px; height:50px; background:#0d9488; color:white; font-size:24px; border:none; border-radius:16px; cursor:pointer; display:grid; place-items:center; }
 
-        .added-link { display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; }
+        .added-link { 
+            display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:10px; border-radius:16px; 
+        }
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
@@ -294,9 +296,6 @@
 </div>
 
 <script>
-    // Todo el script del dashboard (el mismo que tenías, 100% funcional con redes sociales)
-    // (Se incluye completo aquí – igual que en tu última versión corregida)
-
     const firebaseConfig = {
         apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
         authDomain: "truewebx-78890.firebaseapp.com",
@@ -394,10 +393,176 @@
             : '<p style="text-align:center;">Aún no tienes servicios publicados. ¡Crea uno nuevo!</p>';
     }
 
-    // (Resto del script completo: show(), addSocialLink(), updateAddedSocials(), removeSocialLink(), addService(), editService(), updateService(), deleteService() – igual que antes)
+    function show(section) {
+        document.getElementById('home').style.display = section === 'home' ? 'block' : 'none';
+        document.getElementById('add').style.display = section === 'add' ? 'block' : 'none';
+        document.getElementById('edit').style.display = section === 'edit' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'edit' ? 1 : 2)));
+        if (section === 'home') loadDashboard();
+        if (section === 'add') {
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+        }
+    }
 
-    // ... (incluye todo el JavaScript funcional del dashboard que ya tenías)
+    function addSocialLink(isEdit = false) {
+        const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+        const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+        const type = select.value;
+        const url = input.value.trim();
+        if (url && url.startsWith('http')) {
+            currentSocialLinks.push({ type, url });
+            updateAddedSocials(isEdit);
+            input.value = '';
+        } else if (url) {
+            alert('Por favor ingresa una URL válida (con https://)');
+        }
+    }
 
+    function updateAddedSocials(isEdit = false) {
+        const container = isEdit ? 'edit-added-socials' : 'added-socials';
+        document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
+            <div class="added-link">
+                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <span>${link.type}: ${link.url}</span>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+            </div>
+        `).join('');
+    }
+
+    function removeSocialLink(index, isEdit = false) {
+        currentSocialLinks.splice(index, 1);
+        updateAddedSocials(isEdit);
+    }
+
+    async function addService() {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const profileFile = document.getElementById('profile').files[0];
+        const photoFiles = document.getElementById('photos').files;
+
+        let profileUrl = 'https://via.placeholder.com/300?text=Perfil';
+        if (profileFile) {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (error) { msg.innerHTML = `<p style="color:red;">Error perfil: ${error.message}</p>`; return; }
+            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            profileUrl = data.publicUrl;
+        }
+
+        const photosUrls = [];
+        for (let file of photoFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+            if (error) { msg.innerHTML = `<p style="color:red;">Error foto: ${error.message}</p>`; return; }
+            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+            photosUrls.push(data.publicUrl);
+        }
+
+        const service = {
+            id: crypto.randomUUID(),
+            owner_id: user.uid,
+            name: document.getElementById('name').value.trim(),
+            city: document.getElementById('city').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            gmail: document.getElementById('gmail').value.trim(),
+            price: document.getElementById('price').value.trim(),
+            description: document.getElementById('desc').value.trim(),
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks,
+            created_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient.from('services').insert(service);
+        if (error) { msg.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`; return; }
+
+        msg.innerHTML = '<p style="color:#0f0;">¡Publicado con éxito!</p>';
+        document.querySelector('.form-grid').reset();
+        currentSocialLinks = [];
+        document.getElementById('added-socials').innerHTML = '';
+        setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+    }
+
+    async function editService(id) {
+        currentEditId = id;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-phone').value = service.phone || '';
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-price').value = service.price || '';
+        document.getElementById('edit-desc').value = service.description || '';
+
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+        updateAddedSocials(true);
+
+        show('edit');
+    }
+
+    async function updateService() {
+        if (!currentEditId) return;
+
+        const profileFile = document.getElementById('edit-profile').files[0];
+        const photoFiles = document.getElementById('edit-photos').files;
+
+        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+        let profileUrl = current.profile;
+        if (profileFile) {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            profileUrl = data.publicUrl;
+        }
+
+        let photosUrls = current.photos || [];
+        for (let file of photoFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+            const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+            photosUrls.push(data.publicUrl);
+        }
+
+        const updates = {
+            name: document.getElementById('edit-name').value.trim(),
+            city: document.getElementById('edit-city').value.trim(),
+            phone: document.getElementById('edit-phone').value.trim(),
+            gmail: document.getElementById('edit-gmail').value.trim(),
+            price: document.getElementById('edit-price').value.trim(),
+            description: document.getElementById('edit-desc').value.trim(),
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks
+        };
+
+        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+        if (error) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            return;
+        }
+
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">¡Actualizado con éxito!</p>';
+        currentEditId = null;
+        currentSocialLinks = [];
+        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+    }
+
+    async function deleteService(id) {
+        if (confirm('¿Seguro que quieres borrar este servicio?')) {
+            const { error } = await supabaseClient.from('services').delete().eq('id', id);
+            if (error) alert('Error: ' + error.message);
+            loadDashboard();
+        }
+    }
 </script>
 </body>
 </html>
