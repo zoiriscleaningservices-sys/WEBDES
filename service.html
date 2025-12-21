@@ -4,25 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- Default fallback title & description (will be updated dynamically) -->
-  <title>TrueWebX – Professional Services</title>
-  <meta name="description" content="Discover professional services in your local area. Free consultation available.">
+  <!-- Default fallback (will be replaced dynamically) -->
+  <title>Loading Business Profile... | TrueWebX</title>
+  <meta name="description" content="Professional local services with free consultation. Contact trusted businesses on TrueWebX.">
   
-  <!-- Canonical (updated dynamically) -->
   <link rel="canonical" id="canonicalLink" href="">
-
-  <!-- Open Graph / Facebook -->
+  
+  <!-- Open Graph -->
   <meta property="og:type" content="business.business">
-  <meta property="og:title" id="ogTitle" content="Professional Services">
-  <meta property="og:description" id="ogDesc" content="Contact us for a free consultation.">
+  <meta property="og:title" id="ogTitle" content="Business Profile">
+  <meta property="og:description" id="ogDesc" content="View details and contact this local business.">
   <meta property="og:image" id="ogImage" content="">
   <meta property="og:url" id="ogUrl" content="">
   <meta property="og:site_name" content="TrueWebX">
 
-  <!-- Twitter Card -->
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" id="twitterTitle" content="Professional Services">
-  <meta name="twitter:description" id="twitterDesc" content="Contact us for a free consultation.">
+  <meta name="twitter:title" id="twitterTitle" content="Business Profile">
+  <meta name="twitter:description" id="twitterDesc" content="View details and contact this local business.">
   <meta name="twitter:image" id="twitterImage" content="">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -34,6 +33,7 @@
       --turquoise: #0d9488;
       --text: #ffffff;
       --bg-gradient: linear-gradient(135deg, var(--turquoise), var(--coral));
+      --glass: rgba(255, 255, 255, 0.15);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -46,7 +46,7 @@
     .container {
       max-width: 900px;
       margin: 40px auto;
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--glass);
       backdrop-filter: blur(20px);
       border-radius: 32px;
       padding: 40px;
@@ -60,7 +60,9 @@
       -webkit-background-clip: text;
       color: transparent;
       margin-bottom: 30px;
+      cursor: pointer;
     }
+    .logo:hover { opacity: 0.9; }
     .profile-img {
       width: 220px;
       height: 220px;
@@ -160,9 +162,19 @@
       background: #ff5252;
       transform: translateY(-5px);
     }
-    .loading, .error {
-      font-size: 1.5rem;
-      padding: 100px 20px;
+    .loading, .error, .not-found {
+      font-size: 1.6rem;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .error { color: #ff8fa3; }
+    .back-home {
+      margin-top: 30px;
+      font-size: 1.2rem;
+    }
+    .back-home a {
+      color: white;
+      text-decoration: underline;
     }
     footer {
       text-align: center;
@@ -183,66 +195,75 @@
 <body>
 
   <div class="container" id="content">
-    <div class="loading">Loading your business profile...</div>
+    <div class="loading">
+      <i class="fas fa-spinner fa-spin" style="font-size:3rem;margin-bottom:20px;"></i>
+      <br>Loading your business profile...
+    </div>
   </div>
 
-  <!-- JSON-LD Structured Data (LocalBusiness Schema) -->
-  <script type="application/ld+json" id="structuredData">
-  {}
-  </script>
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json" id="structuredData">{}</script>
 
   <script>
-    // Supabase configuration (same as your dashboard)
     const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
     const supabaseKey = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     async function loadServicePage() {
-      // Get the 'id' from URL: service.html?id=abc123...
       const urlParams = new URLSearchParams(window.location.search);
       const serviceId = urlParams.get('id');
 
+      const content = document.getElementById('content');
+
       if (!serviceId) {
-        document.getElementById('content').innerHTML = '<div class="error">❌ No service ID provided. Invalid link.</div>';
+        content.innerHTML = `
+          <div class="error">
+            <i class="fas fa-exclamation-triangle" style="font-size:4rem;"></i>
+            <h2>Invalid Link</h2>
+            <p>No business ID provided.</p>
+            <div class="back-home"><a href="https://truewebx.site/">← Back to TrueWebX Directory</a></div>
+          </div>
+        `;
         return;
       }
 
-      // Fetch the service from Supabase
       const { data: service, error } = await supabase
         .from('services')
         .select('*')
         .eq('id', serviceId)
         .single();
 
+      // Handle not found or error
       if (error || !service) {
-        document.getElementById('content').innerHTML = '<div class="error">❌ Business profile not found.</div>';
+        content.innerHTML = `
+          <div class="not-found">
+            <i class="fas fa-search" style="font-size:4rem;opacity:0.7;"></i>
+            <h2>Business Profile Not Found</h2>
+            <p>This listing may have been removed or the link is incorrect.</p>
+            <div class="back-home"><a href="https://truewebx.site/">← Explore All Businesses on TrueWebX</a></div>
+          </div>
+        `;
         return;
       }
 
       const currentUrl = window.location.href;
 
-      // === Update SEO Tags Dynamically ===
+      // Update page title and meta
       document.title = `${service.name} - ${service.city} | TrueWebX`;
-
       document.querySelector('meta[name="description"]').setAttribute('content',
-        service.description.length > 160 ? service.description.substring(0, 157) + '...' : service.description
+        service.description?.substring(0, 157) + (service.description?.length > 157 ? '...' : '')
       );
-
       document.getElementById('canonicalLink').setAttribute('href', currentUrl);
 
-      // Open Graph
-      document.getElementById('ogTitle').setAttribute('content', `${service.name} in ${service.city}`);
-      document.getElementById('ogDesc').setAttribute('content', service.description.substring(0, 200));
+      // Open Graph & Twitter
+      ['ogTitle', 'twitterTitle'].forEach(id => document.getElementById(id).setAttribute('content', `${service.name} in ${service.city}`));
+      ['ogDesc', 'twitterDesc'].forEach(id => document.getElementById(id).setAttribute('content', service.description?.substring(0, 200) || 'Local professional service'));
       document.getElementById('ogImage').setAttribute('content', service.profile);
+      document.getElementById('twitterImage').setAttribute('content', service.profile);
       document.getElementById('ogUrl').setAttribute('content', currentUrl);
 
-      // Twitter
-      document.getElementById('twitterTitle').setAttribute('content', `${service.name} in ${service.city}`);
-      document.getElementById('twitterDesc').setAttribute('content', service.description.substring(0, 200));
-      document.getElementById('twitterImage').setAttribute('content', service.profile);
-
-      // === Structured Data (JSON-LD) ===
-      const [cityName, country = ''] = service.city.split(',').map(s => s.trim());
+      // Structured Data
+      const [cityName, country = ''] = (service.city || '').split(',').map(s => s.trim());
       document.getElementById('structuredData').textContent = JSON.stringify({
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
@@ -259,11 +280,11 @@
         "url": currentUrl
       }, null, 2);
 
-      // === Render Page Content ===
-      document.getElementById('content').innerHTML = `
-        <div class="logo">TrueWebX</div>
+      // Render full profile
+      content.innerHTML = `
+        <div class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</div>
 
-        <img src="${service.profile}" alt="${service.name} logo/profile in ${service.city}" class="profile-img">
+        <img src="${service.profile}" alt="${service.name} - Professional profile in ${service.city}" class="profile-img">
 
         <h1>${service.name}</h1>
         <div class="location">
@@ -271,7 +292,7 @@
         </div>
 
         <div class="description">
-          ${service.description.replace(/\n/g, '<br>')}
+          ${service.description?.replace(/\n/g, '<br>') || 'No description available.'}
         </div>
 
         <div class="contact-info">
@@ -282,7 +303,7 @@
         ${Array.isArray(service.photos) && service.photos.length > 0 ? `
           <div class="gallery">
             ${service.photos.map(photo => `
-              <img src="${photo}" alt="${service.name} gallery image in ${service.city}">
+              <img src="${photo}" alt="${service.name} service photo in ${service.city}">
             `).join('')}
           </div>
         ` : ''}
@@ -291,39 +312,34 @@
           <div class="social-links">
             ${service.social_links.map(link => {
               const icons = {
-                instagram: 'instagram',
-                tiktok: 'tiktok',
-                facebook: 'facebook-f',
-                twitter: 'twitter',
-                linkedin: 'linkedin-in',
-                youtube: 'youtube',
-                whatsapp: 'whatsapp',
-                other: 'globe'
+                instagram: 'instagram', tiktok: 'tiktok', facebook: 'facebook-f',
+                twitter: 'twitter', linkedin: 'linkedin-in', youtube: 'youtube',
+                whatsapp: 'whatsapp', other: 'globe'
               };
-              const iconClass = icons[link.type.toLowerCase()] || 'globe';
-              return `<a href="${link.url}" target="_blank" aria-label="${link.type}">
-                <i class="fab fa-${iconClass}"></i>
+              const icon = icons[link.type?.toLowerCase()] || 'globe';
+              return `<a href="${link.url}" target="_blank" rel="noopener" aria-label="${link.type}">
+                <i class="fab fa-${icon}"></i>
               </a>`;
             }).join('')}
           </div>
         ` : ''}
 
         <div style="margin: 40px 0;">
-          <button class="cta-button" onclick="window.location.href='mailto:${service.gmail}?subject=Inquiry%20from%20TrueWebX'">
+          <button class="cta-button" onclick="window.location.href='mailto:${service.gmail}?subject=Inquiry from TrueWebX'">
             Get Free Consultation
           </button>
-          <button class="cta-button" onclick="navigator.clipboard.writeText('${currentUrl}'); alert('Link copied to clipboard!')">
-            Share This Page
+          <button class="cta-button" onclick="navigator.clipboard.writeText('${currentUrl}'); alert('Link copied! Share this profile.')">
+            Share This Profile
           </button>
         </div>
 
         <footer>
-          Powered by <strong>TrueWebX</strong> • Your trusted local business directory
+          Powered by <strong>TrueWebX</strong> • Global Directory of Trusted Local Businesses
         </footer>
       `;
     }
 
-    // Load the page when ready
+    // Load on page ready
     loadServicePage();
   </script>
 </body>
