@@ -553,9 +553,10 @@
             .then(() => loadDashboard());
     };
 
+    // Updated Sign Out – redirects to the public homepage
     function logoutAndGoHome() {
         auth.signOut().then(() => {
-            window.location.reload();
+            window.location.href = 'https://truewebx.site/';
         });
     }
 
