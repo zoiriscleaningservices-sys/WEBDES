@@ -602,7 +602,9 @@
     const fallbackReviews = [
         { text: "Excellent service and very professional!", author: "Maria G." },
         { text: "Highly recommend! Fast and reliable.", author: "John D." },
-        { text: "Best experience I've had in years.", author: "Sophie L." }
+        { text: "Best experience I've had in years.", author: "Sophie L." },
+        { text: "Amazing team and outstanding results!", author: "Alex T." },
+        { text: "Super friendly and efficient service.", author: "Emma R." }
     ];
 
     function previewImage(file, containerId, isProfile = false) {
@@ -745,13 +747,26 @@
             .then(data => {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data.contents, 'text/html');
-                const reviewElements = doc.querySelectorAll('.review-full-text, .MyEned');
+                const reviewElements = doc.querySelectorAll('[data-review-id] button[aria-label^="Review by"] ~ div');
                 const extracted = [];
                 reviewElements.forEach(el => {
-                    const text = el.innerText.trim();
-                    if (text) extracted.push({ text, author: "Customer" });
+                    const textEl = el.querySelector('span[class*="text"]');
+                    const authorEl = el.parentElement.querySelector('div[class*="author"] span');
+                    if (textEl && authorEl) {
+                        const text = textEl.innerText.trim();
+                        const author = authorEl.innerText.trim();
+                        if (text) extracted.push({ text, author });
+                    }
                 });
-                if (extracted.length > 0) reviews = extracted;
+                if (extracted.length === 0) {
+                    // Fallback to any possible text containers
+                    const altElements = doc.querySelectorAll('.MyEned, .review-full-text, div[role="article"] span');
+                    altElements.forEach(el => {
+                        const text = el.innerText.trim();
+                        if (text && text.length > 10) extracted.push({ text, author: "Customer" });
+                    });
+                }
+                if (extracted.length > 0) reviews = extracted.slice(0, 20); // Limit to 20 to avoid too many
             })
             .catch(() => console.log("Could not fetch real reviews, using fallback"))
             .finally(() => {
