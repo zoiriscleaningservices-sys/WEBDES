@@ -4,13 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- Fallback SEO -->
   <title>TrueWebX Business Profile</title>
   <meta name="description" content="Professional local services on TrueWebX – free consultation available.">
   
   <link rel="canonical" id="canonicalLink" href="">
   
-  <!-- Open Graph -->
   <meta property="og:type" content="business.business">
   <meta property="og:title" id="ogTitle" content="Local Business Profile">
   <meta property="og:description" id="ogDesc" content="Contact this trusted local service provider.">
@@ -18,7 +16,6 @@
   <meta property="og:url" id="ogUrl" content="">
   <meta property="og:site_name" content="TrueWebX">
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" id="twitterTitle" content="Local Business Profile">
   <meta name="twitter:description" id="twitterDesc" content="Contact this trusted local service provider.">
@@ -146,12 +143,12 @@
       text-align: center;
     }
     .loading i { font-size: 3rem; margin-bottom: 20px; }
-    .not-found, .error {
+    .not-found {
       font-size: 1.6rem;
       padding: 80px 20px;
       text-align: center;
     }
-    .not-found i, .error i { font-size: 4rem; opacity: 0.7; margin-bottom: 20px; display: block; }
+    .not-found i { font-size: 4rem; opacity: 0.7; margin-bottom: 20px; display: block; }
     .back-home {
       margin-top: 30px;
       font-size: 1.2rem;
@@ -192,106 +189,100 @@
 
       if (!serviceId) {
         content.innerHTML = `
-          <div class="error">
+          <div class="not-found">
             <i class="fas fa-exclamation-triangle"></i>
             <h2>Invalid Link</h2>
-            <p>No business ID was provided.</p>
-            <div class="back-home"><a href="https://truewebx.site/">← Back to TrueWebX Directory</a></div>
+            <p>No business ID provided.</p>
+            <div class="back-home"><a href="https://truewebx.site/">← Back to Directory</a></div>
           </div>
         `;
         return;
       }
 
-      try {
-        const { data: service, error } = await supabase
-          .from('services')
-          .select('*')
-          .eq('id', serviceId)
-          .single();
+      const { data: service, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('id', serviceId)
+        .single();
 
-        if (error || !service) {
-          throw new Error('Not found');
-        }
-
-        const currentUrl = window.location.href;
-
-        // Dynamic SEO
-        document.title = `${service.name} - ${service.city} | TrueWebX`;
-        document.querySelector('meta[name="description"]').setAttribute('content', (service.description || '').substring(0, 157) + '...');
-
-        document.getElementById('canonicalLink').setAttribute('href', currentUrl);
-
-        document.getElementById('ogTitle').setAttribute('content', `${service.name} in ${service.city}`);
-        document.getElementById('ogDesc').setAttribute('content', (service.description || '').substring(0, 200));
-        document.getElementById('ogImage').setAttribute('content', service.profile || '');
-        document.getElementById('ogUrl').setAttribute('content', currentUrl);
-
-        document.getElementById('twitterTitle').setAttribute('content', `${service.name} in ${service.city}`);
-        document.getElementById('twitterDesc').setAttribute('content', (service.description || '').substring(0, 200));
-        document.getElementById('twitterImage').setAttribute('content', service.profile || '');
-
-        // Structured Data
-        const [cityName = '', country = 'US'] = (service.city || '').split(',').map(s => s.trim());
-        document.getElementById('structuredData').textContent = JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          "name": service.name,
-          "image": service.profile,
-          "telephone": service.phone,
-          "email": service.gmail,
-          "address": { "@type": "PostalAddress", "addressLocality": cityName, "addressCountry": country },
-          "description": service.description,
-          "url": currentUrl
-        }, null, 2);
-
-        // Render Success
-        content.innerHTML = `
-          <div class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</div>
-
-          <img src="${service.profile || 'https://via.placeholder.com/400?text=Profile'}" alt="${service.name} profile in ${service.city}" class="profile-img">
-
-          <h1>${service.name}</h1>
-          <div class="location"><i class="fas fa-map-marker-alt"></i> ${service.city}</div>
-
-          <div class="description">${(service.description || 'No description available.').replace(/\n/g, '<br>')}</div>
-
-          <div class="contact-info">
-            <p><i class="fas fa-phone"></i> <a href="tel:${service.phone}">${service.phone}</a></p>
-            <p><i class="fas fa-envelope"></i> <a href="mailto:${service.gmail}">${service.gmail}</a></p>
-          </div>
-
-          ${Array.isArray(service.photos) && service.photos.length > 0 ? `
-            <div class="gallery">
-              ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery photo">`).join('')}
-            </div>` : ''}
-
-          ${Array.isArray(service.social_links) && service.social_links.length > 0 ? `
-            <div class="social-links">
-              ${service.social_links.map(link => {
-                const icons = {instagram:'instagram',tiktok:'tiktok',facebook:'facebook-f',twitter:'twitter',linkedin:'linkedin-in',youtube:'youtube',whatsapp:'whatsapp',other:'globe'};
-                const icon = icons[link.type?.toLowerCase()] || 'globe';
-                return `<a href="${link.url}" target="_blank" rel="noopener" aria-label="${link.type}"><i class="fab fa-${icon}"></i></a>`;
-              }).join('')}
-            </div>` : ''}
-
-          <div style="margin:40px 0;">
-            <button class="cta-button" onclick="window.location.href='mailto:${service.gmail}?subject=Inquiry from TrueWebX'">Get Free Consultation</button>
-            <button class="cta-button" onclick="navigator.clipboard.writeText('${currentUrl}'); alert('Link copied!')">Share Profile</button>
-          </div>
-
-          <footer>Powered by <strong>TrueWebX</strong> • Trusted Global Business Directory</footer>
-        `;
-      } catch (err) {
-        // This catches not found, errors, etc.
+      if (error || !service) {
         content.innerHTML = `
           <div class="not-found">
             <i class="fas fa-search"></i>
             <h2>Business Profile Not Found</h2>
-            <p>This listing may have been removed or the link is no longer valid.</p>
-            <div class="back-home"><a href="https://truewebx.site/">← Browse All Businesses on TrueWebX</a></div>
+            <p>This listing may have been removed.</p>
+            <div class="back-home"><a href="https://truewebx.site/">← Browse All Businesses</a></div>
           </div>
         `;
+        return;
       }
+
+      const currentUrl = window.location.href;
+
+      // Update SEO
+      document.title = `${service.name} - ${service.city} | TrueWebX`;
+      document.querySelector('meta[name="description"]').content = service.description?.substring(0, 157) + '...' || 'Local services';
+
+      document.getElementById('canonicalLink').href = currentUrl;
+      document.getElementById('ogTitle').content = `${service.name} in ${service.city}`;
+      document.getElementById('ogDesc').content = service.description?.substring(0, 200) || '';
+      document.getElementById('ogImage').content = service.profile || '';
+      document.getElementById('ogUrl').content = currentUrl;
+      document.getElementById('twitterTitle').content = `${service.name} in ${service.city}`;
+      document.getElementById('twitterDesc').content = service.description?.substring(0, 200) || '';
+      document.getElementById('twitterImage').content = service.profile || '';
+
+      // Structured Data
+      const [cityName = '', country = 'US'] = (service.city || '').split(',').map(s => s.trim());
+      document.getElementById('structuredData').textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": service.name,
+        "image": service.profile,
+        "telephone": service.phone,
+        "email": service.gmail,
+        "address": {"@type": "PostalAddress", "addressLocality": cityName, "addressCountry": country},
+        "description": service.description,
+        "url": currentUrl
+      }, null, 2);
+
+      // Render the actual profile
+      content.innerHTML = `
+        <div class="logo" onclick="window.location.href='https://truewebx.site/'">TrueWebX</div>
+
+        <img src="${service.profile || 'https://via.placeholder.com/400?text=Profile'}" alt="${service.name} profile" class="profile-img">
+
+        <h1>${service.name}</h1>
+        <div class="location"><i class="fas fa-map-marker-alt"></i> ${service.city}</div>
+
+        <div class="description">${(service.description || 'No description available.').replace(/\n/g, '<br>')}</div>
+
+        <div class="contact-info">
+          <p><i class="fas fa-phone"></i> <a href="tel:${service.phone}">${service.phone}</a></p>
+          <p><i class="fas fa-envelope"></i> <a href="mailto:${service.gmail}">${service.gmail}</a></p>
+        </div>
+
+        ${Array.isArray(service.photos) && service.photos.length > 0 ? `
+          <div class="gallery">
+            ${service.photos.map(p => `<img src="${p}" alt="${service.name} photo">`).join('')}
+          </div>` : ''}
+
+        ${Array.isArray(service.social_links) && service.social_links.length > 0 ? `
+          <div class="social-links">
+            ${service.social_links.map(link => {
+              const icons = {instagram:'instagram',tiktok:'tiktok',facebook:'facebook-f',twitter:'twitter',linkedin:'linkedin-in',youtube:'youtube',whatsapp:'whatsapp',other:'globe'};
+              const icon = icons[link.type?.toLowerCase()] || 'globe';
+              return `<a href="${link.url}" target="_blank" rel="noopener"><i class="fab fa-${icon}"></i></a>`;
+            }).join('')}
+          </div>` : ''}
+
+        <div style="margin:40px 0;">
+          <button class="cta-button" onclick="window.location.href='mailto:${service.gmail}?subject=Inquiry from TrueWebX'">Get Free Consultation</button>
+          <button class="cta-button" onclick="navigator.clipboard.writeText('${currentUrl}'); alert('Link copied!')">Share Profile</button>
+        </div>
+
+        <footer>Powered by <strong>TrueWebX</strong> • Global Business Directory</footer>
+      `;
     }
 
     loadServicePage();
