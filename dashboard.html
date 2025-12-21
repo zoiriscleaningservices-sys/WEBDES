@@ -495,7 +495,6 @@
     let isPublishing = false;
     let currentChatServiceId = null;
 
-    // Your original preview functions (unchanged)
     function previewImage(file, containerId, isProfile = false) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -589,9 +588,16 @@
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
                     <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);"><strong>Free Consultation</strong></p>
+                    <p style="font-size:1.8rem;color:var(--coral);margin:20px 0;"><strong>Free Consultation</strong></p>
+
+                    <!-- NEW: View Public SEO Page Button -->
+                    <button onclick="window.open('service.html?id=${s.id}', '_blank')" 
+                            style="background:var(--coral);color:white;padding:14px 20px;border:none;border-radius:16px;font-weight:bold;cursor:pointer;width:100%;margin:15px 0 10px;font-size:1.1rem;">
+                        🌐 View Public SEO Page
+                    </button>
+
                     ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                    <div class="links">
+                    <div class="links" style="margin-top:15px;">
                         ${s.social_links.map(link => `
                             <a href="${link.url}" target="_blank">
                                 <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
@@ -619,7 +625,6 @@
         if (section === 'messages') loadInbox();
     }
 
-    // Your original social link functions (unchanged)
     function addSocialLink(isEdit = false) {
         const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
         const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
@@ -652,7 +657,6 @@
 
     document.getElementById('publishBtn').onclick = addService;
 
-    // Your original addService, editService, updateService, deleteService functions (unchanged)
     async function addService() {
         if (isPublishing) return;
         
@@ -712,13 +716,13 @@
             const { error } = await supabaseClient.from('services').insert(service);
             if (error) throw error;
 
-            msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
+            msg.innerHTML = '<p style="color:#0f0;">Published successfully! Your SEO page is ready.</p>';
             document.getElementById('addForm').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
             document.getElementById('profilePreview').innerHTML = '';
             document.getElementById('galleryPreview').innerHTML = '';
-            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 2000);
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 3000);
         } catch (err) {
             msg.innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
             console.error(err);
@@ -802,7 +806,7 @@
             const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
             if (error) throw error;
 
-            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully! SEO page refreshed.</p>';
             currentEditId = null;
             currentSocialLinks = [];
             document.getElementById('editProfilePreview').innerHTML = '';
@@ -815,14 +819,13 @@
     }
 
     async function deleteService(id) {
-        if (confirm('Are you sure you want to delete this service?')) {
+        if (confirm('Are you sure you want to delete this service? This will also remove its public SEO page.')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
             if (error) alert('Error: ' + error.message);
             loadDashboard();
         }
     }
 
-    // Messaging Functions
     async function loadInbox() {
         const user = auth.currentUser;
         if (!user) return;
