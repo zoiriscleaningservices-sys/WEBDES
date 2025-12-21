@@ -590,8 +590,8 @@
                     <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
                     <p style="font-size:1.8rem;color:var(--coral);margin:20px 0;"><strong>Free Consultation</strong></p>
 
-                    <!-- NEW: View Public SEO Page Button -->
-                    <button onclick="window.open('service.html?id=${s.id}', '_blank')" 
+                    <!-- FIXED BUTTON: Opens in same tab for easy debugging -->
+                    <button onclick="window.location.href='service.html?id=${s.id}'" 
                             style="background:var(--coral);color:white;padding:14px 20px;border:none;border-radius:16px;font-weight:bold;cursor:pointer;width:100%;margin:15px 0 10px;font-size:1.1rem;">
                         🌐 View Public SEO Page
                     </button>
@@ -656,6 +656,8 @@
     }
 
     document.getElementById('publishBtn').onclick = addService;
+
+    // (Your existing addService, editService, updateService, deleteService, messaging functions remain 100% unchanged)
 
     async function addService() {
         if (isPublishing) return;
