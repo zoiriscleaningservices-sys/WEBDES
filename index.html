@@ -5,27 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrueWebX – Global Business Directory | Find Local Services Worldwide</title>
     <meta name="description" content="TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
-    <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles, cleaning services, local businesses">
+    <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
     <meta name="robots" content="index, follow">
-
-    <!-- Open Graph -->
     <meta property="og:title" content="TrueWebX – Global Business Directory">
     <meta property="og:description" content="Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/">
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
-    <meta property="og:site_name" content="TrueWebX">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="TrueWebX – Global Business Directory">
-    <meta name="twitter:description" content="Find trusted local services worldwide with free consultations.">
-    <meta name="twitter:image" content="https://truewebx.site/og-image.jpg">
-
     <link rel="canonical" href="https://truewebx.site/">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root { 
             --coral: #ff6b6b; 
@@ -56,7 +45,7 @@
             background: rgba(255,255,255,0.25); backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.4); color: white; font-weight: 600;
             padding: 10px 20px; border-radius: 50px; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
         }
         .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
 
@@ -82,9 +71,22 @@
             color: white;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        .search-box::placeholder { color: rgba(255,255,255,0.7); }
-        .search-box:focus { outline: none; box-shadow: 0 0 0 4px rgba(255,107,107,0.3); }
-        .search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; color: rgba(255,255,255,0.8); pointer-events: none; }
+        .search-box::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255,107,107,0.3);
+        }
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8rem;
+            color: rgba(255,255,255,0.8);
+            pointer-events: none;
+        }
 
         .glass { 
             background: var(--light-glass);
@@ -101,13 +103,12 @@
         .card { 
             background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
             padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease; opacity: 1;
         }
+        .card.hidden { display: none; }
         .card:hover { transform: translateY(-6px); }
         .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
         .card h3 { font-size: 1.6rem; margin: 10px 0; }
-        .card h3 a { color: white; text-decoration: none; }
-        .card h3 a:hover { text-decoration: underline; }
         .card p { margin: 8px 0; line-height: 1.5; font-size: 1rem; }
         .private { filter: blur(6px); user-select: none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter: none; }
@@ -119,116 +120,6 @@
         .links a:hover { background: rgba(255,255,255,0.2); }
         .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
         footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
-
-        /* Message Button */
-        .message-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--coral);
-            color: white;
-            font-weight: 600;
-            padding: 14px 28px;
-            border-radius: 50px;
-            text-decoration: none;
-            margin: 20px auto 10px;
-            box-shadow: 0 6px 20px rgba(255,107,107,0.4);
-            transition: all 0.3s ease;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border: none;
-            width: 100%;
-            justify-content: center;
-        }
-        .message-btn:hover {
-            background: #ff5252;
-            transform: translateY(-3px);
-        }
-
-        /* Chat Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .modal-content {
-            background: var(--card-glass);
-            backdrop-filter: blur(20px);
-            border-radius: 28px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            text-align: center;
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .message {
-            max-width: 80%;
-            padding: 12px 18px;
-            border-radius: 20px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        .message.client {
-            align-self: flex-end;
-            background: var(--coral);
-            color: white;
-        }
-        .message.owner {
-            align-self: flex-start;
-            background: rgba(255,255,255,0.3);
-        }
-        .message small {
-            display: block;
-            margin-top: 6px;
-            opacity: 0.7;
-            font-size: 0.8em;
-        }
-        .message-input {
-            display: flex;
-            padding: 16px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            gap: 10px;
-        }
-        .message-input input {
-            flex: 1;
-            padding: 14px;
-            border-radius: 50px;
-            border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-        .message-input input::placeholder { color: rgba(255,255,255,0.7); }
-        .message-input button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--coral);
-            color: white;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-        }
 
         @media (min-width: 640px) {
             .services { grid-template-columns: repeat(2,1fr); gap: 24px; }
@@ -255,7 +146,7 @@
         <section class="hero" aria-labelledby="hero-tagline">
             <h2 id="hero-tagline" class="tagline">Promote Your Business Worldwide</h2>
             <p class="subtitle">
-                TrueWebX is the global business directory connecting customers with trusted local services and companies everywhere.
+                TrueWebX is the global business directory connecting customers with trusted local services and companies everywhere.<br>
                 <strong>Find professionals offering free consultations today.</strong>
             </p>
         </section>
@@ -277,23 +168,6 @@
     </footer>
 </div>
 
-<!-- Chat Modal -->
-<div id="chatModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-header">
-    <div class="modal-content">
-        <div class="modal-header" id="modal-header">
-            Message <span id="chatBusinessName"></span>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-            <p style="text-align:center; opacity:0.7;">Start the conversation!</p>
-        </div>
-        <div class="message-input">
-            <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
-            <button onclick="sendClientMessage()"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-</div>
-
-<!-- Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -308,17 +182,6 @@
 }
 </script>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "TrueWebX",
-  "url": "https://truewebx.site/",
-  "logo": "https://truewebx.site/logo.png",
-  "description": "Global business directory connecting customers with local professional services worldwide."
-}
-</script>
-
 <script>
     window.addEventListener('scroll', () => {
         document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
@@ -329,7 +192,6 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let allServices = [];
-    let currentServiceId = null;
 
     async function loadServices() {
         const { data: services, error } = await supabaseClient
@@ -342,11 +204,49 @@
         if (error || !services || services.length === 0) {
             list.innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
             allServices = [];
+            addStructuredData([]);
             return;
         }
 
         allServices = services;
         renderServices(services);
+        addStructuredData(services);
+    }
+
+    function addStructuredData(services) {
+        // Remove old schema if exists
+        const oldScript = document.querySelector('script[type="application/ld+json"]:not([src])');
+        if (oldScript) oldScript.remove();
+
+        const schemaItems = services.map(s => ({
+            "@type": "ProfessionalService",
+            "name": s.name || "Business on TrueWebX",
+            "description": s.description || "Professional service listed on TrueWebX global directory",
+            "telephone": s.phone || "",
+            "email": s.gmail || "",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": s.city || "Worldwide"
+            },
+            "image": s.profile || "https://truewebx.site/default-profile.jpg",
+            "offers": {
+                "@type": "Offer",
+                "name": "Free Consultation"
+            },
+            "url": "https://truewebx.site/",
+            "sameAs": s.social_links ? s.social_links.map(l => l.url) : [],
+            "datePublished": s.created_at || new Date().toISOString()
+        }));
+
+        const schema = {
+            "@context": "https://schema.org",
+            "@graph": schemaItems
+        };
+
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.text = JSON.stringify(schema);
+        document.head.appendChild(script);
     }
 
     function renderServices(services) {
@@ -357,29 +257,21 @@
         }
 
         list.innerHTML = services.map(s => `
-            <article class="card" itemscope itemtype="https://schema.org/LocalBusiness">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name}" itemprop="image">
-                <h3 itemprop="name">
-                    <a href="service.html?id=${s.id}">${s.name || 'Unnamed Business'}</a>
-                </h3>
-                <p><strong itemprop="address">${s.city || 'Location not specified'}</strong></p>
-                <p itemprop="description">${(s.description || 'No description provided').substring(0, 200)}${s.description && s.description.length > 200 ? '...' : ''}</p>
+            <article class="card" itemscope itemtype="https://schema.org/ProfessionalService">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name || 'business'}" itemprop="image">
+                <h3 itemprop="name">${s.name || 'Unnamed Business'}</h3>
+                <p><strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong></p>
+                <p itemprop="description">${s.description || 'No description provided'}</p>
                 <div class="photos" aria-label="Gallery photos">
-                    ${Array.isArray(s.photos) ? s.photos.slice(0,6).map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1} of ${s.name}">`).join('') : ''}
+                    ${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1} of ${s.name || 'business'}">`).join('') : ''}
                 </div>
                 <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Not available'}</span></p>
                 <p>Email: <span class="private" itemprop="email">${s.gmail || 'Not available'}</span></p>
                 <p class="price"><strong>Free Consultation</strong></p>
-
-                <button class="message-btn" onclick="openChat('${s.id}', '${(s.name || 'Business').replace(/'/g, "\\'")}')">
-                    <i class="fas fa-comment-dots"></i> Message Business
-                </button>
-
                 ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                <div class="links">
-                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
+                <div class="links" itemprop="sameAs" content="${s.social_links.map(l => l.url).join(' ')}">
+                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" aria-label="Visit ${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
                 </div>` : ''}
-
                 <small style="opacity:0.85;display:block;margin-top:12px;">
                     Published: ${new Date(s.created_at).toLocaleDateString('en-US', {day:'numeric', month:'long', year:'numeric'})}
                 </small>
@@ -387,7 +279,7 @@
         `).join('');
     }
 
-    // Real-time search (client-side)
+    // Real-time search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
 
@@ -405,69 +297,6 @@
         renderServices(filtered);
     });
 
-    // Chat Functions
-    function openChat(serviceId, businessName) {
-        currentServiceId = serviceId;
-        document.getElementById('chatBusinessName').textContent = businessName;
-        document.getElementById('chatModal').style.display = 'flex';
-        document.getElementById('chatInput').focus();
-        loadChat();
-    }
-
-    function closeChat() {
-        document.getElementById('chatModal').style.display = 'none';
-        currentServiceId = null;
-        document.getElementById('chatMessages').innerHTML = '<p style="text-align:center; opacity:0.7;">Start the conversation!</p>';
-    }
-
-    // Close modal on ESC
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeChat();
-    });
-
-    async function loadChat() {
-        if (!currentServiceId) return;
-        const { data } = await supabaseClient
-            .from('messages')
-            .select('*')
-            .eq('service_id', currentServiceId)
-            .order('created_at', { ascending: true });
-
-        const chat = document.getElementById('chatMessages');
-        chat.innerHTML = data && data.length > 0 ? data.map(m => `
-            <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
-                ${m.text}
-                <small>${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>
-            </div>
-        `).join('') : '<p style="text-align:center; opacity:0.7;">Start the conversation!</p>';
-        chat.scrollTop = chat.scrollHeight;
-    }
-
-    async function sendClientMessage() {
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if (!text || !currentServiceId) return;
-
-        await supabaseClient.from('messages').insert({
-            service_id: currentServiceId,
-            text: text,
-            is_from_owner: false,
-            created_at: new Date().toISOString()
-        });
-
-        input.value = '';
-        loadChat();
-    }
-
-    document.getElementById('chatInput').addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendClientMessage();
-    });
-
-    document.getElementById('chatModal').addEventListener('click', e => {
-        if (e.target === document.getElementById('chatModal')) closeChat();
-    });
-
-    // Load all services on page load
     loadServices();
 </script>
 </body>
