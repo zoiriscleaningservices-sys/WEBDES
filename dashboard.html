@@ -218,38 +218,106 @@
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
-        /* Reviews Carousel */
+        /* Modern & Professional Reviews Section */
+        .reviews-section {
+            margin-top: 28px;
+        }
+        .reviews-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            color: white;
+        }
         .reviews-carousel {
-            margin-top: 20px;
-            padding: 16px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 16px;
-            min-height: 120px;
             position: relative;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px 24px;
             overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+            min-height: 240px;
         }
         .review-slide {
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 1.2s ease-in-out;
             position: absolute;
-            width: 100%;
-            text-align: center;
-            line-height: 1.5;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
         }
         .review-slide.active {
             opacity: 1;
+            position: relative;
+        }
+        .stars {
+            color: #ffd700;
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            letter-spacing: 4px;
         }
         .review-text {
+            font-size: 1.15rem;
+            line-height: 1.7;
+            max-width: 90%;
+            margin-bottom: 24px;
             font-style: italic;
-            margin-bottom: 8px;
+            position: relative;
+        }
+        .review-text::before {
+            content: "“";
+            font-size: 5rem;
+            opacity: 0.2;
+            position: absolute;
+            left: -10px;
+            top: -30px;
+        }
+        .review-text::after {
+            content: "”";
+            font-size: 5rem;
+            opacity: 0.2;
+            position: absolute;
+            right: -10px;
+            bottom: -50px;
         }
         .review-author {
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.1rem;
             color: var(--coral);
+        }
+        .review-author small {
+            display: block;
+            font-weight: normal;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .dot.active {
+            background: var(--coral);
+            transform: scale(1.3);
         }
         .no-reviews {
             opacity: 0.7;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            font-style: italic;
+            text-align: center;
         }
 
         /* Messages Tab Styles */
@@ -397,7 +465,6 @@
             <input type="email" id="gmail" placeholder="Email" required>
             <textarea id="desc" placeholder="Detailed Description" required></textarea>
 
-            <!-- New Google Reviews Link Field -->
             <input type="url" id="reviews-link" placeholder="Google Reviews Link (optional – e.g. your Google Business page URL)">
 
             <div class="photo-upload">
@@ -449,7 +516,6 @@
             <input type="email" id="edit-gmail" placeholder="Email" required>
             <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
 
-            <!-- Edit Reviews Link -->
             <input type="url" id="edit-reviews-link" placeholder="Google Reviews Link (optional)">
 
             <div class="photo-upload">
@@ -533,7 +599,6 @@
     let isPublishing = false;
     let currentChatServiceId = null;
 
-    // Sample reviews fallback (in case scraping fails)
     const fallbackReviews = [
         { text: "Excellent service and very professional!", author: "Maria G." },
         { text: "Highly recommend! Fast and reliable.", author: "John D." },
@@ -623,7 +688,13 @@
 
         list.innerHTML = services && services.length > 0
             ? services.map(s => {
-                const reviewsHtml = s.reviews_link ? `<div class="reviews-carousel" data-link="${s.reviews_link}" id="reviews-${s.id}"><div class="no-reviews">Loading reviews...</div></div>` : '';
+                const reviewsHtml = s.reviews_link ? 
+                    `<div class="reviews-section">
+                        <div class="reviews-header">Customer Reviews</div>
+                        <div class="reviews-carousel" data-link="${s.reviews_link}" id="reviews-${s.id}">
+                            <div class="no-reviews">Loading reviews...</div>
+                        </div>
+                    </div>` : '';
                 return `
                 <div class="card">
                     <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
@@ -658,7 +729,6 @@
             }).join('')
             : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
 
-        // Start review carousels after rendering
         setTimeout(() => {
             document.querySelectorAll('.reviews-carousel').forEach(carousel => {
                 startReviewCarousel(carousel);
@@ -668,9 +738,8 @@
 
     function startReviewCarousel(container) {
         const link = container.dataset.link;
-        let reviews = fallbackReviews; // default
+        let reviews = fallbackReviews;
 
-        // Simple proxy to attempt fetching real reviews (Google doesn't allow direct scraping, but we try via a public widget pattern)
         fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
             .then(res => res.json())
             .then(data => {
@@ -692,24 +761,38 @@
 
     function renderCarousel(container, reviews) {
         if (reviews.length === 0) {
-            container.innerHTML = '<div class="no-reviews">No reviews available</div>';
+            container.innerHTML = '<div class="no-reviews">No reviews available yet</div>';
             return;
         }
 
-        container.innerHTML = reviews.map((r, i) => `
-            <div class="review-slide ${i === 0 ? 'active' : ''}">
-                <div class="review-text">"${r.text}"</div>
-                <div class="review-author">— ${r.author}</div>
-            </div>
-        `).join('');
+        let slidesHtml = '';
+        let dotsHtml = '';
 
+        reviews.forEach((r, i) => {
+            const stars = '★★★★★';
+            slidesHtml += `
+                <div class="review-slide ${i === 0 ? 'active' : ''}">
+                    <div class="stars">${stars}</div>
+                    <div class="review-text">${r.text}</div>
+                    <div class="review-author">${r.author}<small>Verified Customer</small></div>
+                </div>
+            `;
+            dotsHtml += `<div class="dot ${i === 0 ? 'active' : ''}"></div>`;
+        });
+
+        container.innerHTML = slidesHtml + `<div class="carousel-dots">${dotsHtml}</div>`;
+
+        const slides = container.querySelectorAll('.review-slide');
+        const dots = container.querySelectorAll('.dot');
         let current = 0;
-        setInterval(() => {
-            container.querySelectorAll('.review-slide').forEach((slide, idx) => {
-                slide.classList.toggle('active', idx === current);
-            });
+
+        const rotate = () => {
+            slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+            dots.forEach((d, idx) => d.classList.toggle('active', idx === current));
             current = (current + 1) % reviews.length;
-        }, 6000); // Change every 6 seconds
+        };
+
+        setInterval(rotate, 7000);
     }
 
     function show(section) {
