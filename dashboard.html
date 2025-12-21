@@ -218,108 +218,6 @@
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; }
 
-        /* Modern & Professional Reviews Section */
-        .reviews-section {
-            margin-top: 28px;
-        }
-        .reviews-header {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 16px;
-            color: white;
-        }
-        .reviews-carousel {
-            position: relative;
-            background: rgba(255,255,255,0.12);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 32px 24px;
-            overflow: hidden;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-            min-height: 240px;
-        }
-        .review-slide {
-            opacity: 0;
-            transition: opacity 1.2s ease-in-out;
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0 20px;
-        }
-        .review-slide.active {
-            opacity: 1;
-            position: relative;
-        }
-        .stars {
-            color: #ffd700;
-            font-size: 1.8rem;
-            margin-bottom: 16px;
-            letter-spacing: 4px;
-        }
-        .review-text {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            max-width: 90%;
-            margin-bottom: 24px;
-            font-style: italic;
-            position: relative;
-        }
-        .review-text::before {
-            content: "“";
-            font-size: 5rem;
-            opacity: 0.2;
-            position: absolute;
-            left: -10px;
-            top: -30px;
-        }
-        .review-text::after {
-            content: "”";
-            font-size: 5rem;
-            opacity: 0.2;
-            position: absolute;
-            right: -10px;
-            bottom: -50px;
-        }
-        .review-author {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--coral);
-        }
-        .review-author small {
-            display: block;
-            font-weight: normal;
-            opacity: 0.8;
-            margin-top: 4px;
-            font-size: 0.95rem;
-        }
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .dot {
-            width: 10px;
-            height: 10px;
-            background: rgba(255,255,255,0.4);
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        .dot.active {
-            background: var(--coral);
-            transform: scale(1.3);
-        }
-        .no-reviews {
-            opacity: 0.7;
-            font-size: 1rem;
-            font-style: italic;
-            text-align: center;
-        }
-
         /* Messages Tab Styles */
         .inbox-list { display: grid; gap: 16px; }
         .inbox-item {
@@ -403,37 +301,38 @@
     <div class="form">
         <h2 style="margin-bottom:30px; color:#151717;" id="formTitle">Sign In</h2>
 
-    <form id="authForm">
-        <div class="inputForm">
-            <input id="email" placeholder="Your email" class="input" type="email" required>
+        <form id="authForm">
+            <div class="inputForm">
+                <input id="email" placeholder="Your email" class="input" type="email" required>
+            </div>
+
+            <div class="inputForm">
+                <input id="password" placeholder="Your password" class="input" type="password" required>
+            </div>
+
+            <button type="submit" class="button-submit" id="authButton">Sign In</button>
+        </form>
+
+        <div id="message"></div>
+
+        <p style="margin-top:20px; color:#666;">
+            <span id="toggleText">Don't have an account?</span> 
+            <span class="toggle-link" onclick="toggleAuthMode()">Sign up here</span>
+        </p>
+
+        <div style="margin-top:20px;">
+            <button type="button" class="btn google" id="googleBtn">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
+                    <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
+                    <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
+                    <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path>
+                </svg>
+                Continue with Google
+            </button>
         </div>
-
-        <div class="inputForm">
-            <input id="password" placeholder="Your password" class="input" type="password" required>
-        </div>
-
-        <button type="submit" class="button-submit" id="authButton">Sign In</button>
-    </form>
-
-    <div id="message"></div>
-
-    <p style="margin-top:20px; color:#666;">
-        <span id="toggleText">Don't have an account?</span> 
-        <span class="toggle-link" onclick="toggleAuthMode()">Sign up here</span>
-    </p>
-
-    <div style="margin-top:20px;">
-        <button type="button" class="btn google" id="googleBtn">
-            <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
-                <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
-                <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
-                <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
-                <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path>
-            </svg>
-            Continue with Google
-        </button>
     </div>
-</div></div>
+</div>
 
 <!-- DASHBOARD -->
 <div id="dashboardScreen" style="display:none;">
@@ -442,137 +341,133 @@
             <div class="nav-item active" onclick="show('home')"><i class="fas fa-home"></i><span>My Services</span></div>
             <div class="nav-item" onclick="show('add')"><i class="fas fa-plus-circle"></i><span>New</span></div>
             <div class="nav-item" onclick="show('messages')"><i class="fas fa-envelope"></i><span>Messages</span></div>
-            <div class="nav-item" onclick="window.location.href='index.html'"><i class="fas fa-globe"></i><span>Public</span></div>
             <div class="nav-item" onclick="logoutAndGoHome()"><i class="fas fa-sign-out-alt"></i><span>Sign Out</span></div>
         </div>
     </div>
 
-<div class="main-content">
-    <h1 class="logo" onclick="window.location.href='index.html'">TrueWebX</h1>
-    <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
+    <div class="main-content">
+        <h1 class="logo">TrueWebX</h1>
+        <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
 
-    <div id="home" class="glass">
-        <h2>My Published Services</h2>
-        <div class="services" id="list"></div>
-    </div>
+        <div id="home" class="glass">
+            <h2>My Published Services</h2>
+            <div class="services" id="list"></div>
+        </div>
 
-    <div id="add" class="glass" style="display:none;">
-        <h2>Publish New Service</h2>
-        <form class="form-grid" id="addForm">
-            <input type="text" id="name" placeholder="Business / Company Name" required>
-            <input type="text" id="city" placeholder="City and Country" required>
-            <input type="tel" id="phone" placeholder="Phone Number" required>
-            <input type="email" id="gmail" placeholder="Email" required>
-            <textarea id="desc" placeholder="Detailed Description" required></textarea>
+        <div id="add" class="glass" style="display:none;">
+            <h2>Publish New Service</h2>
+            <form class="form-grid" id="addForm">
+                <input type="text" id="name" placeholder="Business / Company Name" required>
+                <input type="text" id="city" placeholder="City and Country" required>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <input type="email" id="gmail" placeholder="Email" required>
+                <textarea id="desc" placeholder="Detailed Description" required></textarea>
 
-            <input type="url" id="reviews-link" placeholder="Google Reviews Link (optional – e.g. your Google Business page URL)">
-
-            <div class="photo-upload">
-                <i class="fas fa-camera"></i>
-                <span>Upload Profile Photo / Logo</span>
-                <small>(Required – one image)</small>
-                <input type="file" id="profile" accept="image/*" required>
-                <div class="preview-container" id="profilePreview"></div>
-            </div>
-
-            <div class="photo-upload">
-                <i class="fas fa-images"></i>
-                <span>Upload Gallery Photos</span>
-                <small>(Optional – select multiple)</small>
-                <input type="file" id="photos" accept="image/*" multiple>
-                <div class="preview-container" id="galleryPreview"></div>
-            </div>
-
-            <div id="social-container">
-                <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
-                <div class="social-input">
-                    <select id="social-type">
-                        <option value="instagram">Instagram</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="twitter">X (Twitter)</option>
-                        <option value="linkedin">LinkedIn</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="whatsapp">WhatsApp</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <input type="url" id="social-url" placeholder="Full URL (e.g. https://instagram.com/yourbusiness)">
-                    <button type="button" onclick="addSocialLink()">+</button>
+                <div class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Upload Profile Photo / Logo</span>
+                    <small>(Required – one image)</small>
+                    <input type="file" id="profile" accept="image/*" required>
+                    <div class="preview-container" id="profilePreview"></div>
                 </div>
-                <div id="added-socials" style="margin-top:10px;"></div>
-            </div>
 
-            <button type="button" id="publishBtn">PUBLISH NOW</button>
-        </form>
-        <p id="msg"></p>
-    </div>
-
-    <div id="edit" class="glass" style="display:none;">
-        <h2>Edit Service</h2>
-        <form class="form-grid" id="editForm">
-            <input type="text" id="edit-name" placeholder="Business / Company Name" required>
-            <input type="text" id="edit-city" placeholder="City and Country" required>
-            <input type="tel" id="edit-phone" placeholder="Phone Number" required>
-            <input type="email" id="edit-gmail" placeholder="Email" required>
-            <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
-
-            <input type="url" id="edit-reviews-link" placeholder="Google Reviews Link (optional)">
-
-            <div class="photo-upload">
-                <i class="fas fa-camera"></i>
-                <span>Change Profile Photo / Logo</span>
-                <small>(Optional – leave blank to keep current)</small>
-                <input type="file" id="edit-profile" accept="image/*">
-                <div class="preview-container" id="editProfilePreview"></div>
-            </div>
-
-            <div class="photo-upload">
-                <i class="fas fa-images"></i>
-                <span>Add More Gallery Photos</span>
-                <small>(Optional – select multiple)</small>
-                <input type="file" id="edit-photos" accept="image/*" multiple>
-                <div class="preview-container" id="editGalleryPreview"></div>
-            </div>
-
-            <div id="edit-social-container">
-                <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
-                <div class="social-input">
-                    <select id="edit-social-type">
-                        <option value="instagram">Instagram</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="twitter">X (Twitter)</option>
-                        <option value="linkedin">LinkedIn</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="whatsapp">WhatsApp</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <input type="url" id="edit-social-url" placeholder="Full URL">
-                    <button type="button" onclick="addSocialLink(true)">+</button>
+                <div class="photo-upload">
+                    <i class="fas fa-images"></i>
+                    <span>Upload Gallery Photos</span>
+                    <small>(Optional – select multiple)</small>
+                    <input type="file" id="photos" accept="image/*" multiple>
+                    <div class="preview-container" id="galleryPreview"></div>
                 </div>
-                <div id="edit-added-socials" style="margin-top:10px;"></div>
-            </div>
 
-            <button type="button" onclick="updateService()">SAVE CHANGES</button>
-        </form>
-        <p id="edit-msg"></p>
-    </div>
+                <div id="social-container">
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media (optional)</h3>
+                    <div class="social-input">
+                        <select id="social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="url" id="social-url" placeholder="Full URL (e.g. https://instagram.com/yourbusiness)">
+                        <button type="button" onclick="addSocialLink()">+</button>
+                    </div>
+                    <div id="added-socials" style="margin-top:10px;"></div>
+                </div>
 
-    <!-- Messages Tab -->
-    <div id="messages" class="glass" style="display:none;">
-        <h2>Messages</h2>
-        <div id="inboxList" class="inbox-list"></div>
+                <button type="button" id="publishBtn">PUBLISH NOW</button>
+            </form>
+            <p id="msg"></p>
+        </div>
 
-        <div id="chatWindow" class="glass chat-window">
-            <div class="chat-header" id="chatHeader">Select a conversation</div>
-            <div class="chat-body" id="chatBody"></div>
-            <div class="chat-input">
-                <input type="text" id="replyInput" placeholder="Type your reply...">
-                <button onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
+        <div id="edit" class="glass" style="display:none;">
+            <h2>Edit Service</h2>
+            <form class="form-grid" id="editForm">
+                <input type="text" id="edit-name" placeholder="Business / Company Name" required>
+                <input type="text" id="edit-city" placeholder="City and Country" required>
+                <input type="tel" id="edit-phone" placeholder="Phone Number" required>
+                <input type="email" id="edit-gmail" placeholder="Email" required>
+                <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
+
+                <div class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <span>Change Profile Photo / Logo</span>
+                    <small>(Optional – leave blank to keep current)</small>
+                    <input type="file" id="edit-profile" accept="image/*">
+                    <div class="preview-container" id="editProfilePreview"></div>
+                </div>
+
+                <div class="photo-upload">
+                    <i class="fas fa-images"></i>
+                    <span>Add More Gallery Photos</span>
+                    <small>(Optional – select multiple)</small>
+                    <input type="file" id="edit-photos" accept="image/*" multiple>
+                    <div class="preview-container" id="editGalleryPreview"></div>
+                </div>
+
+                <div id="edit-social-container">
+                    <h3 style="color:white; margin:20px 0 10px;">Social Media</h3>
+                    <div class="social-input">
+                        <select id="edit-social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="url" id="edit-social-url" placeholder="Full URL">
+                        <button type="button" onclick="addSocialLink(true)">+</button>
+                    </div>
+                    <div id="edit-added-socials" style="margin-top:10px;"></div>
+                </div>
+
+                <button type="button" onclick="updateService()">SAVE CHANGES</button>
+            </form>
+            <p id="edit-msg"></p>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages" class="glass" style="display:none;">
+            <h2>Messages</h2>
+            <div id="inboxList" class="inbox-list"></div>
+
+            <div id="chatWindow" class="glass chat-window">
+                <div class="chat-header" id="chatHeader">Select a conversation</div>
+                <div class="chat-body" id="chatBody"></div>
+                <div class="chat-input">
+                    <input type="text" id="replyInput" placeholder="Type your reply...">
+                    <button onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
     </div>
-</div></div>
+</div>
 
 <script>
     const firebaseConfig = {
@@ -598,14 +493,6 @@
     let isSignupMode = false;
     let isPublishing = false;
     let currentChatServiceId = null;
-
-    const fallbackReviews = [
-        { text: "Excellent service and very professional!", author: "Maria G." },
-        { text: "Highly recommend! Fast and reliable.", author: "John D." },
-        { text: "Best experience I've had in years.", author: "Sophie L." },
-        { text: "Amazing team and outstanding results!", author: "Alex T." },
-        { text: "Super friendly and efficient service.", author: "Emma R." }
-    ];
 
     function previewImage(file, containerId, isProfile = false) {
         const reader = new FileReader();
@@ -668,7 +555,7 @@
 
     function logoutAndGoHome() {
         auth.signOut().then(() => {
-            window.location.href = 'index.html';
+            window.location.reload();
         });
     }
 
@@ -689,15 +576,7 @@
             .order('created_at', { ascending: false });
 
         list.innerHTML = services && services.length > 0
-            ? services.map(s => {
-                const reviewsHtml = s.reviews_link ? 
-                    `<div class="reviews-section">
-                        <div class="reviews-header">Customer Reviews</div>
-                        <div class="reviews-carousel" data-link="${s.reviews_link}" id="reviews-${s.id}">
-                            <div class="no-reviews">Loading reviews...</div>
-                        </div>
-                    </div>` : '';
-                return `
+            ? services.map(s => `
                 <div class="card">
                     <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
                     <div class="delete" onclick="deleteService('${s.id}')">×</div>
@@ -708,12 +587,6 @@
                     <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
                     <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
                     <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
-                    <p style="font-size:1.8rem;color:var(--coral);margin:20px 0;"><strong>Free Consultation</strong></p>
-
-                    <button onclick="window.location.href='service.html?id=${s.id}'" 
-                            style="background:var(--coral);color:white;padding:14px 20px;border:none;border-radius:16px;font-weight:bold;cursor:pointer;width:100%;margin:15px 0 10px;font-size:1.1rem;">
-                         View Public SEO Page
-                    </button>
 
                     ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
                     <div class="links" style="margin-top:15px;">
@@ -724,90 +597,9 @@
                         `).join('')}
                     </div>
                     ` : ''}
-
-                    ${reviewsHtml}
                 </div>
-            `;
-            }).join('')
+            `).join('')
             : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
-
-        setTimeout(() => {
-            document.querySelectorAll('.reviews-carousel').forEach(carousel => {
-                startReviewCarousel(carousel);
-            });
-        }, 500);
-    }
-
-    function startReviewCarousel(container) {
-        const link = container.dataset.link;
-        let reviews = fallbackReviews;
-
-        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`)
-            .then(res => res.json())
-            .then(data => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
-                const reviewElements = doc.querySelectorAll('[data-review-id] button[aria-label^="Review by"] ~ div');
-                const extracted = [];
-                reviewElements.forEach(el => {
-                    const textEl = el.querySelector('span[class*="text"]');
-                    const authorEl = el.parentElement.querySelector('div[class*="author"] span');
-                    if (textEl && authorEl) {
-                        const text = textEl.innerText.trim();
-                        const author = authorEl.innerText.trim();
-                        if (text) extracted.push({ text, author });
-                    }
-                });
-                if (extracted.length === 0) {
-                    // Fallback to any possible text containers
-                    const altElements = doc.querySelectorAll('.MyEned, .review-full-text, div[role="article"] span');
-                    altElements.forEach(el => {
-                        const text = el.innerText.trim();
-                        if (text && text.length > 10) extracted.push({ text, author: "Customer" });
-                    });
-                }
-                if (extracted.length > 0) reviews = extracted.slice(0, 20); // Limit to 20 to avoid too many
-            })
-            .catch(() => console.log("Could not fetch real reviews, using fallback"))
-            .finally(() => {
-                renderCarousel(container, reviews);
-            });
-    }
-
-    function renderCarousel(container, reviews) {
-        if (reviews.length === 0) {
-            container.innerHTML = '<div class="no-reviews">No reviews available yet</div>';
-            return;
-        }
-
-        let slidesHtml = '';
-        let dotsHtml = '';
-
-        reviews.forEach((r, i) => {
-            const stars = '★★★★★';
-            slidesHtml += `
-                <div class="review-slide ${i === 0 ? 'active' : ''}">
-                    <div class="stars">${stars}</div>
-                    <div class="review-text">${r.text}</div>
-                    <div class="review-author">${r.author}<small>Verified Customer</small></div>
-                </div>
-            `;
-            dotsHtml += `<div class="dot ${i === 0 ? 'active' : ''}"></div>`;
-        });
-
-        container.innerHTML = slidesHtml + `<div class="carousel-dots">${dotsHtml}</div>`;
-
-        const slides = container.querySelectorAll('.review-slide');
-        const dots = container.querySelectorAll('.dot');
-        let current = 0;
-
-        const rotate = () => {
-            slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
-            dots.forEach((d, idx) => d.classList.toggle('active', idx === current));
-            current = (current + 1) % reviews.length;
-        };
-
-        setInterval(rotate, 7000);
     }
 
     function show(section) {
@@ -865,11 +657,10 @@
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
         const desc = document.getElementById('desc').value.trim();
-        const reviewsLink = document.getElementById('reviews-link').value.trim();
         const profileFile = document.getElementById('profile').files[0];
 
         if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msg.innerHTML = '<p style="color:red;">All fields are required except additional photos and reviews link!</p>';
+            msg.innerHTML = '<p style="color:red;">All fields are required except additional photos!</p>';
             return;
         }
 
@@ -911,14 +702,13 @@
                 profile: profileUrl,
                 photos: photosUrls,
                 social_links: currentSocialLinks,
-                reviews_link: reviewsLink || null,
                 created_at: new Date().toISOString()
             };
 
             const { error } = await supabaseClient.from('services').insert(service);
             if (error) throw error;
 
-            msg.innerHTML = '<p style="color:#0f0;">Published successfully! Your SEO page is ready.</p>';
+            msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
             document.getElementById('addForm').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
@@ -944,7 +734,6 @@
         document.getElementById('edit-phone').value = service.phone || '';
         document.getElementById('edit-gmail').value = service.gmail || '';
         document.getElementById('edit-desc').value = service.description || '';
-        document.getElementById('edit-reviews-link').value = service.reviews_link || '';
 
         currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
         updateAddedSocials(true);
@@ -962,7 +751,6 @@
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
         const desc = document.getElementById('edit-desc').value.trim();
-        const reviewsLink = document.getElementById('edit-reviews-link').value.trim();
 
         if (!name || !city || !phone || !gmail || !desc) {
             document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
@@ -1004,14 +792,13 @@
                 description: desc,
                 profile: profileUrl,
                 photos: photosUrls,
-                social_links: currentSocialLinks,
-                reviews_link: reviewsLink || null
+                social_links: currentSocialLinks
             };
 
             const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
             if (error) throw error;
 
-            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully! SEO page refreshed.</p>';
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
             currentEditId = null;
             currentSocialLinks = [];
             document.getElementById('editProfilePreview').innerHTML = '';
@@ -1024,7 +811,7 @@
     }
 
     async function deleteService(id) {
-        if (confirm('Are you sure you want to delete this service? This will also remove its public SEO page.')) {
+        if (confirm('Are you sure you want to delete this service?')) {
             const { error } = await supabaseClient.from('services').delete().eq('id', id);
             if (error) alert('Error: ' + error.message);
             loadDashboard();
