@@ -1,19 +1,31 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrueWebX – Global Business Directory | Find Local Services Worldwide</title>
     <meta name="description" content="TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
-    <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
+    <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles, cleaning services, local businesses">
     <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
     <meta property="og:title" content="TrueWebX – Global Business Directory">
     <meta property="og:description" content="Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/">
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
+    <meta property="og:site_name" content="TrueWebX">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TrueWebX – Global Business Directory">
+    <meta name="twitter:description" content="Find trusted local services worldwide with free consultations.">
+    <meta name="twitter:image" content="https://truewebx.site/og-image.jpg">
+
     <link rel="canonical" href="https://truewebx.site/">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root { 
             --coral: #ff6b6b; 
@@ -31,202 +43,205 @@
         }
         .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
 
-    .header-wrapper {
-        position: fixed; top: 0; left: 0; right: 0;
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 16px; z-index: 1000; background: rgba(0,0,0,0.1); backdrop-filter: blur(15px);
-        transition: background 0.3s ease;
-    }
-    .header-wrapper.scrolled { background: rgba(0,0,0,0.4); }
-    .logo { font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 900; background: linear-gradient(45deg, #fff, #ff8fa3); -webkit-background-clip: text; color: transparent; }
+        .header-wrapper {
+            position: fixed; top: 0; left: 0; right: 0;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px; z-index: 1000; background: rgba(0,0,0,0.1); backdrop-filter: blur(15px);
+            transition: background 0.3s ease;
+        }
+        .header-wrapper.scrolled { background: rgba(0,0,0,0.4); }
+        .logo { font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 900; background: linear-gradient(45deg, #fff, #ff8fa3); -webkit-background-clip: text; color: transparent; }
 
-    .login-btn {
-        background: rgba(255,255,255,0.25); backdrop-filter: blur(15px);
-        border: 1px solid rgba(255,255,255,0.4); color: white; font-weight: 600;
-        padding: 10px 20px; border-radius: 50px; cursor: pointer;
-        display: flex; align-items: center; gap: 8px;
-    }
-    .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .login-btn {
+            background: rgba(255,255,255,0.25); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.4); color: white; font-weight: 600;
+            padding: 10px 20px; border-radius: 50px; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; text-decoration: none;
+        }
+        .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
 
-    .main-content { padding-top: 100px; min-height: 100vh; display: flex; flex-direction: column; }
-    .hero { text-align: center; padding: 40px 16px 30px; }
-    .tagline { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 600; margin-bottom: 10px; }
-    .subtitle { font-size: clamp(0.95rem, 3.5vw, 1.35rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.6; }
+        .main-content { padding-top: 100px; min-height: 100vh; display: flex; flex-direction: column; }
+        .hero { text-align: center; padding: 40px 16px 30px; }
+        .tagline { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 600; margin-bottom: 10px; }
+        .subtitle { font-size: clamp(0.95rem, 3.5vw, 1.35rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.6; }
 
-    /* SEARCH BAR */
-    .search-container {
-        max-width: 700px;
-        margin: 20px auto;
-        position: relative;
-    }
-    .search-box {
-        width: 100%;
-        padding: 18px 60px 18px 24px;
-        font-size: 1.2rem;
-        border-radius: 50px;
-        border: none;
-        background: rgba(255,255,255,0.25);
-        backdrop-filter: blur(15px);
-        color: white;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-    .search-box::placeholder { color: rgba(255,255,255,0.7); }
-    .search-box:focus { outline: none; box-shadow: 0 0 0 4px rgba(255,107,107,0.3); }
-    .search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; color: rgba(255,255,255,0.8); pointer-events: none; }
+        /* SEARCH BAR */
+        .search-container {
+            max-width: 700px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .search-box {
+            width: 100%;
+            padding: 18px 60px 18px 24px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(15px);
+            color: white;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .search-box::placeholder { color: rgba(255,255,255,0.7); }
+        .search-box:focus { outline: none; box-shadow: 0 0 0 4px rgba(255,107,107,0.3); }
+        .search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; color: rgba(255,255,255,0.8); pointer-events: none; }
 
-    .glass { 
-        background: var(--light-glass);
-        backdrop-filter: blur(20px); 
-        border-radius: 28px; 
-        padding: 32px 20px; 
-        margin: 20px 0; 
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        flex: 1;
-    }
-    h2 { font-size: clamp(1.7rem, 5.5vw, 2.6rem); margin-bottom: 24px; text-align: center; }
-    .services { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    .card { 
-        background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
-        padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
-        transition: transform 0.3s ease; opacity: 1;
-    }
-    .card:hover { transform: translateY(-6px); }
-    .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
-    .card h3 { font-size: 1.6rem; margin: 10px 0; }
-    .card p { margin: 8px 0; line-height: 1.5; font-size: 1rem; }
-    .private { filter: blur(6px); user-select: none; transition: filter 0.3s; font-weight: 500; }
-    .private:hover, .private:focus { filter: none; }
-    .price { font-size: 1.8rem !important; color: var(--coral) !important; font-weight: 800; margin: 16px 0; }
-    .photos { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 14px 0; }
-    .photos img { width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    .links { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 12px; }
-    .links a { color: #ffeb3b; text-decoration: none; font-weight: 600; padding: 8px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; gap: 6px; }
-    .links a:hover { background: rgba(255,255,255,0.2); }
-    .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
-    footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
+        .glass { 
+            background: var(--light-glass);
+            backdrop-filter: blur(20px); 
+            border-radius: 28px; 
+            padding: 32px 20px; 
+            margin: 20px 0; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            flex: 1;
+        }
+        h2 { font-size: clamp(1.7rem, 5.5vw, 2.6rem); margin-bottom: 24px; text-align: center; }
+        .services { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .card { 
+            background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
+            padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
+            transition: transform 0.3s ease;
+        }
+        .card:hover { transform: translateY(-6px); }
+        .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
+        .card h3 { font-size: 1.6rem; margin: 10px 0; }
+        .card h3 a { color: white; text-decoration: none; }
+        .card h3 a:hover { text-decoration: underline; }
+        .card p { margin: 8px 0; line-height: 1.5; font-size: 1rem; }
+        .private { filter: blur(6px); user-select: none; transition: filter 0.3s; font-weight: 500; }
+        .private:hover, .private:focus { filter: none; }
+        .price { font-size: 1.8rem !important; color: var(--coral) !important; font-weight: 800; margin: 16px 0; }
+        .photos { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 14px 0; }
+        .photos img { width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .links { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 12px; }
+        .links a { color: #ffeb3b; text-decoration: none; font-weight: 600; padding: 8px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; gap: 6px; }
+        .links a:hover { background: rgba(255,255,255,0.2); }
+        .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
+        footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
 
-    /* Message Button */
-    .message-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: var(--coral);
-        color: white;
-        font-weight: 600;
-        padding: 14px 28px;
-        border-radius: 50px;
-        text-decoration: none;
-        margin: 20px auto 10px;
-        box-shadow: 0 6px 20px rgba(255,107,107,0.4);
-        transition: all 0.3s ease;
-        font-size: 1.1rem;
-        cursor: pointer;
-        border: none;
-        width: 100%;
-        justify-content: center;
-    }
-    .message-btn:hover {
-        background: #ff5252;
-        transform: translateY(-3px);
-    }
+        /* Message Button */
+        .message-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--coral);
+            color: white;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 20px auto 10px;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            justify-content: center;
+        }
+        .message-btn:hover {
+            background: #ff5252;
+            transform: translateY(-3px);
+        }
 
-    /* Chat Modal */
-    .modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.7);
-        backdrop-filter: blur(10px);
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-    }
-    .modal-content {
-        background: var(--card-glass);
-        backdrop-filter: blur(20px);
-        border-radius: 28px;
-        width: 90%;
-        max-width: 500px;
-        max-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-    }
-    .modal-header {
-        padding: 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-        text-align: center;
-        font-size: 1.4rem;
-        font-weight: 600;
-    }
-    .chat-messages {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    .message {
-        max-width: 80%;
-        padding: 12px 18px;
-        border-radius: 20px;
-        line-height: 1.4;
-        word-wrap: break-word;
-    }
-    .message.client {
-        align-self: flex-end;
-        background: var(--coral);
-        color: white;
-    }
-    .message.owner {
-        align-self: flex-start;
-        background: rgba(255,255,255,0.3);
-    }
-    .message small {
-        display: block;
-        margin-top: 6px;
-        opacity: 0.7;
-        font-size: 0.8em;
-    }
-    .message-input {
-        display: flex;
-        padding: 16px;
-        border-top: 1px solid rgba(255,255,255,0.2);
-        gap: 10px;
-    }
-    .message-input input {
-        flex: 1;
-        padding: 14px;
-        border-radius: 50px;
-        border: none;
-        background: rgba(255,255,255,0.2);
-        color: white;
-    }
-    .message-input input::placeholder { color: rgba(255,255,255,0.7); }
-    .message-input button {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: var(--coral);
-        color: white;
-        border: none;
-        font-size: 1.4rem;
-        cursor: pointer;
-    }
+        /* Chat Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message.client {
+            align-self: flex-end;
+            background: var(--coral);
+            color: white;
+        }
+        .message.owner {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.3);
+        }
+        .message small {
+            display: block;
+            margin-top: 6px;
+            opacity: 0.7;
+            font-size: 0.8em;
+        }
+        .message-input {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            gap: 10px;
+        }
+        .message-input input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .message-input input::placeholder { color: rgba(255,255,255,0.7); }
+        .message-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--coral);
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
 
-    @media (min-width: 640px) {
-        .services { grid-template-columns: repeat(2,1fr); gap: 24px; }
-        .glass { padding: 40px 30px; }
-        .photos { grid-template-columns: repeat(3,1fr); }
-    }
-    @media (min-width: 1024px) {
-        .services { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); }
-        .hero { padding: 60px 20px 50px; }
-        .glass { padding: 50px 40px; border-radius: 32px; }
-    }
-</style></head>
+        @media (min-width: 640px) {
+            .services { grid-template-columns: repeat(2,1fr); gap: 24px; }
+            .glass { padding: 40px 30px; }
+            .photos { grid-template-columns: repeat(3,1fr); }
+        }
+        @media (min-width: 1024px) {
+            .services { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); }
+            .hero { padding: 60px 20px 50px; }
+            .glass { padding: 50px 40px; border-radius: 32px; }
+        }
+    </style>
+</head>
 <body>
 <div class="container">
     <header class="header-wrapper" id="header" role="banner">
@@ -236,36 +251,36 @@
         </a>
     </header>
 
-<main class="main-content" role="main">
-    <section class="hero" aria-labelledby="hero-tagline">
-        <h2 id="hero-tagline" class="tagline">Promote Your Business Worldwide</h2>
-        <p class="subtitle">
-            TrueWebX is the global business directory connecting customers with trusted local services and companies everywhere.
+    <main class="main-content" role="main">
+        <section class="hero" aria-labelledby="hero-tagline">
+            <h2 id="hero-tagline" class="tagline">Promote Your Business Worldwide</h2>
+            <p class="subtitle">
+                TrueWebX is the global business directory connecting customers with trusted local services and companies everywhere.
+                <strong>Find professionals offering free consultations today.</strong>
+            </p>
+        </section>
 
-            <strong>Find professionals offering free consultations today.</strong>
-        </p>
-    </section>
+        <!-- SEARCH BAR -->
+        <div class="search-container" role="search">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by business name, service, or city (e.g. plumber Miami, web design New York...)" aria-label="Search businesses">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+        </div>
 
-    <!-- SEARCH BAR -->
-    <div class="search-container" role="search">
-        <input type="text" id="searchInput" class="search-box" placeholder="Search by business name, service, or city (e.g. plumber Miami, web design New York...)" aria-label="Search businesses">
-        <i class="fas fa-search search-icon" aria-hidden="true"></i>
-    </div>
+        <section class="glass" aria-labelledby="services-heading">
+            <h2 id="services-heading">Available Services Worldwide</h2>
+            <div class="services" id="list" role="list"></div>
+        </section>
+    </main>
 
-    <section class="glass" aria-labelledby="services-heading">
-        <h2 id="services-heading">Available Services Worldwide</h2>
-        <div class="services" id="list" role="list"></div>
-    </section>
-</main>
-
-<footer role="contentinfo">
-    © 2025 TrueWebX – The global directory for businesses and professional services
-</footer></div>
+    <footer role="contentinfo">
+        © 2025 TrueWebX – The global directory for businesses and professional services
+    </footer>
+</div>
 
 <!-- Chat Modal -->
-<div id="chatModal" class="modal">
+<div id="chatModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-header">
     <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header" id="modal-header">
             Message <span id="chatBusinessName"></span>
         </div>
         <div class="chat-messages" id="chatMessages">
@@ -278,6 +293,7 @@
     </div>
 </div>
 
+<!-- Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -289,6 +305,17 @@
     "target": "https://truewebx.site/?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "TrueWebX",
+  "url": "https://truewebx.site/",
+  "logo": "https://truewebx.site/logo.png",
+  "description": "Global business directory connecting customers with local professional services worldwide."
 }
 </script>
 
@@ -330,13 +357,15 @@
         }
 
         list.innerHTML = services.map(s => `
-            <article class="card" itemscope itemtype="https://schema.org/ProfessionalService">
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name || 'business'}" itemprop="image">
-                <h3 itemprop="name">${s.name || 'Unnamed Business'}</h3>
-                <p><strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong></p>
-                <p itemprop="description">${s.description || 'No description provided'}</p>
+            <article class="card" itemscope itemtype="https://schema.org/LocalBusiness">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name}" itemprop="image">
+                <h3 itemprop="name">
+                    <a href="service.html?id=${s.id}">${s.name || 'Unnamed Business'}</a>
+                </h3>
+                <p><strong itemprop="address">${s.city || 'Location not specified'}</strong></p>
+                <p itemprop="description">${(s.description || 'No description provided').substring(0, 200)}${s.description && s.description.length > 200 ? '...' : ''}</p>
                 <div class="photos" aria-label="Gallery photos">
-                    ${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1}">`).join('') : ''}
+                    ${Array.isArray(s.photos) ? s.photos.slice(0,6).map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1} of ${s.name}">`).join('') : ''}
                 </div>
                 <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Not available'}</span></p>
                 <p>Email: <span class="private" itemprop="email">${s.gmail || 'Not available'}</span></p>
@@ -358,7 +387,7 @@
         `).join('');
     }
 
-    // Real-time search
+    // Real-time search (client-side)
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
 
@@ -388,7 +417,13 @@
     function closeChat() {
         document.getElementById('chatModal').style.display = 'none';
         currentServiceId = null;
+        document.getElementById('chatMessages').innerHTML = '<p style="text-align:center; opacity:0.7;">Start the conversation!</p>';
     }
+
+    // Close modal on ESC
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeChat();
+    });
 
     async function loadChat() {
         if (!currentServiceId) return;
@@ -432,6 +467,7 @@
         if (e.target === document.getElementById('chatModal')) closeChat();
     });
 
+    // Load all services on page load
     loadServices();
 </script>
 </body>
