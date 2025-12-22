@@ -383,7 +383,10 @@
         <!-- All Services View -->
         <div id="services" class="glass">
             <h2 style="text-align:center; margin-bottom:24px;">All Available Services</h2>
-            <div class="services" id="list"></div>
+            <div class="services" id="list">
+                <!-- Services will be loaded here -->
+                <p style="text-align:center; opacity:0.7;">Loading services...</p>
+            </div>
         </div>
 
         <!-- Messages View -->
@@ -456,6 +459,10 @@
     onAuthStateChanged(auth, user => {
         currentUser = user;
         if (user) loadDashboard();
+        else {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+        }
     });
 
     async function loadDashboard() {
@@ -463,7 +470,7 @@
         document.getElementById('dashboardScreen').style.display = 'block';
         document.getElementById('welcomeMsg').textContent = `Hello ${currentUser.displayName || currentUser.email.split('@')[0]}!`;
 
-        loadAllServices();
+        await loadAllServices(); // Ensure services load after login
     }
 
     function show(section) {
@@ -474,47 +481,59 @@
     }
 
     async function loadAllServices() {
-        const { data: services } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
+        const { data: services, error } = await supabaseClient
+            .from('services')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error loading services:', error);
+            document.getElementById('list').innerHTML = '<p style="text-align:center; color:red;">Error loading services. Check console.</p>';
+            return;
+        }
 
         const list = document.getElementById('list');
-        list.innerHTML = services?.length > 0
-            ? services.map(s => `
-                <div class="card">
-                    <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Logo'}" class="profile-img" alt="${s.name} profile">
-                    <h3>${s.name || 'Business Name'}</h3>
-                    <p><strong>${s.city || 'Location'}</strong></p>
-                    <p>${s.description || 'No description'}</p>
-                    ${Array.isArray(s.photos) && s.photos.length > 0 ? `
-                    <div class="photos">
-                        ${s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('')}
-                    </div>` : ''}
-                    <p>Phone: <span class="private">${s.phone || 'Hidden'}</span></p>
-                    <p>Email: <span class="private">${s.gmail || 'Hidden'}</span></p>
+        if (!services || services.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:40px; opacity:0.9;">No services available yet.</p>';
+            return;
+        }
 
-                    <button class="message-btn" onclick="openChat('${s.id}', '${(s.name || 'Business').replace(/'/g, "\\'")}', '${s.profile || 'https://via.placeholder.com/50'}')">
-                        Message Business
-                    </button>
+        list.innerHTML = services.map(s => `
+            <div class="card">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Logo'}" class="profile-img" alt="${s.name || 'Business'} profile">
+                <h3>${s.name || 'Business Name'}</h3>
+                <p><strong>${s.city || 'Location'}</strong></p>
+                <p>${s.description || 'No description'}</p>
+                ${Array.isArray(s.photos) && s.photos.length > 0 ? `
+                <div class="photos">
+                    ${s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('')}
+                </div>` : ''}
+                <p>Phone: <span class="private">${s.phone || 'Hidden'}</span></p>
+                <p>Email: <span class="private">${s.gmail || 'Hidden'}</span></p>
 
-                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                    <div class="links">
-                        ${s.social_links.map(link => `
-                            <a href="${link.url}" target="_blank">
-                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
-                            </a>
-                        `).join('')}
-                    </div>` : ''}
-                </div>
-            `).join('')
-            : '<p style="text-align:center; padding:40px; opacity:0.9;">No services available yet.</p>';
+                <button class="message-btn" onclick="openChat('${s.id}', '${(s.name || 'Business').replace(/'/g, "\\'")}', '${s.profile || 'https://via.placeholder.com/50'}')">
+                    Message Business
+                </button>
+
+                ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                <div class="links">
+                    ${s.social_links.map(link => `
+                        <a href="${link.url}" target="_blank">
+                            <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                        </a>
+                    `).join('')}
+                </div>` : ''}
+            </div>
+        `).join('');
     }
 
     async function loadInbox() {
-        const { data: messages } = await supabaseClient.from('messages')
+        const { data: messages, error } = await supabaseClient.from('messages')
             .select('service_id, text, created_at, is_from_owner')
             .eq('customer_id', currentUser.uid)
             .order('created_at', { ascending: false });
 
-        if (!messages || messages.length === 0) {
+        if (error || !messages || messages.length === 0) {
             document.getElementById('inboxList').innerHTML = '<p style="text-align:center; opacity:0.8;">No messages yet. Start a conversation!</p>';
             return;
         }
@@ -594,7 +613,7 @@
 
         if (error) {
             console.error('Send error:', error);
-            alert(`Failed to send: ${error.message || 'Check console'}`);
+            alert(`Failed to send: ${error.message || 'Unknown error'}`);
         } else {
             input.value = '';
             loadChatMessages();
