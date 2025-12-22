@@ -386,7 +386,9 @@
     };
 
     function logout() {
-        auth.signOut().then(() => window.location.reload());
+        auth.signOut().then(() => {
+            window.location.href = 'https://truewebx.site/';
+        });
     }
 
     auth.onAuthStateChanged(user => {
@@ -455,9 +457,10 @@
             .eq('customer_id', currentUser.uid)
             .order('created_at', { ascending: false });
 
+        const uniqueServiceIds = [...new Set(messages.map(m => m.service_id))];
         const { data: services } = await supabaseClient.from('services')
             .select('id, name')
-            .in('id', [...new Set(messages.map(m => m.service_id))]);
+            .in('id', uniqueServiceIds);
 
         const chats = {};
         messages.forEach(m => {
