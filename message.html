@@ -452,10 +452,15 @@
 
     // Load all services
     async function loadAllServices() {
-        const { data: services } = await supabaseClient
+        const { data: services, error } = await supabaseClient
             .from('services')
             .select('*')
             .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Load services error:', error);
+            return;
+        }
 
         const list = document.getElementById('list');
         list.innerHTML = services && services.length > 0
@@ -491,10 +496,15 @@
 
     // Load inbox with business picture + name
     async function loadInbox() {
-        const { data: messages } = await supabaseClient.from('messages')
+        const { data: messages, error: msgError } = await supabaseClient.from('messages')
             .select('service_id, text, created_at, is_from_owner')
             .eq('customer_id', currentUser.uid)
             .order('created_at', { ascending: false });
+
+        if (msgError) {
+            console.error('Load messages error:', msgError);
+            return;
+        }
 
         const uniqueServiceIds = [...new Set(messages.map(m => m.service_id))];
         if (uniqueServiceIds.length === 0) {
@@ -502,23 +512,26 @@
             return;
         }
 
-        const { data: services } = await supabaseClient.from('services')
+        const { data: services, error: servError } = await supabaseClient.from('services')
             .select('id, name, profile')
             .in('id', uniqueServiceIds);
+
+        if (servError) {
+            console.error('Load services error:', servError);
+            return;
+        }
 
         const chats = {};
         messages.forEach(m => {
             const service = services.find(s => s.id === m.service_id);
-            if (service) {
-                if (!chats[m.service_id]) {
-                    chats[m.service_id] = {
-                        name: service.name || 'Business',
-                        profile: service.profile || 'https://via.placeholder.com/60',
-                        lastMessage: m.text,
-                        time: m.created_at,
-                        unread: m.is_from_owner
-                    };
-                }
+            if (service && !chats[m.service_id]) {
+                chats[m.service_id] = {
+                    name: service.name || 'Business',
+                    profile: service.profile || 'https://via.placeholder.com/60',
+                    lastMessage: m.text,
+                    time: m.created_at,
+                    unread: m.is_from_owner
+                };
             }
         });
 
@@ -545,10 +558,15 @@
     }
 
     async function loadChatMessages() {
-        const { data } = await supabaseClient.from('messages')
+        const { data, error } = await supabaseClient.from('messages')
             .select('*')
             .eq('service_id', currentChatServiceId)
             .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('Load chat error:', error);
+            return;
+        }
 
         const body = document.getElementById('chatBody');
         body.innerHTML = data && data.length
@@ -565,26 +583,32 @@
     async function sendMessage() {
         const input = document.getElementById('replyInput');
         const text = input.value.trim();
-        if (!text || !currentChatServiceId || !currentUser) return;
+        if (!text || !currentChatServiceId || !currentUser) {
+            alert('Cannot send empty message or no business selected.');
+            return;
+        }
 
-        const { error } = await supabaseClient.from('messages').insert({
-            service_id: currentChatServiceId,
-            customer_id: currentUser.uid,
-            text: text,
-            is_from_owner: false
-        });
+        const { data, error } = await supabaseClient.from('messages').insert([
+            {
+                service_id: currentChatServiceId,
+                customer_id: currentUser.uid,
+                text: text,
+                is_from_owner: false,
+                created_at: new Date().toISOString()
+            }
+        ]);
 
         if (error) {
-            console.error('Send error:', error);
-            alert('Failed to send message. Please try again.');
+            console.error('Send message error:', error);
+            alert(`Failed to send message: ${error.message || 'Unknown error. Check console.'}`);
         } else {
             input.value = '';
             loadChatMessages();
-            loadInbox(); // Refresh inbox
+            loadInbox(); // Refresh inbox to show new message
         }
     }
 
-    // Fixed: Use separate button ID and direct event listener
+    // Fixed event listeners
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
 
     document.getElementById('replyInput').addEventListener('keypress', e => {
