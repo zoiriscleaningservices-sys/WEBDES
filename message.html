@@ -5,8 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrueWebX – Customer Messages</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBam-ZJXtbgHnhI7IeGLgKS-HeRdSBQNS0",
+            authDomain: "limpieza-digital.firebaseapp.com",
+            projectId: "limpieza-digital",
+            storageBucket: "limpieza-digital.firebasestorage.app",
+            messagingSenderId: "410437614466",
+            appId: "1:410437614466:web:8abec9eb1189a2369bad9b",
+            measurementId: "G-PEEH86LR43"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        window.firebaseAuth = auth; // Make available globally for functions
+        window.GoogleAuthProvider = GoogleAuthProvider;
+        window.signInWithPopup = signInWithPopup;
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
@@ -378,21 +396,10 @@
     </div>
 </div>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
-        authDomain: "truewebx-78890.firebaseapp.com",
-        projectId: "truewebx-78890",
-        storageBucket: "truewebx-78890.firebasestorage.app",
-        messagingSenderId: "578628752073",
-        appId: "1:578628752073:web:c916cc3f234865a2947318"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script type="module">
+    // Supabase client
+    const { createClient } = supabase;
+    const supabaseClient = createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
 
     let currentUser = null;
     let currentChatServiceId = null;
@@ -405,32 +412,41 @@
         document.getElementById('toggleText').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
     }
 
-    document.getElementById('authForm').onsubmit = e => {
+    document.getElementById('authForm').onsubmit = async e => {
         e.preventDefault();
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const isSignup = document.getElementById('authButton').textContent === 'Sign Up';
 
-        const promise = isSignup 
-            ? auth.createUserWithEmailAndPassword(email, password)
-            : auth.signInWithEmailAndPassword(email, password);
-
-        promise.then(() => loadDashboard())
-               .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        try {
+            if (isSignup) {
+                await createUserWithEmailAndPassword(firebaseAuth, email, password);
+            } else {
+                await signInWithEmailAndPassword(firebaseAuth, email, password);
+            }
+            loadDashboard();
+        } catch (err) {
+            document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`;
+        }
     };
 
-    document.getElementById('googleBtn').onclick = () => {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-            .then(() => loadDashboard());
+    document.getElementById('googleBtn').onclick = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(firebaseAuth, provider);
+            loadDashboard();
+        } catch (err) {
+            document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`;
+        }
     };
 
     function logout() {
-        auth.signOut().then(() => {
+        signOut(firebaseAuth).then(() => {
             window.location.href = 'https://truewebx.site/';
         });
     }
 
-    auth.onAuthStateChanged(user => {
+    onAuthStateChanged(firebaseAuth, user => {
         currentUser = user;
         if (user) loadDashboard();
     });
@@ -494,23 +510,19 @@
             : '<p style="text-align:center; padding:40px; opacity:0.9;">No services available yet.</p>';
     }
 
-    // Load inbox with business picture + name
+    // Load inbox
     async function loadInbox() {
         const { data: messages, error: msgError } = await supabaseClient.from('messages')
             .select('service_id, text, created_at, is_from_owner')
             .eq('customer_id', currentUser.uid)
             .order('created_at', { ascending: false });
 
-        if (msgError) {
-            console.error('Load messages error:', msgError);
+        if (msgError || !messages || messages.length === 0) {
+            document.getElementById('inboxList').innerHTML = '<p style="text-align:center; opacity:0.8;">No messages yet. Start a conversation!</p>';
             return;
         }
 
         const uniqueServiceIds = [...new Set(messages.map(m => m.service_id))];
-        if (uniqueServiceIds.length === 0) {
-            document.getElementById('inboxList').innerHTML = '<p style="text-align:center; opacity:0.8;">No messages yet. Start a conversation!</p>';
-            return;
-        }
 
         const { data: services, error: servError } = await supabaseClient.from('services')
             .select('id, name, profile')
@@ -547,8 +559,8 @@
         `).join('');
     }
 
-    // Open chat with business picture and name
-    async function openChat(serviceId, name, profile) {
+    // Open chat
+    function openChat(serviceId, name, profile) {
         currentChatServiceId = serviceId;
         document.getElementById('chatBusinessName').textContent = name;
         document.getElementById('chatBusinessPic').src = profile || 'https://via.placeholder.com/50';
@@ -557,6 +569,7 @@
         document.getElementById('replyInput').focus();
     }
 
+    // Load chat messages
     async function loadChatMessages() {
         const { data, error } = await supabaseClient.from('messages')
             .select('*')
@@ -580,15 +593,16 @@
         body.scrollTop = body.scrollHeight;
     }
 
+    // Send message
     async function sendMessage() {
         const input = document.getElementById('replyInput');
         const text = input.value.trim();
         if (!text || !currentChatServiceId || !currentUser) {
-            alert('Cannot send empty message or no business selected.');
+            alert('Cannot send empty message.');
             return;
         }
 
-        const { data, error } = await supabaseClient.from('messages').insert([
+        const { error } = await supabaseClient.from('messages').insert([
             {
                 service_id: currentChatServiceId,
                 customer_id: currentUser.uid,
@@ -599,18 +613,16 @@
         ]);
 
         if (error) {
-            console.error('Send message error:', error);
-            alert(`Failed to send message: ${error.message || 'Unknown error. Check console.'}`);
+            console.error('Send error:', error);
+            alert(`Failed to send: ${error.message}`);
         } else {
             input.value = '';
             loadChatMessages();
-            loadInbox(); // Refresh inbox to show new message
+            loadInbox();
         }
     }
 
-    // Fixed event listeners
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
-
     document.getElementById('replyInput').addEventListener('keypress', e => {
         if (e.key === 'Enter') {
             e.preventDefault();
