@@ -7,7 +7,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signOut, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            GoogleAuthProvider, 
+            signInWithPopup 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBam-ZJXtbgHnhI7IeGLgKS-HeRdSBQNS0",
@@ -21,8 +29,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        window.firebaseAuth = auth; // Make available globally for functions
-        window.GoogleAuthProvider = GoogleAuthProvider;
+        const provider = new GoogleAuthProvider();
+
+        window.firebaseAuth = auth;
+        window.googleProvider = provider;
         window.signInWithPopup = signInWithPopup;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -397,14 +407,12 @@
 </div>
 
 <script type="module">
-    // Supabase client
     const { createClient } = supabase;
     const supabaseClient = createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
 
     let currentUser = null;
     let currentChatServiceId = null;
 
-    // Auth handlers
     function toggleAuthMode() {
         const isSignup = document.getElementById('formTitle').textContent === 'Sign In';
         document.getElementById('formTitle').textContent = isSignup ? 'Create Account' : 'Sign In';
@@ -432,8 +440,7 @@
 
     document.getElementById('googleBtn').onclick = async () => {
         try {
-            const provider = new GoogleAuthProvider();
-            await signInWithPopup(firebaseAuth, provider);
+            await signInWithPopup(firebaseAuth, googleProvider);
             loadDashboard();
         } catch (err) {
             document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`;
@@ -466,23 +473,14 @@
         if (section === 'messages') loadInbox();
     }
 
-    // Load all services
     async function loadAllServices() {
-        const { data: services, error } = await supabaseClient
-            .from('services')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Load services error:', error);
-            return;
-        }
+        const { data: services } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
 
         const list = document.getElementById('list');
-        list.innerHTML = services && services.length > 0
+        list.innerHTML = services?.length > 0
             ? services.map(s => `
                 <div class="card">
-                    <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Logo'}" class="profile-img" alt="${s.name || 'Business'} profile">
+                    <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Logo'}" class="profile-img" alt="${s.name} profile">
                     <h3>${s.name || 'Business Name'}</h3>
                     <p><strong>${s.city || 'Location'}</strong></p>
                     <p>${s.description || 'No description'}</p>
@@ -510,28 +508,21 @@
             : '<p style="text-align:center; padding:40px; opacity:0.9;">No services available yet.</p>';
     }
 
-    // Load inbox
     async function loadInbox() {
-        const { data: messages, error: msgError } = await supabaseClient.from('messages')
+        const { data: messages } = await supabaseClient.from('messages')
             .select('service_id, text, created_at, is_from_owner')
             .eq('customer_id', currentUser.uid)
             .order('created_at', { ascending: false });
 
-        if (msgError || !messages || messages.length === 0) {
+        if (!messages || messages.length === 0) {
             document.getElementById('inboxList').innerHTML = '<p style="text-align:center; opacity:0.8;">No messages yet. Start a conversation!</p>';
             return;
         }
 
         const uniqueServiceIds = [...new Set(messages.map(m => m.service_id))];
-
-        const { data: services, error: servError } = await supabaseClient.from('services')
+        const { data: services } = await supabaseClient.from('services')
             .select('id, name, profile')
             .in('id', uniqueServiceIds);
-
-        if (servError) {
-            console.error('Load services error:', servError);
-            return;
-        }
 
         const chats = {};
         messages.forEach(m => {
@@ -559,7 +550,6 @@
         `).join('');
     }
 
-    // Open chat
     function openChat(serviceId, name, profile) {
         currentChatServiceId = serviceId;
         document.getElementById('chatBusinessName').textContent = name;
@@ -569,20 +559,14 @@
         document.getElementById('replyInput').focus();
     }
 
-    // Load chat messages
     async function loadChatMessages() {
-        const { data, error } = await supabaseClient.from('messages')
+        const { data } = await supabaseClient.from('messages')
             .select('*')
             .eq('service_id', currentChatServiceId)
             .order('created_at', { ascending: true });
 
-        if (error) {
-            console.error('Load chat error:', error);
-            return;
-        }
-
         const body = document.getElementById('chatBody');
-        body.innerHTML = data && data.length
+        body.innerHTML = data?.length
             ? data.map(m => `
                 <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
                     ${m.text}
@@ -593,20 +577,16 @@
         body.scrollTop = body.scrollHeight;
     }
 
-    // Send message
     async function sendMessage() {
         const input = document.getElementById('replyInput');
         const text = input.value.trim();
-        if (!text || !currentChatServiceId || !currentUser) {
-            alert('Cannot send empty message.');
-            return;
-        }
+        if (!text || !currentChatServiceId) return;
 
         const { error } = await supabaseClient.from('messages').insert([
             {
                 service_id: currentChatServiceId,
                 customer_id: currentUser.uid,
-                text: text,
+                text,
                 is_from_owner: false,
                 created_at: new Date().toISOString()
             }
@@ -614,7 +594,7 @@
 
         if (error) {
             console.error('Send error:', error);
-            alert(`Failed to send: ${error.message}`);
+            alert(`Failed to send: ${error.message || 'Check console'}`);
         } else {
             input.value = '';
             loadChatMessages();
