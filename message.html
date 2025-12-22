@@ -29,10 +29,10 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        const googleProvider = new GoogleAuthProvider();
 
-        window.firebaseAuth = auth;
-        window.googleProvider = provider;
+        window.auth = auth;
+        window.googleProvider = googleProvider;
         window.signInWithPopup = signInWithPopup;
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -428,9 +428,9 @@
 
         try {
             if (isSignup) {
-                await createUserWithEmailAndPassword(firebaseAuth, email, password);
+                await createUserWithEmailAndPassword(auth, email, password);
             } else {
-                await signInWithEmailAndPassword(firebaseAuth, email, password);
+                await signInWithEmailAndPassword(auth, email, password);
             }
             loadDashboard();
         } catch (err) {
@@ -440,7 +440,7 @@
 
     document.getElementById('googleBtn').onclick = async () => {
         try {
-            await signInWithPopup(firebaseAuth, googleProvider);
+            await signInWithPopup(auth, googleProvider);
             loadDashboard();
         } catch (err) {
             document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`;
@@ -448,12 +448,12 @@
     };
 
     function logout() {
-        signOut(firebaseAuth).then(() => {
+        signOut(auth).then(() => {
             window.location.href = 'https://truewebx.site/';
         });
     }
 
-    onAuthStateChanged(firebaseAuth, user => {
+    onAuthStateChanged(auth, user => {
         currentUser = user;
         if (user) loadDashboard();
     });
