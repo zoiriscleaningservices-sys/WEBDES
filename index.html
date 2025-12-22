@@ -7,11 +7,14 @@
     <meta name="description" content="TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
     <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
     <meta name="robots" content="index, follow">
+
+    <!-- Default Open Graph tags (used when no specific business is targeted) -->
     <meta property="og:title" content="TrueWebX – Global Business Directory">
     <meta property="og:description" content="Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/">
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
+
     <link rel="canonical" href="https://truewebx.site/">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -54,7 +57,6 @@
         .tagline { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 600; margin-bottom: 10px; }
         .subtitle { font-size: clamp(0.95rem, 3.5vw, 1.35rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.6; }
 
-        /* SEARCH BAR */
         .search-container {
             max-width: 700px;
             margin: 20px auto;
@@ -188,7 +190,6 @@
             </p>
         </section>
 
-        <!-- SEARCH BAR -->
         <div class="search-container" role="search">
             <input type="text" id="searchInput" class="search-box" placeholder="Search by business name, service, or city (e.g. plumber Miami, web design New York...)" aria-label="Search businesses">
             <i class="fas fa-search search-icon" aria-hidden="true"></i>
@@ -230,6 +231,54 @@
 
     let allServices = [];
 
+    // Function to update Open Graph meta tags dynamically (client-side)
+    function updateOGTags(service) {
+        document.title = `${service.name} – ${service.city || 'Worldwide'} | TrueWebX`;
+
+        const setMeta = (property, content) => {
+            let meta = document.querySelector(`meta[property="${property}"]`);
+            if (!meta) {
+                meta = document.createElement('meta');
+                meta.setAttribute('property', property);
+                document.head.appendChild(meta);
+            }
+            meta.setAttribute('content', content);
+        };
+
+        setMeta('og:title', `${service.name} – Cleaning Services & More`);
+        setMeta('og:description', `${service.description || 'Professional services with free consultation'} in ${service.city || 'your area'}. Listed on TrueWebX Global Directory.`);
+        setMeta('og:type', 'profile');
+        setMeta('og:url', window.location.href);
+        setMeta('og:image', service.profile || 'https://truewebx.site/default-profile.jpg');
+
+        // Also update name="description" for general SEO
+        let descMeta = document.querySelector('meta[name="description"]');
+        if (descMeta) {
+            descMeta.setAttribute('content', `${service.name} – ${service.description || 'Professional services'} in ${service.city || 'worldwide'}. Free consultation available on TrueWebX.`);
+        }
+    }
+
+    // Reset to default OG tags
+    function resetOGTags() {
+        document.title = 'TrueWebX – Global Business Directory | Find Local Services Worldwide';
+
+        const setMeta = (property, content) => {
+            const meta = document.querySelector(`meta[property="${property}"]`);
+            if (meta) meta.setAttribute('content', content);
+        };
+
+        setMeta('og:title', 'TrueWebX – Global Business Directory');
+        setMeta('og:description', 'Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.');
+        setMeta('og:type', 'website');
+        setMeta('og:url', 'https://truewebx.site/');
+        setMeta('og:image', 'https://truewebx.site/og-image.jpg');
+
+        const descMeta = document.querySelector('meta[name="description"]');
+        if (descMeta) {
+            descMeta.setAttribute('content', 'TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.');
+        }
+    }
+
     async function loadServices() {
         const { data: services, error } = await supabaseClient
             .from('services')
@@ -242,6 +291,7 @@
             list.innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
             allServices = [];
             addStructuredData([]);
+            resetOGTags();
             return;
         }
 
@@ -249,7 +299,7 @@
         renderServices(services);
         addStructuredData(services);
 
-        // Handle hash on page load (e.g. #service-123)
+        // Handle direct link on load
         handleHash();
     }
 
@@ -320,10 +370,9 @@
             </article>
         `).join('');
 
-        // Attach copy-link functionality to all share buttons
         document.querySelectorAll('.share-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const cardId = this.parentElement.id; // e.g. service-123
+                const cardId = this.parentElement.id;
                 const url = `${window.location.origin}${window.location.pathname}#${cardId}`;
                 
                 navigator.clipboard.writeText(url).then(() => {
@@ -334,27 +383,35 @@
                         this.innerHTML = '<i class="fas fa-link"></i>';
                     }, 2000);
                 }).catch(() => {
-                    // Fallback for older browsers
                     prompt('Copy this link:', url);
                 });
             });
         });
     }
 
-    // Handle direct links like #service-123
     function handleHash() {
-        const hash = window.location.hash; // e.g. "#service-123"
+        const hash = window.location.hash;
         if (hash) {
             const targetCard = document.querySelector(hash);
             if (targetCard) {
                 targetCard.classList.add('targeted');
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
-                // Remove highlight after 4 seconds
                 setTimeout(() => {
                     targetCard.classList.remove('targeted');
                 }, 4000);
+
+                // Find the service data and update OG tags
+                const serviceId = hash.replace('#service-', '');
+                const service = allServices.find(s => s.id.toString() === serviceId);
+                if (service) {
+                    updateOGTags(service);
+                }
+            } else {
+                resetOGTags();
             }
+        } else {
+            resetOGTags();
         }
     }
 
@@ -376,7 +433,6 @@
         renderServices(filtered);
     });
 
-    // Re-check hash if user navigates back/forward
     window.addEventListener('hashchange', handleHash);
 
     loadServices();
