@@ -8,7 +8,7 @@
     <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
     <meta name="robots" content="index, follow">
 
-    <!-- Default Open Graph tags (used when no specific business is targeted) -->
+    <!-- Default Open Graph tags -->
     <meta property="og:title" content="TrueWebX – Global Business Directory">
     <meta property="og:description" content="Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.">
     <meta property="og:type" content="website">
@@ -104,9 +104,10 @@
         .services { display: grid; grid-template-columns: 1fr; gap: 20px; }
         .card { 
             background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
-            padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
+            padding: 24px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
             transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 1;
             position: relative;
+            text-align: center;
         }
         .card.hidden { display: none; }
         .card:hover { transform: translateY(-6px); }
@@ -119,33 +120,48 @@
             50% { box-shadow: 0 0 0 8px rgba(255, 107, 107, 0.4), 0 8px 28px rgba(0,0,0,0.4); }
             100% { box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.6), 0 8px 28px rgba(0,0,0,0.4); }
         }
-        .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
-        .card h3 { font-size: 1.6rem; margin: 10px 0; }
-        .card p { margin: 8px 0; line-height: 1.5; font-size: 1rem; }
+        .card .profile-img {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            margin: 16px auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .card h3 { font-size: 1.8rem; margin: 16px 0 8px; }
+        .card p { margin: 10px 0; line-height: 1.6; opacity: 0.95; }
+        .card .photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .card .photos img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
         .private { filter: blur(6px); user-select: none; transition: filter 0.3s; font-weight: 500; }
         .private:hover, .private:focus { filter: none; }
         .price { font-size: 1.8rem !important; color: var(--coral) !important; font-weight: 800; margin: 16px 0; }
-        .photos { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 14px 0; }
-        .photos img { width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .links { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 12px; }
-        .links a { color: #ffeb3b; text-decoration: none; font-weight: 600; padding: 8px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; gap: 6px; }
+        .links { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .links a { color: #ffeb3b; text-decoration: none; font-weight: 600; padding: 10px 16px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; gap: 8px; }
         .links a:hover { background: rgba(255,255,255,0.2); }
 
         .share-btn {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 16px;
+            right: 16px;
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.4);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             transition: all 0.3s ease;
         }
         .share-btn:hover {
@@ -166,7 +182,7 @@
             .photos { grid-template-columns: repeat(3,1fr); }
         }
         @media (min-width: 1024px) {
-            .services { grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); }
+            .services { grid-template-columns: repeat(auto-fill, minmax(360px,1fr)); }
             .hero { padding: 60px 20px 50px; }
             .glass { padding: 50px 40px; border-radius: 32px; }
         }
@@ -231,9 +247,8 @@
 
     let allServices = [];
 
-    // Function to update Open Graph meta tags dynamically (client-side)
     function updateOGTags(service) {
-        document.title = `${service.name} – ${service.city || 'Worldwide'} | TrueWebX`;
+        document.title = `${service.name} - ${service.city || 'Professional Services'} | TrueWebX`;
 
         const setMeta = (property, content) => {
             let meta = document.querySelector(`meta[property="${property}"]`);
@@ -245,37 +260,40 @@
             meta.setAttribute('content', content);
         };
 
-        setMeta('og:title', `${service.name} – Cleaning Services & More`);
-        setMeta('og:description', `${service.description || 'Professional services with free consultation'} in ${service.city || 'your area'}. Listed on TrueWebX Global Directory.`);
+        setMeta('og:title', `${service.name} – ${service.city || 'Local Service'}`);
+        setMeta('og:description', service.description || 'Professional service offering free consultation on TrueWebX global directory.');
         setMeta('og:type', 'profile');
         setMeta('og:url', window.location.href);
         setMeta('og:image', service.profile || 'https://truewebx.site/default-profile.jpg');
 
-        // Also update name="description" for general SEO
         let descMeta = document.querySelector('meta[name="description"]');
-        if (descMeta) {
-            descMeta.setAttribute('content', `${service.name} – ${service.description || 'Professional services'} in ${service.city || 'worldwide'}. Free consultation available on TrueWebX.`);
+        if (!descMeta) {
+            descMeta = document.createElement('meta');
+            descMeta.name = 'description';
+            document.head.appendChild(descMeta);
         }
+        descMeta.content = `${service.name} in ${service.city || 'your area'}. ${service.description || 'Professional services with free consultation.'} Contact now on TrueWebX.`;
     }
 
-    // Reset to default OG tags
     function resetOGTags() {
         document.title = 'TrueWebX – Global Business Directory | Find Local Services Worldwide';
 
-        const setMeta = (property, content) => {
-            const meta = document.querySelector(`meta[property="${property}"]`);
-            if (meta) meta.setAttribute('content', content);
+        const defaults = {
+            'og:title': 'TrueWebX – Global Business Directory',
+            'og:description': 'Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.',
+            'og:type': 'website',
+            'og:url': 'https://truewebx.site/',
+            'og:image': 'https://truewebx.site/og-image.jpg'
         };
 
-        setMeta('og:title', 'TrueWebX – Global Business Directory');
-        setMeta('og:description', 'Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.');
-        setMeta('og:type', 'website');
-        setMeta('og:url', 'https://truewebx.site/');
-        setMeta('og:image', 'https://truewebx.site/og-image.jpg');
+        Object.entries(defaults).forEach(([prop, content]) => {
+            const meta = document.querySelector(`meta[property="${prop}"]`);
+            if (meta) meta.content = content;
+        });
 
         const descMeta = document.querySelector('meta[name="description"]');
         if (descMeta) {
-            descMeta.setAttribute('content', 'TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.');
+            descMeta.content = 'TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.';
         }
     }
 
@@ -298,33 +316,34 @@
         allServices = services;
         renderServices(services);
         addStructuredData(services);
-
-        // Handle direct link on load
         handleHash();
     }
 
     function addStructuredData(services) {
-        const oldScript = document.querySelector('script[type="application/ld+json"]:not([src])');
-        if (oldScript) oldScript.remove();
+        const oldScript = document.querySelectorAll('script[type="application/ld+json"]');
+        oldScript.forEach(s => s.remove());
 
         const schemaItems = services.map(s => ({
             "@type": "ProfessionalService",
-            "name": s.name || "Business on TrueWebX",
-            "description": s.description || "Professional service listed on TrueWebX global directory",
+            "@id": `https://truewebx.site/#service-${s.id}`,
+            "name": s.name || "Professional Service",
+            "description": s.description || "Local professional service offering free consultation",
+            "image": s.profile || "https://truewebx.site/default-profile.jpg",
             "telephone": s.phone || "",
             "email": s.gmail || "",
             "address": {
                 "@type": "PostalAddress",
-                "addressLocality": s.city || "Worldwide"
-            },
-            "image": s.profile || "https://truewebx.site/default-profile.jpg",
-            "offers": {
-                "@type": "Offer",
-                "name": "Free Consultation"
+                "addressLocality": s.city || "Worldwide",
+                "addressCountry": "US"
             },
             "url": `https://truewebx.site/#service-${s.id}`,
-            "sameAs": s.social_links ? s.social_links.map(l => l.url) : [],
-            "datePublished": s.created_at || new Date().toISOString()
+            "offers": {
+                "@type": "Offer",
+                "name": "Free Consultation",
+                "price": "0"
+            },
+            "sameAs": Array.isArray(s.social_links) ? s.social_links.map(l => l.url) : [],
+            "datePublished": s.created_at ? new Date(s.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
         }));
 
         const schema = {
@@ -334,7 +353,7 @@
 
         const script = document.createElement('script');
         script.type = 'application/ld+json';
-        script.text = JSON.stringify(schema);
+        script.text = JSON.stringify(schema, null, 2);
         document.head.appendChild(script);
     }
 
@@ -347,24 +366,44 @@
 
         list.innerHTML = services.map(s => `
             <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/ProfessionalService">
-                <button class="share-btn" aria-label="Copy link to this business" title="Copy direct link">
+                <button class="share-btn" aria-label="Copy direct link to this business" title="Copy link">
                     <i class="fas fa-link"></i>
                 </button>
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name || 'business'}" itemprop="image">
-                <h3 itemprop="name">${s.name || 'Unnamed Business'}</h3>
-                <p><strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong></p>
-                <p itemprop="description">${s.description || 'No description provided'}</p>
+                
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" 
+                     alt="${s.name ? s.name + ' profile picture' : 'Business profile'}" 
+                     class="profile-img" itemprop="image">
+                
+                <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
+                
+                <p itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                    <strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong>
+                </p>
+                
+                <p itemprop="description">${s.description || 'Professional service offering free consultation'}</p>
+                
+                ${Array.isArray(s.photos) && s.photos.length > 0 ? `
                 <div class="photos" aria-label="Gallery photos">
-                    ${Array.isArray(s.photos) ? s.photos.map((p,i) => `<img src="${p}" alt="Gallery photo ${i+1} of ${s.name || 'business'}">`).join('') : ''}
-                </div>
-                <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Not available'}</span></p>
-                <p>Email: <span class="private" itemprop="email">${s.gmail || 'Not available'}</span></p>
-                <p class="price"><strong>Free Consultation</strong></p>
-                ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                <div class="links" itemprop="sameAs" content="${s.social_links.map(l => l.url).join(' ')}">
-                    ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" aria-label="Visit ${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}
+                    ${s.photos.map((p, i) => `<img src="${p}" alt="${s.name || 'Business'} gallery photo ${i+1}" loading="lazy">`).join('')}
                 </div>` : ''}
-                <small style="opacity:0.85;display:block;margin-top:12px;">
+                
+                <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
+                <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
+                
+                <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    <span itemprop="name">Free Consultation</span>
+                </strong></p>
+                
+                ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                <div class="links">
+                    ${s.social_links.map(l => `
+                        <a href="${l.url}" target="_blank" rel="noopener" aria-label="Visit ${l.type} profile" itemprop="sameAs">
+                            <i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}
+                        </a>
+                    `).join('')}
+                </div>` : ''}
+                
+                <small style="opacity:0.85;display:block;margin-top:16px;">
                     Published: ${new Date(s.created_at).toLocaleDateString('en-US', {day:'numeric', month:'long', year:'numeric'})}
                 </small>
             </article>
@@ -396,17 +435,11 @@
             if (targetCard) {
                 targetCard.classList.add('targeted');
                 targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
-                setTimeout(() => {
-                    targetCard.classList.remove('targeted');
-                }, 4000);
+                setTimeout(() => targetCard.classList.remove('targeted'), 4000);
 
-                // Find the service data and update OG tags
                 const serviceId = hash.replace('#service-', '');
                 const service = allServices.find(s => s.id.toString() === serviceId);
-                if (service) {
-                    updateOGTags(service);
-                }
+                if (service) updateOGTags(service);
             } else {
                 resetOGTags();
             }
@@ -415,10 +448,8 @@
         }
     }
 
-    // Real-time search
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
-
         if (query === '') {
             renderServices(allServices);
             return;
@@ -429,7 +460,6 @@
             (service.city && service.city.toLowerCase().includes(query)) ||
             (service.description && service.description.toLowerCase().includes(query))
         );
-
         renderServices(filtered);
     });
 
