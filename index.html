@@ -103,10 +103,20 @@
         .card { 
             background: var(--card-glass); backdrop-filter: blur(15px); border-radius: 24px; 
             padding: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
-            transition: transform 0.3s ease; opacity: 1;
+            transition: transform 0.3s ease, box-shadow 0.3s ease; opacity: 1;
+            position: relative;
         }
         .card.hidden { display: none; }
         .card:hover { transform: translateY(-6px); }
+        .card.targeted {
+            box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.6), 0 8px 28px rgba(0,0,0,0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.6), 0 8px 28px rgba(0,0,0,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255, 107, 107, 0.4), 0 8px 28px rgba(0,0,0,0.4); }
+            100% { box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.6), 0 8px 28px rgba(0,0,0,0.4); }
+        }
         .card img { width: 100%; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); }
         .card h3 { font-size: 1.6rem; margin: 10px 0; }
         .card p { margin: 8px 0; line-height: 1.5; font-size: 1rem; }
@@ -118,6 +128,33 @@
         .links { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 12px; }
         .links a { color: #ffeb3b; text-decoration: none; font-weight: 600; padding: 8px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; display: flex; align-items: center; gap: 6px; }
         .links a:hover { background: rgba(255,255,255,0.2); }
+
+        .share-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .share-btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+        .share-btn.copied {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+
         .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
         footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
 
@@ -211,10 +248,12 @@
         allServices = services;
         renderServices(services);
         addStructuredData(services);
+
+        // Handle hash on page load (e.g. #service-123)
+        handleHash();
     }
 
     function addStructuredData(services) {
-        // Remove old schema if exists
         const oldScript = document.querySelector('script[type="application/ld+json"]:not([src])');
         if (oldScript) oldScript.remove();
 
@@ -233,7 +272,7 @@
                 "@type": "Offer",
                 "name": "Free Consultation"
             },
-            "url": "https://truewebx.site/",
+            "url": `https://truewebx.site/#service-${s.id}`,
             "sameAs": s.social_links ? s.social_links.map(l => l.url) : [],
             "datePublished": s.created_at || new Date().toISOString()
         }));
@@ -257,7 +296,10 @@
         }
 
         list.innerHTML = services.map(s => `
-            <article class="card" itemscope itemtype="https://schema.org/ProfessionalService">
+            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/ProfessionalService">
+                <button class="share-btn" aria-label="Copy link to this business" title="Copy direct link">
+                    <i class="fas fa-link"></i>
+                </button>
                 <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" alt="Profile photo of ${s.name || 'business'}" itemprop="image">
                 <h3 itemprop="name">${s.name || 'Unnamed Business'}</h3>
                 <p><strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong></p>
@@ -277,6 +319,43 @@
                 </small>
             </article>
         `).join('');
+
+        // Attach copy-link functionality to all share buttons
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const cardId = this.parentElement.id; // e.g. service-123
+                const url = `${window.location.origin}${window.location.pathname}#${cardId}`;
+                
+                navigator.clipboard.writeText(url).then(() => {
+                    this.classList.add('copied');
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        this.classList.remove('copied');
+                        this.innerHTML = '<i class="fas fa-link"></i>';
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback for older browsers
+                    prompt('Copy this link:', url);
+                });
+            });
+        });
+    }
+
+    // Handle direct links like #service-123
+    function handleHash() {
+        const hash = window.location.hash; // e.g. "#service-123"
+        if (hash) {
+            const targetCard = document.querySelector(hash);
+            if (targetCard) {
+                targetCard.classList.add('targeted');
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Remove highlight after 4 seconds
+                setTimeout(() => {
+                    targetCard.classList.remove('targeted');
+                }, 4000);
+            }
+        }
     }
 
     // Real-time search
@@ -296,6 +375,9 @@
 
         renderServices(filtered);
     });
+
+    // Re-check hash if user navigates back/forward
+    window.addEventListener('hashchange', handleHash);
 
     loadServices();
 </script>
