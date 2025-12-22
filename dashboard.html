@@ -123,11 +123,31 @@
             max-width:600px;
         }
         .form-grid { display:grid; gap:18px; width:100%; }
-        input, textarea, button { padding:16px; border-radius:16px; border:none; font-size:16px; }
-        input, textarea { background:rgba(255,255,255,0.25); color:white; backdrop-filter:blur(10px); width:100%; }
+        input, textarea, button, select { padding:16px; border-radius:16px; border:none; font-size:16px; }
+        input, textarea, select { background:rgba(255,255,255,0.25); color:white; backdrop-filter:blur(10px); width:100%; }
         input::placeholder, textarea::placeholder { color:rgba(255,255,255,0.7); }
         button { background:var(--coral); color:white; font-weight:bold; cursor:pointer; width:100%; }
         button:disabled { background:#888; cursor:not-allowed; }
+
+        /* New Select Styles */
+        .location-select {
+            position: relative;
+        }
+        .location-select select {
+            appearance: none;
+            padding-right: 40px;
+        }
+        .location-select::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: rgba(255,255,255,0.8);
+        }
 
         .photo-upload {
             position: relative;
@@ -358,7 +378,64 @@
             <h2>Publish New Service</h2>
             <form class="form-grid" id="addForm">
                 <input type="text" id="name" placeholder="Business / Company Name" required>
-                <input type="text" id="city" placeholder="City and Country" required>
+                
+                <!-- NEW: Dropdown for US Cities & States -->
+                <div class="location-select">
+                    <select id="city" required>
+                        <option value="" disabled selected>Select City, State (USA only)</option>
+                        <option value="New York, NY">New York, NY</option>
+                        <option value="Los Angeles, CA">Los Angeles, CA</option>
+                        <option value="Chicago, IL">Chicago, IL</option>
+                        <option value="Houston, TX">Houston, TX</option>
+                        <option value="Phoenix, AZ">Phoenix, AZ</option>
+                        <option value="Philadelphia, PA">Philadelphia, PA</option>
+                        <option value="San Antonio, TX">San Antonio, TX</option>
+                        <option value="San Diego, CA">San Diego, CA</option>
+                        <option value="Dallas, TX">Dallas, TX</option>
+                        <option value="San Jose, CA">San Jose, CA</option>
+                        <option value="Austin, TX">Austin, TX</option>
+                        <option value="Jacksonville, FL">Jacksonville, FL</option>
+                        <option value="Fort Worth, TX">Fort Worth, TX</option>
+                        <option value="Columbus, OH">Columbus, OH</option>
+                        <option value="Charlotte, NC">Charlotte, NC</option>
+                        <option value="San Francisco, CA">San Francisco, CA</option>
+                        <option value="Indianapolis, IN">Indianapolis, IN</option>
+                        <option value="Seattle, WA">Seattle, WA</option>
+                        <option value="Denver, CO">Denver, CO</option>
+                        <option value="Washington, DC">Washington, DC</option>
+                        <option value="Boston, MA">Boston, MA</option>
+                        <option value="El Paso, TX">El Paso, TX</option>
+                        <option value="Nashville, TN">Nashville, TN</option>
+                        <option value="Detroit, MI">Detroit, MI</option>
+                        <option value="Oklahoma City, OK">Oklahoma City, OK</option>
+                        <option value="Portland, OR">Portland, OR</option>
+                        <option value="Las Vegas, NV">Las Vegas, NV</option>
+                        <option value="Memphis, TN">Memphis, TN</option>
+                        <option value="Louisville, KY">Louisville, KY</option>
+                        <option value="Baltimore, MD">Baltimore, MD</option>
+                        <option value="Milwaukee, WI">Milwaukee, WI</option>
+                        <option value="Albuquerque, NM">Albuquerque, NM</option>
+                        <option value="Tucson, AZ">Tucson, AZ</option>
+                        <option value="Fresno, CA">Fresno, CA</option>
+                        <option value="Mesa, AZ">Mesa, AZ</option>
+                        <option value="Sacramento, CA">Sacramento, CA</option>
+                        <option value="Atlanta, GA">Atlanta, GA</option>
+                        <option value="Kansas City, MO">Kansas City, MO</option>
+                        <option value="Colorado Springs, CO">Colorado Springs, CO</option>
+                        <option value="Omaha, NE">Omaha, NE</option>
+                        <option value="Raleigh, NC">Raleigh, NC</option>
+                        <option value="Miami, FL">Miami, FL</option>
+                        <option value="Long Beach, CA">Long Beach, CA</option>
+                        <option value="Virginia Beach, VA">Virginia Beach, VA</option>
+                        <option value="Oakland, CA">Oakland, CA</option>
+                        <option value="Minneapolis, MN">Minneapolis, MN</option>
+                        <option value="Tulsa, OK">Tulsa, OK</option>
+                        <option value="Tampa, FL">Tampa, FL</option>
+                        <option value="Arlington, TX">Arlington, TX</option>
+                        <option value="New Orleans, LA">New Orleans, LA</option>
+                    </select>
+                </div>
+
                 <input type="tel" id="phone" placeholder="Phone Number" required>
                 <input type="email" id="gmail" placeholder="Email" required>
                 <textarea id="desc" placeholder="Detailed Description" required></textarea>
@@ -407,7 +484,64 @@
             <h2>Edit Service</h2>
             <form class="form-grid" id="editForm">
                 <input type="text" id="edit-name" placeholder="Business / Company Name" required>
-                <input type="text" id="edit-city" placeholder="City and Country" required>
+                
+                <!-- Same dropdown in Edit form -->
+                <div class="location-select">
+                    <select id="edit-city" required>
+                        <option value="" disabled>Select City, State (USA only)</option>
+                        <option value="New York, NY">New York, NY</option>
+                        <option value="Los Angeles, CA">Los Angeles, CA</option>
+                        <option value="Chicago, IL">Chicago, IL</option>
+                        <option value="Houston, TX">Houston, TX</option>
+                        <option value="Phoenix, AZ">Phoenix, AZ</option>
+                        <option value="Philadelphia, PA">Philadelphia, PA</option>
+                        <option value="San Antonio, TX">San Antonio, TX</option>
+                        <option value="San Diego, CA">San Diego, CA</option>
+                        <option value="Dallas, TX">Dallas, TX</option>
+                        <option value="San Jose, CA">San Jose, CA</option>
+                        <option value="Austin, TX">Austin, TX</option>
+                        <option value="Jacksonville, FL">Jacksonville, FL</option>
+                        <option value="Fort Worth, TX">Fort Worth, TX</option>
+                        <option value="Columbus, OH">Columbus, OH</option>
+                        <option value="Charlotte, NC">Charlotte, NC</option>
+                        <option value="San Francisco, CA">San Francisco, CA</option>
+                        <option value="Indianapolis, IN">Indianapolis, IN</option>
+                        <option value="Seattle, WA">Seattle, WA</option>
+                        <option value="Denver, CO">Denver, CO</option>
+                        <option value="Washington, DC">Washington, DC</option>
+                        <option value="Boston, MA">Boston, MA</option>
+                        <option value="El Paso, TX">El Paso, TX</option>
+                        <option value="Nashville, TN">Nashville, TN</option>
+                        <option value="Detroit, MI">Detroit, MI</option>
+                        <option value="Oklahoma City, OK">Oklahoma City, OK</option>
+                        <option value="Portland, OR">Portland, OR</option>
+                        <option value="Las Vegas, NV">Las Vegas, NV</option>
+                        <option value="Memphis, TN">Memphis, TN</option>
+                        <option value="Louisville, KY">Louisville, KY</option>
+                        <option value="Baltimore, MD">Baltimore, MD</option>
+                        <option value="Milwaukee, WI">Milwaukee, WI</option>
+                        <option value="Albuquerque, NM">Albuquerque, NM</option>
+                        <option value="Tucson, AZ">Tucson, AZ</option>
+                        <option value="Fresno, CA">Fresno, CA</option>
+                        <option value="Mesa, AZ">Mesa, AZ</option>
+                        <option value="Sacramento, CA">Sacramento, CA</option>
+                        <option value="Atlanta, GA">Atlanta, GA</option>
+                        <option value="Kansas City, MO">Kansas City, MO</option>
+                        <option value="Colorado Springs, CO">Colorado Springs, CO</option>
+                        <option value="Omaha, NE">Omaha, NE</option>
+                        <option value="Raleigh, NC">Raleigh, NC</option>
+                        <option value="Miami, FL">Miami, FL</option>
+                        <option value="Long Beach, CA">Long Beach, CA</option>
+                        <option value="Virginia Beach, VA">Virginia Beach, VA</option>
+                        <option value="Oakland, CA">Oakland, CA</option>
+                        <option value="Minneapolis, MN">Minneapolis, MN</option>
+                        <option value="Tulsa, OK">Tulsa, OK</option>
+                        <option value="Tampa, FL">Tampa, FL</option>
+                        <option value="Arlington, TX">Arlington, TX</option>
+                        <option value="New Orleans, LA">New Orleans, LA</option>
+                    </select>
+                </div>
+
                 <input type="tel" id="edit-phone" placeholder="Phone Number" required>
                 <input type="email" id="edit-gmail" placeholder="Email" required>
                 <textarea id="edit-desc" placeholder="Detailed Description" required></textarea>
@@ -553,7 +687,6 @@
             .then(() => loadDashboard());
     };
 
-    // Updated Sign Out – redirects to the public homepage
     function logoutAndGoHome() {
         auth.signOut().then(() => {
             window.location.href = 'https://truewebx.site/';
@@ -614,6 +747,7 @@
             document.getElementById('addForm').reset();
             document.getElementById('profilePreview').innerHTML = '';
             document.getElementById('galleryPreview').innerHTML = '';
+            document.getElementById('city').value = ''; // Reset dropdown
         }
         if (section === 'messages') loadInbox();
     }
@@ -654,7 +788,7 @@
         if (isPublishing) return;
         
         const name = document.getElementById('name').value.trim();
-        const city = document.getElementById('city').value.trim();
+        const city = document.getElementById('city').value; // Now from dropdown
         const phone = document.getElementById('phone').value.trim();
         const gmail = document.getElementById('gmail').value.trim();
         const desc = document.getElementById('desc').value.trim();
@@ -665,6 +799,7 @@
             return;
         }
 
+        // Rest of the function remains exactly the same
         isPublishing = true;
         const publishBtn = document.getElementById('publishBtn');
         publishBtn.disabled = true;
@@ -731,7 +866,7 @@
         const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
 
         document.getElementById('edit-name').value = service.name || '';
-        document.getElementById('edit-city').value = service.city || '';
+        document.getElementById('edit-city').value = service.city || ''; // Will auto-select if matches
         document.getElementById('edit-phone').value = service.phone || '';
         document.getElementById('edit-gmail').value = service.gmail || '';
         document.getElementById('edit-desc').value = service.description || '';
@@ -744,11 +879,12 @@
         show('edit');
     }
 
+    // updateService(), deleteService(), inbox functions remain unchanged
     async function updateService() {
         if (!currentEditId) return;
 
         const name = document.getElementById('edit-name').value.trim();
-        const city = document.getElementById('edit-city').value.trim();
+        const city = document.getElementById('edit-city').value;
         const phone = document.getElementById('edit-phone').value.trim();
         const gmail = document.getElementById('edit-gmail').value.trim();
         const desc = document.getElementById('edit-desc').value.trim();
@@ -819,6 +955,7 @@
         }
     }
 
+    // Messages functions unchanged...
     async function loadInbox() {
         const user = auth.currentUser;
         if (!user) return;
