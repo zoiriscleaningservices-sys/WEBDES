@@ -371,7 +371,7 @@
                 <div class="chat-body" id="chatBody"></div>
                 <div class="chat-input">
                     <input type="text" id="replyInput" placeholder="Type your message...">
-                    <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>
@@ -396,7 +396,6 @@
 
     let currentUser = null;
     let currentChatServiceId = null;
-    let currentBusinessData = null;
 
     // Auth handlers
     function toggleAuthMode() {
@@ -490,7 +489,7 @@
             : '<p style="text-align:center; padding:40px; opacity:0.9;">No services available yet.</p>';
     }
 
-    // Load inbox with business name + profile picture
+    // Load inbox with business picture + name
     async function loadInbox() {
         const { data: messages } = await supabaseClient.from('messages')
             .select('service_id, text, created_at, is_from_owner')
@@ -510,14 +509,16 @@
         const chats = {};
         messages.forEach(m => {
             const service = services.find(s => s.id === m.service_id);
-            if (service && !chats[m.service_id]) {
-                chats[m.service_id] = {
-                    name: service.name || 'Business',
-                    profile: service.profile || 'https://via.placeholder.com/60',
-                    lastMessage: m.text,
-                    time: m.created_at,
-                    unread: m.is_from_owner
-                };
+            if (service) {
+                if (!chats[m.service_id]) {
+                    chats[m.service_id] = {
+                        name: service.name || 'Business',
+                        profile: service.profile || 'https://via.placeholder.com/60',
+                        lastMessage: m.text,
+                        time: m.created_at,
+                        unread: m.is_from_owner
+                    };
+                }
             }
         });
 
@@ -540,6 +541,7 @@
         document.getElementById('chatBusinessPic').src = profile || 'https://via.placeholder.com/50';
         document.getElementById('chatWindow').style.display = 'flex';
         loadChatMessages();
+        document.getElementById('replyInput').focus();
     }
 
     async function loadChatMessages() {
@@ -563,25 +565,33 @@
     async function sendMessage() {
         const input = document.getElementById('replyInput');
         const text = input.value.trim();
-        if (!text || !currentChatServiceId) return;
+        if (!text || !currentChatServiceId || !currentUser) return;
 
         const { error } = await supabaseClient.from('messages').insert({
             service_id: currentChatServiceId,
             customer_id: currentUser.uid,
-            text,
-            is_from_owner: false,
-            created_at: new Date().toISOString()
+            text: text,
+            is_from_owner: false
         });
 
-        if (!error) {
+        if (error) {
+            console.error('Send error:', error);
+            alert('Failed to send message. Please try again.');
+        } else {
             input.value = '';
             loadChatMessages();
-            loadInbox(); // Refresh inbox to show latest message
+            loadInbox(); // Refresh inbox
         }
     }
 
+    // Fixed: Use separate button ID and direct event listener
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
     document.getElementById('replyInput').addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendMessage();
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
     });
 </script>
 </body>
