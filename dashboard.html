@@ -9,7 +9,12 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --coral: #ff6b6b; --turquoise: #0d9488; --glass-bg: rgba(255,255,255,0.18); --text: #ffffff; }
+        :root { 
+            --coral: #ff6b6b; 
+            --turquoise: #0d9488; 
+            --glass-bg: rgba(255,255,255,0.18); 
+            --text: #ffffff; 
+        }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { 
             font-family: system-ui, -apple-system, sans-serif; 
@@ -185,7 +190,6 @@
         .preview-img { max-width: 120px; max-height: 120px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         .profile-preview { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; border: 5px solid var(--coral); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
 
-        /* Rest of styles unchanged for brevity */
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { background:rgba(255,255,255,0.15); border-radius:24px; padding:20px; position:relative; width:100%; }
         .edit, .delete { position:absolute; top:10px; right:10px; background:#ffeb3b; color:black; width:36px; height:36px; border-radius:50%; display:grid; place-items:center; cursor:pointer; font-size:20px; opacity:0; transition:opacity 0.3s; }
@@ -203,6 +207,73 @@
         .added-link { display:flex; align-items:center; gap:10px; margin-bottom:8px; background:rgba(255,255,255,0.1); padding:12px; border-radius:20px; }
         .added-link i { font-size:20px; }
         .added-link button { background:red; color:white; border:none; border-radius:50%; width:32px; height:32px; cursor:pointer; }
+
+        .inbox-list { display: grid; gap: 16px; }
+        .inbox-item {
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .inbox-item:hover { background: rgba(255,255,255,0.25); transform: translateY(-4px); }
+        .inbox-item.unread { border-left: 4px solid var(--coral); }
+
+        .chat-window {
+            display: none;
+            flex-direction: column;
+            height: 70vh;
+            margin-top: 20px;
+        }
+        .chat-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.4;
+        }
+        .message.client { align-self: flex-end; background: var(--coral); color: white; }
+        .message.owner { align-self: flex-start; background: rgba(255,255,255,0.3); }
+        .message small { display: block; margin-top: 6px; opacity: 0.7; font-size: 0.8em; }
+        .chat-input {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .chat-input input::placeholder { color: rgba(255,255,255,0.7); }
+        .chat-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--coral);
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
 
         @media (max-width: 768px) {
             .glass { padding: 24px; }
@@ -276,7 +347,7 @@
             <form class="form-grid" id="addForm">
                 <input type="text" id="name" placeholder="Business / Company Name" required>
 
-                <!-- NEW: Two separate dropdowns – City first, then State -->
+                <!-- City Dropdown -->
                 <div class="select-wrapper">
                     <select id="cityAdd" required>
                         <option value="" disabled selected>Select City (A-Z)</option>
@@ -309,6 +380,7 @@
                         <option value="Miami">Miami</option>
                         <option value="Milwaukee">Milwaukee</option>
                         <option value="Minneapolis">Minneapolis</option>
+                        <option value="Mobile">Mobile</option>
                         <option value="Nashville">Nashville</option>
                         <option value="New Orleans">New Orleans</option>
                         <option value="New York">New York</option>
@@ -333,6 +405,7 @@
                     </select>
                 </div>
 
+                <!-- State Dropdown -->
                 <div class="select-wrapper">
                     <select id="stateAdd" required>
                         <option value="" disabled selected>Select State (A-Z)</option>
@@ -389,11 +462,13 @@
                     </select>
                 </div>
 
+                <!-- ZIP Code Field -->
+                <input type="text" id="zipAdd" placeholder="ZIP Code (optional, e.g. 36609)" maxlength="5" pattern="\d{0,5}" title="5-digit ZIP code">
+
                 <input type="tel" id="phone" placeholder="Phone Number" required>
                 <input type="email" id="gmail" placeholder="Email" required>
                 <textarea id="desc" placeholder="Detailed Description" rows="5" required></textarea>
 
-                <!-- Photo uploads unchanged -->
                 <div class="photo-upload">
                     <i class="fas fa-camera"></i>
                     <span>Upload Profile Photo / Logo</span>
@@ -410,7 +485,6 @@
                     <div class="preview-container" id="galleryPreview"></div>
                 </div>
 
-                <!-- Social links unchanged -->
                 <div id="social-container">
                     <h3 style="margin:20px 0 10px;">Social Media (optional)</h3>
                     <div class="social-input">
@@ -435,7 +509,6 @@
             <p id="msg"></p>
         </div>
 
-        <!-- Edit form with same new dropdowns -->
         <div id="edit" class="glass" style="display:none;">
             <h2>Edit Service</h2>
             <form class="form-grid" id="editForm">
@@ -444,7 +517,7 @@
                 <div class="select-wrapper">
                     <select id="cityEdit" required>
                         <option value="" disabled selected>Select City (A-Z)</option>
-                        <!-- Same city list as above -->
+                        <!-- Same city list as add form -->
                         <option value="Albuquerque">Albuquerque</option>
                         <option value="Arlington">Arlington</option>
                         <option value="Atlanta">Atlanta</option>
@@ -474,6 +547,7 @@
                         <option value="Miami">Miami</option>
                         <option value="Milwaukee">Milwaukee</option>
                         <option value="Minneapolis">Minneapolis</option>
+                        <option value="Mobile">Mobile</option>
                         <option value="Nashville">Nashville</option>
                         <option value="New Orleans">New Orleans</option>
                         <option value="New York">New York</option>
@@ -504,17 +578,18 @@
                         <!-- Same state list -->
                         <option value="AL">Alabama - AL</option>
                         <option value="AK">Alaska - AK</option>
-                        <!-- ... all states ... -->
+                        <option value="AZ">Arizona - AZ</option>
+                        <!-- ... all 50 states ... -->
                         <option value="WY">Wyoming - WY</option>
                     </select>
                 </div>
 
-                <!-- Rest of edit form unchanged -->
+                <input type="text" id="zipEdit" placeholder="ZIP Code (optional, e.g. 36609)" maxlength="5" pattern="\d{0,5}">
+
                 <input type="tel" id="edit-phone" placeholder="Phone Number" required>
                 <input type="email" id="edit-gmail" placeholder="Email" required>
                 <textarea id="edit-desc" placeholder="Detailed Description" rows="5" required></textarea>
 
-                <!-- Photo uploads for edit unchanged -->
                 <div class="photo-upload">
                     <i class="fas fa-camera"></i>
                     <span>Change Profile Photo / Logo</span>
@@ -531,11 +606,19 @@
                     <div class="preview-container" id="editGalleryPreview"></div>
                 </div>
 
-                <!-- Social for edit unchanged -->
                 <div id="edit-social-container">
                     <h3 style="margin:20px 0 10px;">Social Media</h3>
                     <div class="social-input">
-                        <select id="edit-social-type"> <!-- options same --> </select>
+                        <select id="edit-social-type">
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="twitter">X (Twitter)</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="other">Other</option>
+                        </select>
                         <input type="url" id="edit-social-url" placeholder="Full URL">
                         <button type="button" onclick="addSocialLink(true)">+</button>
                     </div>
@@ -547,60 +630,389 @@
             <p id="edit-msg"></p>
         </div>
 
-        <!-- Messages tab unchanged -->
-        <!-- ... -->
+        <div id="messages" class="glass" style="display:none;">
+            <h2>Messages</h2>
+            <div id="inboxList" class="inbox-list"></div>
 
+            <div id="chatWindow" class="glass chat-window">
+                <div class="chat-header" id="chatHeader">Select a conversation</div>
+                <div class="chat-body" id="chatBody"></div>
+                <div class="chat-input">
+                    <input type="text" id="replyInput" placeholder="Type your reply...">
+                    <button onclick="sendReply()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    // Firebase and Supabase config unchanged ...
+    const firebaseConfig = {
+        apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
+        authDomain: "truewebx-78890.firebaseapp.com",
+        projectId: "truewebx-78890",
+        storageBucket: "truewebx-78890.firebasestorage.app",
+        messagingSenderId: "578628752073",
+        appId: "1:578628752073:web:c916cc3f234865a2947318"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-    // In addService():
-    const city = document.getElementById('cityAdd').value.trim();
-    const state = document.getElementById('stateAdd').value;
-    const fullLocation = city && state ? `${city}, ${state}` : '';
+    const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Validation
-    if (!city || !state) {
-        msg.innerHTML = '<p style="color:red;">Please select both city and state!</p>';
-        return;
+    const list = document.getElementById('list');
+    const msg = document.getElementById('msg');
+    const welcomeMsg = document.getElementById('welcomeMsg');
+    let currentEditId = null;
+    let currentSocialLinks = [];
+    let isSignupMode = false;
+    let isPublishing = false;
+    let currentChatServiceId = null;
+
+    function previewImage(file, containerId, isProfile = false) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = isProfile ? 'profile-preview' : 'preview-img';
+            document.getElementById(containerId).innerHTML = '';
+            document.getElementById(containerId).appendChild(img);
+        };
+        reader.readAsDataURL(file);
     }
 
-    // Then use fullLocation as the 'city' field in DB
-    const service = {
-        // ...
-        city: fullLocation,
-        // ...
-    };
-
-    // In editService(id):
-    // After fetching service
-    const [cityPart, statePart] = service.city ? service.city.split(', ') : ['', ''];
-    document.getElementById('cityEdit').value = cityPart || '';
-    document.getElementById('stateEdit').value = statePart || '';
-
-    // In updateService():
-    const cityEdit = document.getElementById('cityEdit').value.trim();
-    const stateEdit = document.getElementById('stateEdit').value;
-    const fullLocationEdit = cityEdit && stateEdit ? `${cityEdit}, ${stateEdit}` : '';
-
-    if (!cityEdit || !stateEdit) {
-        document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Please select both city and state!</p>';
-        return;
+    function previewMultipleImages(files, containerId) {
+        document.getElementById(containerId).innerHTML = '';
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img';
+                document.getElementById(containerId).appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
     }
 
-    const updates = {
-        // ...
-        city: fullLocationEdit,
-        // ...
+    document.getElementById('profile').addEventListener('change', e => e.target.files[0] && previewImage(e.target.files[0], 'profilePreview', true));
+    document.getElementById('photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'galleryPreview'));
+    document.getElementById('edit-profile').addEventListener('change', e => e.target.files[0] ? previewImage(e.target.files[0], 'editProfilePreview', true) : document.getElementById('editProfilePreview').innerHTML = '');
+    document.getElementById('edit-photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'editGalleryPreview'));
+
+    function toggleAuthMode() {
+        isSignupMode = !isSignupMode;
+        document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Sign In';
+        document.getElementById('authButton').textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+    }
+
+    document.getElementById('authForm').onsubmit = e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (isSignupMode) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        }
     };
 
-    // Reset in show('add')
-    document.getElementById('cityAdd').value = '';
-    document.getElementById('stateAdd').value = '';
+    document.getElementById('googleBtn').onclick = () => {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(() => loadDashboard());
+    };
 
-    // All other script unchanged
+    function logoutAndGoHome() {
+        auth.signOut().then(() => {
+            window.location.href = 'https://truewebx.site/';
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) loadDashboard(user);
+    });
+
+    async function loadDashboard(user = auth.currentUser) {
+        if (!user) return;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
+
+        const { data: services } = await supabaseClient
+            .from('services')
+            .select('*')
+            .eq('owner_id', user.uid)
+            .order('created_at', { ascending: false });
+
+        list.innerHTML = services && services.length > 0
+            ? services.map(s => `
+                <div class="card">
+                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
+                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
+                    <img src="${s.profile || 'https://via.placeholder.com/300?text=Logo'}" style="width:100%;max-width:300px;border-radius:16px;margin:10px 0;">
+                    <h3>${s.name || 'No business name'}</h3>
+                    <p><strong>${s.city || 'No location'}</strong></p>
+                    <p>${s.description || 'No description'}</p>
+                    <div class="photos">${Array.isArray(s.photos) ? s.photos.map(p => `<img src="${p}">`).join('') : ''}</div>
+                    <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
+                    <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
+
+                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                    <div class="links" style="margin-top:15px;">
+                        ${s.social_links.map(link => `
+                            <a href="${link.url}" target="_blank">
+                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                            </a>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('')
+            : '<p style="text-align:center;">You have no published services yet. Create a new one!</p>';
+    }
+
+    function show(section) {
+        ['home', 'add', 'edit', 'messages'].forEach(s => document.getElementById(s).style.display = s === section ? 'block' : 'none');
+        document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'messages' ? 2 : 3)));
+        if (section === 'home') loadDashboard();
+        if (section === 'add') {
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('publishBtn').disabled = false;
+            document.getElementById('addForm').reset();
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
+            document.getElementById('zipAdd').value = '';
+        }
+        if (section === 'messages') loadInbox();
+    }
+
+    function addSocialLink(isEdit = false) {
+        const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+        const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+        const type = select.value;
+        const url = input.value.trim();
+        if (url && url.startsWith('http')) {
+            currentSocialLinks.push({ type, url });
+            updateAddedSocials(isEdit);
+            input.value = '';
+        } else if (url) {
+            alert('Please enter a valid URL (starting with https://)');
+        }
+    }
+
+    function updateAddedSocials(isEdit = false) {
+        const container = isEdit ? 'edit-added-socials' : 'added-socials';
+        document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
+            <div class="added-link">
+                <i class="fab fa-${link.type.toLowerCase()}"></i>
+                <span>${link.type}: ${link.url}</span>
+                <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+            </div>
+        `).join('');
+    }
+
+    function removeSocialLink(index, isEdit = false) {
+        currentSocialLinks.splice(index, 1);
+        updateAddedSocials(isEdit);
+    }
+
+    document.getElementById('publishBtn').onclick = addService;
+
+    async function addService() {
+        if (isPublishing) return;
+
+        const name = document.getElementById('name').value.trim();
+        const city = document.getElementById('cityAdd').value;
+        const state = document.getElementById('stateAdd').value;
+        const zip = document.getElementById('zipAdd').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const gmail = document.getElementById('gmail').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const profileFile = document.getElementById('profile').files[0];
+
+        if (!name || !city || !state || !phone || !gmail || !desc || !profileFile) {
+            msg.innerHTML = '<p style="color:red;">Required fields are missing!</p>';
+            return;
+        }
+
+        if (zip && !/^\d{5}$/.test(zip)) {
+            msg.innerHTML = '<p style="color:red;">ZIP code must be 5 digits</p>';
+            return;
+        }
+
+        isPublishing = true;
+        document.getElementById('publishBtn').disabled = true;
+        document.getElementById('publishBtn').textContent = 'PUBLISHING...';
+
+        let location = `${city}, ${state}`;
+        if (zip) location += ` ${zip}`;
+
+        const user = auth.currentUser;
+        if (!user) return;
+
+        try {
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (profileError) throw profileError;
+            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            const profileUrl = profileData.publicUrl;
+
+            const photoFiles = document.getElementById('photos').files;
+            const photosUrls = [];
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) continue;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const service = {
+                id: crypto.randomUUID(),
+                owner_id: user.uid,
+                name,
+                city: location,
+                phone,
+                gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks,
+                created_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient.from('services').insert(service);
+            if (error) throw error;
+
+            msg.innerHTML = '<p style="color:#0f0;">Published successfully!</p>';
+            document.getElementById('addForm').reset();
+            currentSocialLinks = [];
+            updateAddedSocials();
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 3000);
+        } catch (err) {
+            msg.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+        } finally {
+            isPublishing = false;
+            document.getElementById('publishBtn').disabled = false;
+            document.getElementById('publishBtn').textContent = 'PUBLISH NOW';
+        }
+    }
+
+    async function editService(id) {
+        currentEditId = id;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-phone').value = service.phone || '';
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-desc').value = service.description || '';
+
+        // Parse location: e.g. "Mobile, AL 36609" or "Mobile, AL"
+        const parts = service.city ? service.city.trim().split(' ') : [];
+        const zipPart = parts.length > 2 && /^\d{5}$/.test(parts[parts.length - 1]) ? parts.pop() : '';
+        const cityState = parts.join(' ');
+        const [cityPart, statePart] = cityState ? cityState.split(', ') : ['', ''];
+
+        document.getElementById('cityEdit').value = cityPart || '';
+        document.getElementById('stateEdit').value = statePart || '';
+        document.getElementById('zipEdit').value = zipPart;
+
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+        updateAddedSocials(true);
+        document.getElementById('editProfilePreview').innerHTML = '';
+        document.getElementById('editGalleryPreview').innerHTML = '';
+
+        show('edit');
+    }
+
+    async function updateService() {
+        if (!currentEditId) return;
+
+        const name = document.getElementById('edit-name').value.trim();
+        const city = document.getElementById('cityEdit').value;
+        const state = document.getElementById('stateEdit').value;
+        const zip = document.getElementById('zipEdit').value.trim();
+        const phone = document.getElementById('edit-phone').value.trim();
+        const gmail = document.getElementById('edit-gmail').value.trim();
+        const desc = document.getElementById('edit-desc').value.trim();
+
+        if (!name || !city || !state || !phone || !gmail || !desc) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
+            return;
+        }
+
+        if (zip && !/^\d{5}$/.test(zip)) {
+            document.getElementById('edit-msg').innerHTML = '<p style="color:red;">ZIP code must be 5 digits</p>';
+            return;
+        }
+
+        let location = `${city}, ${state}`;
+        if (zip) location += ` ${zip}`;
+
+        try {
+            const profileFile = document.getElementById('edit-profile').files[0];
+            const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+            let profileUrl = current.profile;
+            if (profileFile) {
+                const fileExt = profileFile.name.split('.').pop();
+                const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                profileUrl = data.publicUrl;
+            }
+
+            let photosUrls = current.photos || [];
+            const photoFiles = document.getElementById('edit-photos').files;
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) throw error;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            const updates = {
+                name,
+                city: location,
+                phone,
+                gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: currentSocialLinks
+            };
+
+            const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+            if (error) throw error;
+
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully!</p>';
+            setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 2000);
+        } catch (err) {
+            document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+        }
+    }
+
+    // deleteService, loadInbox, openChat, loadChatMessages, sendReply unchanged...
 </script>
 </body>
 </html>
