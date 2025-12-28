@@ -162,7 +162,7 @@
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
         .card .gallery::-webkit-scrollbar { display: none; }
         .card .gallery img {
@@ -198,7 +198,7 @@
             scroll-snap-align: center;
         }
 
-        /* Optional: Dots indicator for full gallery */
+        /* Dots indicator for full gallery */
         .gallery-dots {
             display: flex;
             justify-content: center;
@@ -405,7 +405,6 @@
             </article>
         `).join('');
 
-        // Share button functionality
         document.querySelectorAll('.share-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -439,7 +438,6 @@
 
         if (error || !service) return false;
 
-        // SEO updates (unchanged)
         const cityPart = service.city ? service.city.split(',')[0].trim() : 'Your Area';
         const fullLocation = service.city || 'Your Area';
         const title = `#1 Professional Service in ${fullLocation} | ${service.name}`;
@@ -447,36 +445,45 @@
         const pageUrl = window.location.href;
 
         document.title = title;
-        let metaDesc = document.querySelector('meta[name="description"]') || document.createElement('meta');
-        metaDesc.name = 'description'; metaDesc.content = description; 
-        if (!document.querySelector('meta[name="description"]')) document.head.appendChild(metaDesc);
 
-        let canonical = document.querySelector('link[rel="canonical"]') || document.createElement('link');
-        canonical.rel = 'canonical'; canonical.href = pageUrl;
-        if (!document.querySelector('link[rel="canonical"]')) document.head.appendChild(canonical);
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+            metaDesc = document.createElement('meta');
+            metaDesc.name = 'description';
+            document.head.appendChild(metaDesc);
+        }
+        metaDesc.content = description;
 
-        // Open Graph & Twitter (unchanged for brevity - same as before)
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            document.head.appendChild(canonical);
+        }
+        canonical.href = pageUrl;
 
-        // Render single service page with swipeable full gallery
+        // Open Graph and Twitter updates (omitted for brevity, same as before)
+
+        // Fixed single service layout
         document.querySelector('.glass').innerHTML = `
-            <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+            <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; text-align: center;">
 
                 ${service.profile ? `
-                <img src="${service.profile}" alt="${service.name} Logo" style="width:100%; max-width:600px; border-radius:24px; margin:30px auto; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+                <img src="${service.profile}" alt="${service.name} Logo" style="width:100%; max-width:600px; border-radius:24px; margin:20px auto 30px; box-shadow:0 8px 32px rgba(0,0,0,0.5); display:block;">
                 ` : ''}
 
                 <p style="font-size: 1.3rem; line-height: 1.8; margin: 30px 0; opacity: 0.95;">
                     ${service.description || 'Professional, reliable, and affordable services tailored to your needs.'}
                 </p>
 
-                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 24px; padding: 30px; margin: 40px 0; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 24px; padding: 24px 20px; margin: 40px auto; max-width: 600px;">
                     <p style="font-size: 1.4rem; margin: 15px 0;">
-                        <i class="fas fa-phone" style="color: var(--coral); margin-right: 10px;"></i>
-                        Phone: <a href="tel:${service.phone}" style="color: white; text-decoration: none; font-weight: 600;">${service.phone}</a>
+                        <i class="fas fa-phone" style="color: var(--coral); margin-right: 12px;"></i>
+                        Phone: <a href="tel:${service.phone}" style="color: white; text-decoration: none; font-weight: 600;">${service.phone || 'Contact for details'}</a>
                     </p>
                     <p style="font-size: 1.4rem; margin: 15px 0;">
-                        <i class="fas fa-envelope" style="color: var(--coral); margin-right: 10px;"></i>
-                        Email: <a href="mailto:${service.gmail}" style="color: white; text-decoration: none; font-weight: 600;">${service.gmail}</a>
+                        <i class="fas fa-envelope" style="color: var(--coral); margin-right: 12px;"></i>
+                        Email: <a href="mailto:${service.gmail}" style="color: white; text-decoration: none; font-weight: 600;">${service.gmail || 'Contact for details'}</a>
                     </p>
                 </div>
 
@@ -495,7 +502,7 @@
                     </div>
                     <div class="gallery-dots" id="galleryDots"></div>
                 </div>
-                ` : '<p style="opacity: 0.8;">No gallery photos yet.</p>'}
+                ` : '<p style="opacity: 0.8; margin: 40px 0;">No gallery photos yet.</p>'}
 
                 <a href="/" style="display: inline-block; margin: 60px auto; padding: 16px 40px; background: var(--coral); color: white; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.3rem; box-shadow: 0 6px 20px rgba(0,0,0,0.3);">
                     ← Back to Directory
@@ -503,7 +510,7 @@
             </div>
         `;
 
-        // Add dot indicators and sync active state
+        // Dot indicators
         if (service.photos?.length > 1) {
             const gallery = document.getElementById('fullGallery');
             const dotsContainer = document.getElementById('galleryDots');
@@ -514,7 +521,7 @@
             });
 
             gallery.addEventListener('scroll', () => {
-                const scrollLeft = gallery.scrollLeft;
+                const scrollLeft = gallery.scrollLeft + gallery.clientWidth / 2; // center snap
                 const width = gallery.clientWidth;
                 const index = Math.round(scrollLeft / width);
                 document.querySelectorAll('.gallery-dots span').forEach((dot, i) => {
