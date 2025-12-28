@@ -14,8 +14,19 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://truewebx.site/">
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
+    <meta property="og:locale" content="en_US">
 
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Canonical -->
     <link rel="canonical" href="https://truewebx.site/">
+
+    <!-- Favicons (default) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://truewebx.site/favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://truewebx.site/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://truewebx.site/favicon.png">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -234,41 +245,6 @@
 
     let allServices = [];
 
-    function updateOGTags(service) {
-        document.title = `${service.name} - ${service.city || 'Professional Services'} | TrueWebX`;
-
-        const setMeta = (property, content) => {
-            let meta = document.querySelector(`meta[property="${property}"]`);
-            if (!meta) {
-                meta = document.createElement('meta');
-                meta.setAttribute('property', property);
-                document.head.appendChild(meta);
-            }
-            meta.setAttribute('content', content);
-        };
-
-        setMeta('og:title', `${service.name} – ${service.city || 'Local Service'}`);
-        setMeta('og:description', service.description || 'Professional service offering free consultation on TrueWebX.');
-        setMeta('og:type', 'profile');
-        setMeta('og:url', window.location.href);
-        setMeta('og:image', service.profile || 'https://truewebx.site/og-image.jpg');
-
-        let descMeta = document.querySelector('meta[name="description"]');
-        if (descMeta) {
-            descMeta.content = `${service.name} in ${service.city || 'your area'}. ${service.description || 'Professional services with free consultation.'} Contact now on TrueWebX.`;
-        }
-    }
-
-    function resetOGTags() {
-        document.title = 'TrueWebX – Global Business Directory | Find Local Services Worldwide';
-        document.querySelector('meta[name="description"]').content = 'TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.';
-        document.querySelector('meta[property="og:title"]').content = 'TrueWebX – Global Business Directory';
-        document.querySelector('meta[property="og:description"]').content = 'Discover and connect with local businesses worldwide on TrueWebX. Browse detailed profiles, photos, and contact trusted service providers.';
-        document.querySelector('meta[property="og:type"]').content = 'website';
-        document.querySelector('meta[property="og:url"]').content = 'https://truewebx.site/';
-        document.querySelector('meta[property="og:image"]').content = 'https://truewebx.site/og-image.jpg';
-    }
-
     async function loadServices() {
         const { data: services, error } = await supabaseClient
             .from('services')
@@ -278,7 +254,6 @@
         if (error || !services || services.length === 0) {
             document.getElementById('list').innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
             allServices = [];
-            resetOGTags();
             return;
         }
 
@@ -295,13 +270,13 @@
         }
 
         list.innerHTML = services.map(s => `
-            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/ProfessionalService">
+            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness">
                 <button class="share-btn" aria-label="Copy direct link to this business" title="Copy link">
                     <i class="fas fa-link"></i>
                 </button>
                 
-                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Business+Profile'}" 
-                     alt="${s.name ? s.name + ' profile picture' : 'Business profile'}" 
+                <img src="${s.profile || 'https://via.placeholder.com/600x400/0d9488/ffffff?text=Upload+Your+Logo'}" 
+                     alt="${s.name} Logo" 
                      class="profile-img" itemprop="image">
                 
                 <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
@@ -314,7 +289,7 @@
                 
                 ${Array.isArray(s.photos) && s.photos.length > 0 ? `
                 <div class="photos" aria-label="Gallery photos">
-                    ${s.photos.map((p, i) => `<img src="${p}" alt="${s.name || 'Business'} gallery photo ${i+1}" loading="lazy">`).join('')}
+                    ${s.photos.map((p, i) => `<img src="${p}" alt="${s.name} gallery photo ${i+1}" loading="lazy">`).join('')}
                 </div>` : ''}
                 
                 <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
@@ -333,7 +308,7 @@
                     `).join('')}
                 </div>` : ''}
                 
-                <a href="/#${s.slug}" class="view-btn" style="display:inline-block; margin-top:20px; padding:12px 28px; background:var(--coral); color:white; border-radius:50px; text-decoration:none; font-weight:bold;">
+                <a href="#${s.slug}" class="view-btn" style="display:inline-block; margin-top:20px; padding:12px 28px; background:var(--coral); color:white; border-radius:50px; text-decoration:none; font-weight:bold;">
                     View Full Profile →
                 </a>
                 
@@ -344,7 +319,8 @@
         `).join('');
 
         document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
                 const card = this.closest('.card');
                 const service = allServices.find(s => `service-${s.id}` === card.id);
                 const url = service ? `${window.location.origin}/#${service.slug}` : window.location.href;
@@ -365,37 +341,182 @@
 
     async function handleSlugHash() {
         const hash = window.location.hash.slice(1).toLowerCase();
-        if (!hash) {
-            resetOGTags();
-            return false;
-        }
+        if (!hash) return false;
 
-        const { data: service } = await supabaseClient
+        const { data: service, error } = await supabaseClient
             .from('services')
             .select('*')
             .eq('slug', hash)
             .single();
 
-        if (!service) {
-            resetOGTags();
-            return false;
+        if (error || !service) return false;
+
+        // === FULL SEO DOMINATION FOR INDIVIDUAL PAGE (Zoiris-style) ===
+        const cityPart = service.city ? service.city.split(',')[0].trim() : 'Your Area';
+        const statePart = service.city ? service.city.split(',')[1]?.trim() || '' : '';
+        const fullLocation = service.city || 'Your Area';
+        const title = `#1 Professional Service in ${fullLocation} | ${service.name}`;
+        const description = `${service.name} offers the best professional services in ${fullLocation}. ${service.description ? service.description.substring(0, 150) + '...' : 'Contact today for a free quote!'}`;
+        const pageUrl = window.location.href;
+
+        document.title = title;
+
+        // Meta description
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+            metaDesc = document.createElement('meta');
+            metaDesc.name = 'description';
+            document.head.appendChild(metaDesc);
+        }
+        metaDesc.content = description;
+
+        // Canonical
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            document.head.appendChild(canonical);
+        }
+        canonical.href = pageUrl;
+
+        // Open Graph
+        const setOG = (property, content) => {
+            let tag = document.querySelector(`meta[property="og:${property}"]`);
+            if (!tag) {
+                tag = document.createElement('meta');
+                tag.setAttribute('property', `og:${property}`);
+                document.head.appendChild(tag);
+            }
+            tag.content = content;
+        };
+
+        setOG('title', `${service.name} – Professional Services in ${fullLocation}`);
+        setOG('description', description);
+        setOG('url', pageUrl);
+        setOG('type', 'article');
+        setOG('site_name', service.name);
+        setOG('locale', 'en_US');
+        setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+        if (service.profile) {
+            setOG('image:width', '1200');
+            setOG('image:height', '630');
+            setOG('image:type', 'image/jpeg');
         }
 
-        // Add profile picture at the top of the single view
+        // Twitter
+        let twitterCard = document.querySelector('meta[name="twitter:card"]');
+        if (!twitterCard) {
+            twitterCard = document.createElement('meta');
+            twitterCard.name = 'twitter:card';
+            document.head.appendChild(twitterCard);
+        }
+        twitterCard.content = 'summary_large_image';
+
+        const setTwitter = (name, content) => {
+            let tag = document.querySelector(`meta[name="twitter:${name}"]`);
+            if (!tag) {
+                tag = document.createElement('meta');
+                tag.name = `twitter:${name}`;
+                document.head.appendChild(tag);
+            }
+            tag.content = content;
+        };
+        setTwitter('title', title);
+        setTwitter('description', description);
+        setTwitter('image', service.profile || 'https://truewebx.site/og-image.jpg');
+
+        // Dynamic Favicons using business logo
+        if (service.profile) {
+            const addFavicon = (size, rel = 'icon') => {
+                let link = document.querySelector(`link[rel="${rel}"][sizes="${size}x${size}"]`);
+                if (!link) {
+                    link = document.createElement('link');
+                    link.rel = rel;
+                    link.sizes = `${size}x${size}`;
+                    document.head.appendChild(link);
+                }
+                link.href = service.profile;
+            };
+            addFavicon('180x180', 'apple-touch-icon');
+            addFavicon('32x32');
+            addFavicon('16x16');
+        }
+
+        // LocalBusiness Schema (CleaningService style – adaptable)
+        const lbSchema = {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": service.name,
+            "image": service.profile || "",
+            "@id": pageUrl + "#business",
+            "url": pageUrl,
+            "telephone": service.phone || "",
+            "priceRange": "$$",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": cityPart,
+                "addressRegion": statePart,
+                "addressCountry": "US"
+            },
+            "description": service.description || "Professional local service provider offering free consultations.",
+            "openingHours": "Mo-Su 08:00-20:00",
+            "sameAs": (service.social_links || []).map(l => l.url)
+        };
+
+        let lbScript = document.getElementById('localBusinessSchema');
+        if (!lbScript) {
+            lbScript = document.createElement('script');
+            lbScript.id = 'localBusinessSchema';
+            lbScript.type = 'application/ld+json';
+            document.head.appendChild(lbScript);
+        }
+        lbScript.text = JSON.stringify(lbSchema, null, 2);
+
+        // FAQ Schema
+        const faqSchema = {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": `Do you offer same-day service in ${cityPart}?`,
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes! Contact us today to check availability for same-day professional service."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Do you provide free quotes?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Absolutely! We offer free consultations and quotes with no obligation."
+                    }
+                }
+            ]
+        };
+
+        let faqScript = document.getElementById('faqSchema');
+        if (!faqScript) {
+            faqScript = document.createElement('script');
+            faqScript.id = 'faqSchema';
+            faqScript.type = 'application/ld+json';
+            document.head.appendChild(faqScript);
+        }
+        faqScript.text = JSON.stringify(faqSchema, null, 2);
+
+        // Render single service page
         document.querySelector('.glass').innerHTML = `
             <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
 
-                <!-- Profile Picture -->
                 ${service.profile ? `
                 <img src="${service.profile}" alt="${service.name} Logo" style="width:100%; max-width:600px; border-radius:24px; margin:30px auto; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
                 ` : ''}
 
-                <!-- Top Description -->
                 <p style="font-size: 1.3rem; line-height: 1.8; margin: 30px 0; opacity: 0.95;">
-                    ${service.description || 'Trust us to transform your space into a clean, comfortable, and sparkling environment.'}
+                    ${service.description || 'Professional, reliable, and affordable services tailored to your needs.'}
                 </p>
 
-                <!-- Contact Box -->
                 <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 24px; padding: 30px; margin: 40px 0; max-width: 600px; margin-left: auto; margin-right: auto;">
                     <p style="font-size: 1.4rem; margin: 15px 0;">
                         <i class="fas fa-phone" style="color: var(--coral); margin-right: 10px;"></i>
@@ -407,15 +528,12 @@
                     </p>
                 </div>
 
-                <!-- Free Consultation -->
                 <p style="font-size: 2.2rem; color: var(--coral); font-weight: 800; margin: 40px 0;">
                     Free Consultation Available
                 </p>
 
-                <!-- Gallery Title -->
                 <h2 style="font-size: 2.4rem; margin: 60px 0 30px;">Gallery</h2>
 
-                <!-- Gallery Photos -->
                 ${service.photos?.length ? `
                 <div class="photos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin: 40px 0;">
                     ${service.photos.map(p => `
@@ -424,14 +542,12 @@
                 </div>
                 ` : '<p style="opacity: 0.8;">No gallery photos yet.</p>'}
 
-                <!-- Back Button -->
                 <a href="/" style="display: inline-block; margin: 60px auto; padding: 16px 40px; background: var(--coral); color: white; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.3rem; box-shadow: 0 6px 20px rgba(0,0,0,0.3);">
                     ← Back to Directory
                 </a>
             </div>
         `;
 
-        updateOGTags(service);
         window.scrollTo(0, 0);
         return true;
     }
