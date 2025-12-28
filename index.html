@@ -162,9 +162,12 @@
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            scrollbar-width: thin; /* Show slim scrollbar on desktop */
+            cursor: grab;
         }
-        .card .gallery::-webkit-scrollbar { display: none; }
+        .card .gallery:active { cursor: grabbing; }
+        .card .gallery::-webkit-scrollbar { height: 6px; }
+        .card .gallery::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 3px; }
         .card .gallery img {
             flex: 0 0 100%;
             width: 100%;
@@ -187,9 +190,12 @@
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            scrollbar-width: thin;
+            cursor: grab;
         }
-        .full-gallery::-webkit-scrollbar { display: none; }
+        .full-gallery:active { cursor: grabbing; }
+        .full-gallery::-webkit-scrollbar { height: 8px; }
+        .full-gallery::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 4px; }
         .full-gallery img {
             flex: 0 0 100%;
             width: 100%;
@@ -197,6 +203,31 @@
             object-fit: cover;
             scroll-snap-align: center;
         }
+
+        /* Navigation arrows for desktop */
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        .gallery-nav:hover { background: rgba(0,0,0,0.7); }
+        .gallery-nav.prev { left: 20px; }
+        .gallery-nav.next { right: 20px; }
+        .full-gallery-wrapper:hover .gallery-nav { opacity: 1; }
 
         /* Dots indicator for full gallery */
         .gallery-dots {
@@ -259,8 +290,8 @@
             gap: 12px;
             margin: 15px 0;
             font-size: 1.4rem;
-            word-break: break-all; /* Breaks long emails/phones */
-            overflow-wrap: anywhere; /* Modern alternative */
+            word-break: break-all;
+            overflow-wrap: anywhere;
         }
         .contact-item i {
             flex-shrink: 0;
@@ -483,7 +514,6 @@
         }
         canonical.href = pageUrl;
 
-        // Render single service page with fixed contact section
         document.querySelector('.glass').innerHTML = `
             <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; text-align: center;">
 
@@ -517,6 +547,8 @@
 
                 ${service.photos?.length ? `
                 <div class="full-gallery-wrapper">
+                    <button class="gallery-nav prev" aria-label="Previous photo"><i class="fas fa-chevron-left"></i></button>
+                    <button class="gallery-nav next" aria-label="Next photo"><i class="fas fa-chevron-right"></i></button>
                     <div class="full-gallery" id="fullGallery">
                         ${service.photos.map(p => `
                             <img src="${p}" alt="${service.name} work example" loading="lazy">
@@ -532,24 +564,39 @@
             </div>
         `;
 
-        // Dot indicators for gallery
+        // Gallery navigation and dots
         if (service.photos?.length > 1) {
             const gallery = document.getElementById('fullGallery');
+            const prevBtn = document.querySelector('.gallery-nav.prev');
+            const nextBtn = document.querySelector('.gallery-nav.next');
             const dotsContainer = document.getElementById('galleryDots');
+
+            // Create dots
             service.photos.forEach((_, i) => {
                 const dot = document.createElement('span');
                 if (i === 0) dot.classList.add('active');
                 dotsContainer.appendChild(dot);
             });
 
-            gallery.addEventListener('scroll', () => {
-                const scrollLeft = gallery.scrollLeft + gallery.clientWidth / 2;
+            const updateActiveDot = () => {
                 const width = gallery.clientWidth;
-                const index = Math.round(scrollLeft / width);
+                const index = Math.round(gallery.scrollLeft / width);
                 document.querySelectorAll('.gallery-dots span').forEach((dot, i) => {
                     dot.classList.toggle('active', i === index);
                 });
+            };
+
+            gallery.addEventListener('scroll', updateActiveDot);
+
+            prevBtn.addEventListener('click', () => {
+                gallery.scrollBy({ left: -gallery.clientWidth, behavior: 'smooth' });
             });
+
+            nextBtn.addEventListener('click', () => {
+                gallery.scrollBy({ left: gallery.clientWidth, behavior: 'smooth' });
+            });
+
+            updateActiveDot();
         }
 
         window.scrollTo(0, 0);
