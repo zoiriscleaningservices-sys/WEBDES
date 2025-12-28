@@ -167,7 +167,7 @@
         button:hover { background: #ff8787; }
         button:disabled { background: #666; cursor: not-allowed; }
 
-        /* Searchable City Select – FINAL FIX */
+        /* Searchable City Select – DARK & HIGH CONTRAST (100% VISIBLE) */
         .searchable-select {
             position: relative;
             width: 100%;
@@ -179,39 +179,38 @@
         .searchable-select .dropdown-list {
             position: absolute;
             top: 100%;
-            margin-top: 12px; /* extra gap */
+            margin-top: 12px;
             left: 0;
             right: 0;
-            max-height: 320px;
+            max-height: 360px;
             overflow-y: auto;
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(16px);
+            background: #0f0f1a; /* Solid very dark background */
             border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.9);
             z-index: 10000;
             display: none;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 2px solid #333;
         }
         .searchable-select .dropdown-list div {
-            padding: 18px 20px;
+            padding: 20px 24px;
             cursor: pointer;
-            transition: background 0.2s;
-            color: white;
+            transition: background 0.25s;
+            color: #ffffff;
             font-size: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid #333;
         }
         .searchable-select .dropdown-list div:last-child {
             border-bottom: none;
         }
         .searchable-select .dropdown-list div:hover {
-            background: rgba(255,255,255,0.3);
+            background: var(--coral);
         }
         .searchable-select .no-results {
-            padding: 18px 20px;
+            padding: 20px 24px;
             text-align: center;
-            opacity: 0.9;
+            color: #ff6b6b;
             font-style: italic;
-            color: white;
+            font-weight: bold;
         }
 
         .photo-upload {
@@ -439,7 +438,6 @@
             <form class="form-grid" id="addForm">
                 <input type="text" id="name" placeholder="Business / Company Name" required>
 
-                <!-- Searchable City Input -->
                 <div class="searchable-select">
                     <input type="text" id="cityAddInput" placeholder="Search any US city (e.g. Bradenton, Miami...)" autocomplete="off" required>
                     <div class="dropdown-list" id="cityAddList"></div>
@@ -678,7 +676,7 @@
 </div>
 
 <script>
-// Full US cities list (~950 entries)
+// Full US cities list
 const usCities = [
     "Abilene TX","Akron OH","Alameda CA","Albany GA","Albany NY","Albuquerque NM","Alexandria LA","Alexandria VA","Alhambra CA","Allen TX",
     "Allentown PA","Alpharetta GA","Altamonte Springs FL","Altoona PA","Ames IA","Anaheim CA","Anchorage AK","Anderson IN","Ann Arbor MI","Annapolis MD",
@@ -784,7 +782,6 @@ const usCities = [
     let isPublishing = false;
     let currentChatServiceId = null;
 
-    // Final fix for dropdown visibility
     function setupCitySearch(inputId, listId, hiddenId) {
         const input = document.getElementById(inputId);
         const dropdown = document.getElementById(listId);
@@ -820,7 +817,6 @@ const usCities = [
         input.addEventListener('input', () => showDropdown(input.value.toLowerCase()));
         input.addEventListener('click', () => showDropdown(input.value.toLowerCase()));
 
-        // Close only when clicking outside the entire searchable-select container
         document.addEventListener('click', (e) => {
             if (!input.parentElement.contains(e.target)) {
                 dropdown.style.display = 'none';
@@ -831,11 +827,9 @@ const usCities = [
     setupCitySearch('cityAddInput', 'cityAddList', 'cityAdd');
     setupCitySearch('cityEditInput', 'cityEditList', 'cityEdit');
 
-    // ZIP cleanup
     document.getElementById('zipAdd').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
     document.getElementById('zipEdit').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
 
-    // Rest of your script remains exactly the same
     function previewImage(file, containerId, isProfile = false) {
         const reader = new FileReader();
         reader.onload = function(e) {
