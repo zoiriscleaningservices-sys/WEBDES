@@ -843,7 +843,7 @@
                     <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
                     <div class="delete" onclick="deleteService('${s.id}')">×</div>
                     
-                    <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Logo'}" class="profile-img" alt="Profile">
+                    <img src="${s.profile || 'https://via.placeholder.com/600x400/0d9488/ffffff?text=Upload+Your+Logo'}" class="profile-img" alt="Profile">
                     
                     <h3>${s.name || 'No business name'}</h3>
                     <p><strong>${s.city || 'No location'}</strong></p>
@@ -994,7 +994,7 @@
             const { error } = await supabaseClient.from('services').insert(service);
             if (error) throw error;
 
-            msg.innerHTML = `<p style="color:#0f0;">Published successfully!<br>Your public page: <strong>https://truewebx.site/${slug}</strong></p>`;
+            msg.innerHTML = `<p style="color:#0f0;">Published successfully!<br>Your public page: <strong>https://truewebx.site/#${slug}</strong></p>`;
             document.getElementById('addForm').reset();
             currentSocialLinks = [];
             document.getElementById('added-socials').innerHTML = '';
@@ -1009,6 +1009,32 @@
             document.getElementById('publishBtn').disabled = false;
             document.getElementById('publishBtn').textContent = 'PUBLISH NOW';
         }
+    }
+
+    async function editService(id) {
+        currentEditId = id;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
+
+        document.getElementById('edit-name').value = service.name || '';
+        document.getElementById('edit-phone').value = service.phone || '';
+        document.getElementById('edit-gmail').value = service.gmail || '';
+        document.getElementById('edit-desc').value = service.description || '';
+
+        const parts = service.city ? service.city.trim().split(' ') : [];
+        const zipPart = parts.length > 2 && /^\d{5}$/.test(parts[parts.length - 1]) ? parts.pop() : '';
+        const cityState = parts.join(' ');
+        const [cityPart, statePart] = cityState ? cityState.split(', ') : ['', ''];
+
+        document.getElementById('cityEdit').value = cityPart || '';
+        document.getElementById('stateEdit').value = statePart || '';
+        document.getElementById('zipEdit').value = zipPart;
+
+        currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+        updateAddedSocials(true);
+        document.getElementById('editProfilePreview').innerHTML = '';
+        document.getElementById('editGalleryPreview').innerHTML = '';
+
+        show('edit');
     }
 
     async function updateService() {
@@ -1082,7 +1108,7 @@
             const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
             if (error) throw error;
 
-            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully! New URL: https://truewebx.site/' + slug + '</p>';
+            document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully! New URL: https://truewebx.site/#' + slug + '</p>';
             setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 4000);
         } catch (err) {
             document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
