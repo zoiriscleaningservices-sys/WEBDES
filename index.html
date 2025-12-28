@@ -252,6 +252,27 @@
         .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
         footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
 
+        /* Fix for long email/phone on single page */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 15px 0;
+            font-size: 1.4rem;
+            word-break: break-all; /* Breaks long emails/phones */
+            overflow-wrap: anywhere; /* Modern alternative */
+        }
+        .contact-item i {
+            flex-shrink: 0;
+            color: var(--coral);
+        }
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
         @media (min-width: 480px) {
             .container { padding: 16px; }
             .header-wrapper { padding: 16px; }
@@ -462,9 +483,7 @@
         }
         canonical.href = pageUrl;
 
-        // Open Graph and Twitter updates (omitted for brevity, same as before)
-
-        // Fixed single service layout
+        // Render single service page with fixed contact section
         document.querySelector('.glass').innerHTML = `
             <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; text-align: center;">
 
@@ -477,14 +496,17 @@
                 </p>
 
                 <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border-radius: 24px; padding: 24px 20px; margin: 40px auto; max-width: 600px;">
-                    <p style="font-size: 1.4rem; margin: 15px 0;">
-                        <i class="fas fa-phone" style="color: var(--coral); margin-right: 12px;"></i>
-                        Phone: <a href="tel:${service.phone}" style="color: white; text-decoration: none; font-weight: 600;">${service.phone || 'Contact for details'}</a>
-                    </p>
-                    <p style="font-size: 1.4rem; margin: 15px 0;">
-                        <i class="fas fa-envelope" style="color: var(--coral); margin-right: 12px;"></i>
-                        Email: <a href="mailto:${service.gmail}" style="color: white; text-decoration: none; font-weight: 600;">${service.gmail || 'Contact for details'}</a>
-                    </p>
+                    ${service.phone ? `
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>Phone: <a href="tel:${service.phone}">${service.phone}</a></div>
+                    </div>` : ''}
+
+                    ${service.gmail ? `
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>Email: <a href="mailto:${service.gmail}">${service.gmail}</a></div>
+                    </div>` : ''}
                 </div>
 
                 <p style="font-size: 2.2rem; color: var(--coral); font-weight: 800; margin: 40px 0;">
@@ -510,7 +532,7 @@
             </div>
         `;
 
-        // Dot indicators
+        // Dot indicators for gallery
         if (service.photos?.length > 1) {
             const gallery = document.getElementById('fullGallery');
             const dotsContainer = document.getElementById('galleryDots');
@@ -521,7 +543,7 @@
             });
 
             gallery.addEventListener('scroll', () => {
-                const scrollLeft = gallery.scrollLeft + gallery.clientWidth / 2; // center snap
+                const scrollLeft = gallery.scrollLeft + gallery.clientWidth / 2;
                 const width = gallery.clientWidth;
                 const index = Math.round(scrollLeft / width);
                 document.querySelectorAll('.gallery-dots span').forEach((dot, i) => {
