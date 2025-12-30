@@ -143,6 +143,12 @@
             padding: 28px; text-align: center; 
             flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;
         }
+        .card h3 { font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
+        .card .location { font-size: 1.2rem; opacity: 0.9; margin-bottom: 16px; }
+        .card .description-teaser { 
+            line-height: 1.7; opacity: 0.95; margin-bottom: 20px; flex-grow: 1;
+            overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+        }
 
         .card .photos { 
             display: grid; 
@@ -160,6 +166,12 @@
         .price { font-size: 2rem !important; color: var(--coral) !important; font-weight: 800; margin: 20px 0; }
 
         .links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; }
+        .links a { 
+            color: #ffeb3b; padding: 10px 18px; background: rgba(255,255,255,0.1); 
+            border-radius: 24px; font-size: 1rem; display: flex; align-items: center; gap: 8px; 
+            transition: background 0.3s;
+        }
+        .links a:hover { background: rgba(255,255,255,0.25); }
 
         .view-btn { 
             margin: 24px auto 0; padding: 16px 36px; background: var(--coral); 
@@ -188,7 +200,7 @@
             padding: 20px;
         }
 
-        /* Fixed: Profile image not too big */
+        /* Profile image in full view - perfect size */
         .profile-view-content > img {
             width: 100%;
             max-width: 960px;
@@ -196,18 +208,10 @@
             border-radius: 32px;
             margin: 50px 0;
             box-shadow: 0 16px 50px rgba(0,0,0,0.5);
+            display: block;
         }
 
-        /* Fixed: Description paragraph */
-        .profile-view-content > p {
-            font-size: 1.5rem;
-            line-height: 1.9;
-            max-width: 860px;
-            margin: 40px auto;
-            opacity: 0.95;
-        }
-
-        /* Contact box - prevent email wrap */
+        /* Contact box - prevents email wrapping */
         .contact-box {
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(14px);
@@ -225,9 +229,10 @@
             gap: 16px;
             margin: 20px 0;
             font-size: 1.6rem;
-            flex-wrap: nowrap; /* Prevent wrapping */
-            overflow-x: auto; /* Fallback scroll if needed */
+            flex-wrap: nowrap;
+            overflow-x: auto;
             padding: 8px 0;
+            min-width: 0; /* Allows flex children to shrink */
         }
         .contact-item i {
             color: var(--coral);
@@ -235,12 +240,13 @@
             flex-shrink: 0;
         }
         .contact-item a {
-            white-space: nowrap; /* Key: keeps long email on one line */
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: 100%;
         }
 
-        /* Gallery - images not too big */
+        /* Gallery - better image sizing */
         .gallery-wrapper {
             position: relative;
             max-width: 960px;
@@ -257,8 +263,8 @@
             width: 100%;
             height: auto;
             max-height: 620px;
-            object-fit: contain; /* Changed to contain for better proportion */
-            background: #000; /* Black background for letterboxed images */
+            object-fit: contain;
+            background: #000;
             flex-shrink: 0;
         }
 
@@ -285,7 +291,7 @@
         }
         @media (max-width: 768px) {
             .gallery-arrow { display: none; }
-            .gallery-slider img { max-height: 480px; }
+            .gallery-slider img { max-height: 500px; }
         }
     </style>
 </head>
@@ -326,7 +332,71 @@
 </script>
 
 <script>
-    // ... (all your existing JavaScript remains unchanged until handleSlugHash)
+    window.addEventListener('scroll', () => document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50));
+
+    const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
+    let allServices = [];
+
+    async function loadServices() {
+        const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
+        if (error || !services?.length) {
+            document.getElementById('list').innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
+            return;
+        }
+        allServices = services;
+        renderServices(services);
+        handleSlugHash();
+    }
+
+    function renderServices(services) {
+        const list = document.getElementById('list');
+        list.innerHTML = services.length ? services.map(s => `
+            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness">
+                <button class="share-btn" aria-label="Copy link"><i class="fas fa-link"></i></button>
+
+                <div class="profile-img-wrapper">
+                    <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
+                         alt="${s.name} featured" class="profile-img" itemprop="image">
+                </div>
+
+                <div class="card-content">
+                    <div>
+                        <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
+                        <p class="location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                            <strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong>
+                        </p>
+                        <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
+
+                        ${s.photos?.length ? `
+                        <div class="photos">
+                            ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name} preview" loading="lazy">`).join('')}
+                            ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;">+${s.photos.length - 3} more</div>` : ''}
+                        </div>` : ''}
+
+                        <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
+                        <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
+
+                        <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
+
+                        ${s.social_links?.length ? `<div class="links">${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}</div>` : ''}
+                    </div>
+
+                    <a href="#${s.slug}" class="view-btn">View Full Profile →</a>
+                </div>
+            </article>
+        `).join('') : '<p class="no-services">No results found.</p>';
+
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.onclick = e => {
+                e.stopPropagation();
+                const url = `${location.origin}/#${btn.closest('.card').id.split('-')[1]}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => btn.innerHTML = '<i class="fas fa-link"></i>', 2000);
+                });
+            };
+        });
+    }
 
     async function handleSlugHash() {
         const hash = window.location.hash.slice(1).toLowerCase();
@@ -340,7 +410,21 @@
 
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
 
-        // Meta updates (unchanged)...
+        const setMeta = (name, content) => {
+            let el = document.querySelector(`meta[name="${name}"]`) || document.createElement('meta');
+            el.name = name; el.content = content; if (!el.isConnected) document.head.appendChild(el);
+        };
+        setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'}`);
+
+        const setOG = (prop, content) => {
+            let el = document.querySelector(`meta[property="og:${prop}"]`) || document.createElement('meta');
+            el.setAttribute('property', `og:${prop}`); el.content = content;
+            if (!el.isConnected) document.head.appendChild(el);
+        };
+        setOG('title', `${service.name} – #1 in ${fullLocation}`);
+        setOG('description', document.querySelector('meta[name="description"]').content);
+        setOG('url', pageUrl);
+        setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
 
         const galleryHTML = service.photos?.length ? `
             <div class="gallery-wrapper" id="galleryWrapper">
@@ -355,7 +439,9 @@
             <div class="profile-view-content">
                 ${service.profile ? `<img src="${service.profile}" alt="${service.name}">` : ''}
 
-                <p>${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}</p>
+                <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
+                    ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
+                </p>
 
                 <div class="contact-box">
                     ${service.phone ? `<div class="contact-item"><i class="fas fa-phone"></i><div><a href="tel:${service.phone}">${service.phone}</a></div></div>` : ''}
@@ -372,7 +458,6 @@
                 </a>
             </div>`;
 
-        // Gallery slider script (unchanged)...
         if (service.photos?.length > 1) {
             const slider = document.getElementById('gallerySlider');
             const prev = document.getElementById('prevBtn');
@@ -393,7 +478,6 @@
         return true;
     }
 
-    // Rest of your script (search, loadServices, etc.) remains exactly the same
     document.getElementById('searchInput').addEventListener('input', e => {
         const q = e.target.value.toLowerCase().trim();
         renderServices(q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices);
