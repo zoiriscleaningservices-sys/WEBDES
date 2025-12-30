@@ -24,7 +24,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="https://truewebx.site/favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="https://truewebx.site/favicon.png">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" as="style">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" media="print" onload="this.media='all'">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -36,8 +39,9 @@
             --card-glass: rgba(255, 255, 255, 0.25);
             --shadow: 0 8px 32px rgba(0,0,0,0.25);
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+        *, *::before, *::after { box-sizing: border-box; }
         body { 
+            margin: 0;
             font-family: system-ui, -apple-system, sans-serif; 
             background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
             color: var(--white); 
@@ -76,6 +80,7 @@
             padding: 12px 24px; border-radius: 50px; cursor: pointer;
             display: flex; align-items: center; gap: 10px; font-size: 1rem;
             transition: all 0.3s;
+            text-decoration: none;
         }
         .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-3px); }
 
@@ -105,8 +110,8 @@
             backdrop-filter: blur(15px); color: white; box-shadow: var(--shadow);
         }
         .search-box::placeholder { color: rgba(255,255,255,0.7); }
-        .search-box:focus { outline: none; box-shadow: 0 0 0 5px rgba(255,107,107,0.4); }
-        .search-icon { position: absolute; right: 26px; top: 50%; transform: translateY(-50%); font-size: 2rem; color: rgba(255,255,255,0.8); }
+        .search-box:focus { outline: 2px solid var(--coral); outline-offset: 4px; box-shadow: 0 0 0 5px rgba(255,107,107,0.4); }
+        .search-icon { position: absolute; right: 26px; top: 50%; transform: translateY(-50%); font-size: 2rem; color: rgba(255,255,255,0.8); pointer-events: none; }
 
         /* Glass Section */
         .glass { 
@@ -155,7 +160,7 @@
 
         .card .photos { 
             display: grid; 
-            grid-template-columns: 1fr 1fr 1fr; 
+            grid-template-columns: repeat(3, 1fr); 
             gap: 14px; 
             margin: 20px 0;
         }
@@ -165,7 +170,7 @@
         }
 
         .private { filter: blur(6px); transition: filter 0.3s; font-weight: 600; }
-        .private:hover { filter: none; }
+        .private:hover, .private:focus { filter: none; }
         .price { font-size: 2rem !important; color: var(--coral) !important; font-weight: 800; margin: 20px 0; }
 
         .links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; }
@@ -173,15 +178,16 @@
             color: #ffeb3b; padding: 10px 18px; background: rgba(255,255,255,0.1); 
             border-radius: 24px; font-size: 1rem; display: flex; align-items: center; gap: 8px; 
             transition: background 0.3s;
+            text-decoration: none;
         }
         .links a:hover { background: rgba(255,255,255,0.25); }
 
         .view-btn { 
             margin: 24px auto 0; padding: 16px 36px; background: var(--coral); 
             color: white; border-radius: 50px; text-decoration: none; font-weight: bold; 
-            font-size: 1.2rem; transition: all 0.3s;
+            font-size: 1.2rem; transition: all 0.3s; display: inline-block;
         }
-        .view-btn:hover { background: #ff8787; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .view-btn:hover, .view-btn:focus { background: #ff8787; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); outline: none; }
 
         .share-btn {
             position: absolute; top: 20px; right: 20px;
@@ -190,7 +196,7 @@
             width: 50px; height: 50px; display: grid; place-items: center;
             cursor: pointer; font-size: 1.4rem; transition: all 0.3s; z-index: 2;
         }
-        .share-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.15); }
+        .share-btn:hover, .share-btn:focus { background: rgba(255,255,255,0.4); transform: scale(1.15); outline: none; }
 
         .no-services { font-size: 1.5rem; text-align: center; padding: 80px 20px; opacity: 0.9; }
 
@@ -245,6 +251,8 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
+            color: white;
+            text-decoration: none;
         }
 
         .gallery-wrapper {
@@ -274,7 +282,7 @@
             border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem;
             cursor: pointer; opacity: 0.85; transition: all 0.3s; z-index: 10;
         }
-        .gallery-arrow:hover { opacity: 1; background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.15); }
+        .gallery-arrow:hover, .gallery-arrow:focus { opacity: 1; background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.15); outline: none; }
         .gallery-arrow.prev { left: 28px; }
         .gallery-arrow.next { right: 28px; }
 
@@ -299,14 +307,14 @@
 <div class="wrapper">
     <header class="header-wrapper" id="header">
         <h1 class="logo">TrueWebX</h1>
-        <a href="dashboard.html" class="login-btn">
-            <i class="fas fa-user-circle"></i> Login / Sign Up
+        <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up">
+            <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
         </a>
     </header>
 
     <main class="main-content">
-        <section class="hero">
-            <h2 class="tagline">Promote Your Business Worldwide</h2>
+        <section class="hero" aria-labelledby="hero-heading">
+            <h2 id="hero-heading" class="tagline">Promote Your Business Worldwide</h2>
             <p class="subtitle">
                 TrueWebX connects customers with trusted local professionals everywhere.<br>
                 <strong>Free consultations • Verified services • Global reach</strong>
@@ -314,17 +322,18 @@
         </section>
 
         <div class="search-container">
+            <label for="searchInput" class="visually-hidden">Search businesses</label>
             <input type="text" id="searchInput" class="search-box" placeholder="Search services, businesses, or cities..." aria-label="Search businesses">
-            <i class="fas fa-search search-icon"></i>
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
 
-        <section class="glass">
-            <h2>Available Services Worldwide</h2>
-            <div class="services" id="list"></div>
+        <section class="glass" aria-labelledby="services-heading">
+            <h2 id="services-heading">Available Services Worldwide</h2>
+            <div class="services" id="list" role="list"></div>
         </section>
     </main>
 
-    <footer>© 2025 TrueWebX – The global directory for professional services</footer>
+    <footer role="contentinfo">© 2025 TrueWebX – The global directory for professional services</footer>
 </div>
 
 <script type="application/ld+json">
@@ -336,7 +345,7 @@
 
     const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
     let allServices = [];
-    const BASE_PATH = '/profile'; // Your profile path
+    const BASE_PATH = '/profile';
 
     async function loadServices() {
         const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
@@ -352,12 +361,12 @@
     function renderServices(services) {
         const list = document.getElementById('list');
         list.innerHTML = services.length ? services.map(s => `
-            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness">
-                <button class="share-btn" aria-label="Copy link"><i class="fas fa-link"></i></button>
+            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness" role="listitem">
+                <button class="share-btn" aria-label="Copy profile link"><i class="fas fa-link" aria-hidden="true"></i></button>
 
                 <div class="profile-img-wrapper">
                     <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
-                         alt="${s.name} featured" class="profile-img" itemprop="image">
+                         alt="${s.name || 'Business'} featured image" class="profile-img" itemprop="image" loading="lazy">
                 </div>
 
                 <div class="card-content">
@@ -369,9 +378,9 @@
                         <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
 
                         ${s.photos?.length ? `
-                        <div class="photos">
-                            ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name} preview" loading="lazy">`).join('')}
-                            ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;">+${s.photos.length - 3} more</div>` : ''}
+                        <div class="photos" aria-label="Gallery preview">
+                            ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name || 'Business'} gallery image" loading="lazy">`).join('')}
+                            ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;" aria-hidden="true">+${s.photos.length - 3} more</div>` : ''}
                         </div>` : ''}
 
                         <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
@@ -379,10 +388,12 @@
 
                         <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
 
-                        ${s.social_links?.length ? `<div class="links">${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}</div>` : ''}
+                        ${s.social_links?.length ? `<div class="links" aria-label="Social links">
+                            ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs" aria-label="${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}" aria-hidden="true"></i> ${l.type}</a>`).join('')}
+                        </div>` : ''}
                     </div>
 
-                    <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;">View Full Profile →</a>
+                    <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;" aria-label="View full profile of ${s.name}">View Full Profile →</a>
                 </div>
             </article>
         `).join('') : '<p class="no-services">No results found.</p>';
@@ -393,9 +404,9 @@
                 const slug = btn.closest('.card').querySelector('.view-btn').getAttribute('href').split('/').pop();
                 const url = `${location.origin}${BASE_PATH}/${slug}`;
                 navigator.clipboard.writeText(url).then(() => {
-                    btn.innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => btn.innerHTML = '<i class="fas fa-link"></i>', 2000);
-                });
+                    btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
+                    setTimeout(() => btn.innerHTML = '<i class="fas fa-link" aria-hidden="true"></i>', 2000);
+                }).catch(() => alert('Copy failed – please copy URL manually'));
             };
         });
     }
@@ -421,6 +432,7 @@
         setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
 
         let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
         canonical.href = pageUrl;
 
         const setOG = (prop, content) => {
@@ -464,28 +476,28 @@
         };
         let script = document.getElementById('lbSchema');
         if (!script) { script = document.createElement('script'); script.id = 'lbSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
-        script.text = JSON.stringify(lb);
+        script.textContent = JSON.stringify(lb);
 
         const galleryHTML = service.photos?.length ? `
-            <div class="gallery-wrapper" id="galleryWrapper">
+            <div class="gallery-wrapper" id="galleryWrapper" aria-label="Business gallery">
                 <div class="gallery-slider" id="gallerySlider">
-                    ${service.photos.map(p => `<img src="${p}" alt="${service.name} work" loading="lazy">`).join('')}
+                    ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery image" loading="lazy">`).join('')}
                 </div>
-                <div class="gallery-arrow prev" id="prevBtn"><i class="fas fa-chevron-left"></i></div>
-                <div class="gallery-arrow next" id="nextBtn"><i class="fas fa-chevron-right"></i></div>
+                <button class="gallery-arrow prev" id="prevBtn" aria-label="Previous image"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                <button class="gallery-arrow next" id="nextBtn" aria-label="Next image"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
             </div>` : '<p style="opacity:0.8;">No gallery photos yet.</p>';
 
         document.querySelector('.glass').innerHTML = `
-            <div class="profile-view-content">
-                ${service.profile ? `<img src="${service.profile}" alt="${service.name}">` : ''}
+            <section class="profile-view-content" aria-labelledby="profile-title">
+                ${service.profile ? `<img src="${service.profile}" alt="${service.name} profile" loading="lazy">` : ''}
 
                 <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
                     ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
                 </p>
 
-                <div class="contact-box">
-                    ${service.phone ? `<div class="contact-item"><i class="fas fa-phone"></i><div><a href="tel:${service.phone}">${service.phone}</a></div></div>` : ''}
-                    ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
+                <div class="contact-box" aria-label="Contact information">
+                    ${service.phone ? `<div class="contact-item"><i class="fas fa-phone" aria-hidden="true"></i><div><a href="tel:${service.phone.replace(/[^0-9+]/g,'')}">${service.phone}</a></div></div>` : ''}
+                    ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope" aria-hidden="true"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
                 </div>
 
                 <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
@@ -493,10 +505,10 @@
                 <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
                 ${galleryHTML}
 
-                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;">
+                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;" aria-label="Back to directory">
                     ← Back to Directory
                 </a>
-            </div>`;
+            </section>`;
 
         if (service.photos?.length > 1) {
             const slider = document.getElementById('gallerySlider');
@@ -541,7 +553,7 @@
 
     window.addEventListener('popstate', checkPathAndRender);
 
-    // GitHub Pages fix: use replaceState on initial load + DOMContentLoaded
+    // GitHub Pages fix + performance
     document.addEventListener('DOMContentLoaded', () => {
         const slug = getCurrentSlug();
         if (slug) {
