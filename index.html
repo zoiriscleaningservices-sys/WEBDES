@@ -118,11 +118,11 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
             display: flex;
             flex-direction: column;
-            height: 100%; /* makes all cards stretch to same height in row */
+            height: 100%;
+            position: relative;
         }
         .card:hover { transform: translateY(-6px); }
 
-        /* Fixed height for the teaser section inside each card */
         .card-teaser {
             flex: 1;
             display: flex;
@@ -130,10 +130,10 @@
         }
         .profile-img {
             width: 100%;
-            height: auto;            /* changed to auto for full aspect ratio */
-            max-height: 300px;       /* limit max height to prevent overly tall cards */
-            object-fit: contain;     /* show full image without cropping */
-            background: rgba(0,0,0,0.2); /* subtle background for transparent images */
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            background: rgba(0,0,0,0.2);
             border-radius: 20px;
             margin: 16px 0;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
@@ -213,71 +213,47 @@
         .no-services { font-size: 1.3rem; text-align: center; padding: 40px 20px; opacity: 0.9; font-style: italic; }
         footer { text-align: center; margin-top: auto; padding: 24px 16px; font-size: 0.85rem; opacity: 0.8; }
 
-        /* Swipeable Gallery for Individual Page */
-        .full-gallery-wrapper {
+        /* NEW GALLERY STYLE - same as the blog embed */
+        .gallery-wrapper {
             position: relative;
-            margin: 40px 0;
+            width: 100%;
+            max-width: 900px;
+            margin: 50px auto;
             overflow: hidden;
             border-radius: 24px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
         }
-        .full-gallery {
+        .gallery-slider {
             display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            cursor: grab;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .full-gallery:active { cursor: grabbing; }
-        .full-gallery::-webkit-scrollbar { height: 8px; }
-        .full-gallery::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 4px; }
-        .full-gallery img {
-            flex: 0 0 100%;
+        .gallery-slider img {
             width: 100%;
-            height: 400px;
+            height: 500px;
             object-fit: cover;
-            scroll-snap-align: center;
+            flex-shrink: 0;
         }
-        .gallery-nav {
+        .gallery-arrow {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
-            color: white;
-            border: none;
             width: 50px;
             height: 50px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            place-items: center;
             font-size: 1.8rem;
             cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
             z-index: 10;
+            opacity: 0.8;
+            transition: all 0.3s;
         }
-        .gallery-nav:hover { background: rgba(0,0,0,0.7); }
-        .gallery-nav.prev { left: 20px; }
-        .gallery-nav.next { right: 20px; }
-        .full-gallery-wrapper:hover .gallery-nav { opacity: 1; }
-        .gallery-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 16px;
-        }
-        .gallery-dots span {
-            width: 8px;
-            height: 8px;
-            background: rgba(255,255,255,0.4);
-            border-radius: 50%;
-            transition: background 0.3s;
-        }
-        .gallery-dots span.active {
-            background: var(--coral);
-        }
+        .gallery-arrow:hover { opacity: 1; background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.1); }
+        .gallery-arrow.prev { left: 20px; }
+        .gallery-arrow.next { right: 20px; }
+        @media (max-width: 768px) { .gallery-arrow { display: none; } }
 
         .contact-item {
             display: flex;
@@ -302,7 +278,6 @@
         @media (min-width: 640px) {
             .services { grid-template-columns: repeat(2,1fr); }
             .glass { padding: 40px 30px; }
-            .full-gallery img { height: 500px; }
         }
         @media (min-width: 1024px) {
             .services { grid-template-columns: repeat(auto-fill, minmax(380px,1fr)); }
@@ -344,20 +319,6 @@
         © 2025 TrueWebX – The global directory for businesses and professional services
     </footer>
 </div>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "TrueWebX",
-  "url": "https://truewebx.site/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://truewebx.site/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
-</script>
 
 <script>
     window.addEventListener('scroll', () => {
@@ -478,15 +439,47 @@
 
         if (error || !service) return false;
 
-        // Dynamic SEO (unchanged, abbreviated for brevity)
         const fullLocation = service.city || 'Your Area';
         const pageUrl = window.location.href;
 
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation`;
 
-        // ... (rest of SEO code remains the same)
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
+        metaDesc.content = `${service.name} provides top-rated professional services in ${fullLocation}. ${service.description ? service.description.substring(0, 150) + '...' : 'Contact for a free consultation today!'}`;
 
-        // Render individual full profile with full-size profile image
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+        canonical.href = pageUrl;
+
+        const setOG = (prop, content) => {
+            let tag = document.querySelector(`meta[property="og:${prop}"]`);
+            if (!tag) { tag = document.createElement('meta'); tag.setAttribute('property', `og:${prop}`); document.head.appendChild(tag); }
+            tag.content = content;
+        };
+        setOG('title', `${service.name} – #1 Professional Service in ${fullLocation}`);
+        setOG('description', metaDesc.content);
+        setOG('url', pageUrl);
+        setOG('type', 'business.business');
+        setOG('site_name', 'TrueWebX');
+        setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+
+        // Render individual full profile with new gallery
+        let galleryHTML = '';
+        if (Array.isArray(service.photos) && service.photos.length > 0) {
+            const images = service.photos.map(p => `<img src="${p}" alt="${service.name} work example" loading="lazy">`).join('');
+            galleryHTML = `
+                <div class="gallery-wrapper" id="galleryWrapper">
+                    <div class="gallery-slider" id="gallerySlider">
+                        ${images}
+                    </div>
+                    <div class="gallery-arrow prev" id="prevBtn"><i class="fas fa-chevron-left"></i></div>
+                    <div class="gallery-arrow next" id="nextBtn"><i class="fas fa-chevron-right"></i></div>
+                </div>`;
+        } else {
+            galleryHTML = '<p style="opacity: 0.8; text-align:center;">No gallery photos yet.</p>';
+        }
+
         document.querySelector('.glass').innerHTML = `
             <div style="max-width: 1000px; margin: 0 auto; padding: 0 16px; text-align: center;">
 
@@ -517,18 +510,7 @@
 
                 <h2 style="font-size: 2.4rem; margin: 60px 0 30px;">Gallery</h2>
 
-                ${service.photos?.length ? `
-                <div class="full-gallery-wrapper">
-                    <button class="gallery-nav prev" aria-label="Previous photo"><i class="fas fa-chevron-left"></i></button>
-                    <button class="gallery-nav next" aria-label="Next photo"><i class="fas fa-chevron-right"></i></button>
-                    <div class="full-gallery" id="fullGallery">
-                        ${service.photos.map(p => `
-                            <img src="${p}" alt="${service.name} work example" loading="lazy">
-                        `).join('')}
-                    </div>
-                    <div class="gallery-dots" id="galleryDots"></div>
-                </div>
-                ` : '<p style="opacity: 0.8;">No gallery photos yet.</p>'}
+                ${galleryHTML}
 
                 <a href="/" style="display: inline-block; margin: 60px auto; padding: 16px 40px; background: var(--coral); color: white; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.3rem; box-shadow: 0 6px 20px rgba(0,0,0,0.3);">
                     ← Back to Directory
@@ -536,29 +518,52 @@
             </div>
         `;
 
-        // Gallery navigation code (unchanged)
-        if (service.photos?.length > 1) {
-            const gallery = document.getElementById('fullGallery');
-            const prevBtn = document.querySelector('.gallery-nav.prev');
-            const nextBtn = document.querySelector('.gallery-nav.next');
-            const dotsContainer = document.getElementById('galleryDots');
+        // Initialize the new gallery if there are multiple photos
+        if (service.photos && service.photos.length > 1) {
+            const wrapper = document.getElementById('galleryWrapper');
+            const slider = document.getElementById('gallerySlider');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentIndex = 0;
+            let autoTimer;
 
-            service.photos.forEach((_, i) => {
-                const dot = document.createElement('span');
-                if (i === 0) dot.classList.add('active');
-                dotsContainer.appendChild(dot);
-            });
-
-            const updateDots = () => {
-                const index = Math.round(gallery.scrollLeft / gallery.clientWidth);
-                document.querySelectorAll('.gallery-dots span').forEach((dot, i) => dot.classList.toggle('active', i === index));
+            const updateSlide = () => {
+                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
             };
 
-            gallery.addEventListener('scroll', updateDots);
-            prevBtn.addEventListener('click', () => gallery.scrollBy({ left: -gallery.clientWidth, behavior: 'smooth' }));
-            nextBtn.addEventListener('click', () => gallery.scrollBy({ left: gallery.clientWidth, behavior: 'smooth' }));
+            const nextSlide = () => {
+                currentIndex = (currentIndex + 1) % service.photos.length;
+                updateSlide();
+            };
 
-            updateDots();
+            const prevSlide = () => {
+                currentIndex = (currentIndex - 1 + service.photos.length) % service.photos.length;
+                updateSlide();
+            };
+
+            const startAutoSwipe = () => {
+                if (window.innerWidth > 768) {
+                    autoTimer = setInterval(nextSlide, 8000);
+                }
+            };
+
+            const stopAutoSwipe = () => clearInterval(autoTimer);
+
+            nextBtn.onclick = () => { stopAutoSwipe(); nextSlide(); startAutoSwipe(); };
+            prevBtn.onclick = () => { stopAutoSwipe(); prevSlide(); startAutoSwipe(); };
+
+            let touchStartX = 0;
+            wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; stopAutoSwipe(); }, { passive: true });
+            wrapper.addEventListener('touchend', e => {
+                const diff = touchStartX - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 50) {
+                    diff > 0 ? nextSlide() : prevSlide();
+                }
+                startAutoSwipe();
+            });
+
+            window.addEventListener('resize', () => { updateSlide(); stopAutoSwipe(); startAutoSwipe(); });
+            startAutoSwipe();
         }
 
         window.scrollTo(0, 0);
