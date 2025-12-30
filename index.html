@@ -18,6 +18,8 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="canonical" href="https://truewebx.site/">
+
+    <!-- Default Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="https://truewebx.site/favicon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="https://truewebx.site/favicon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="https://truewebx.site/favicon.png">
@@ -408,23 +410,68 @@
         const fullLocation = service.city || 'Your Area';
         const pageUrl = location.href;
 
+        // Ultimate dynamic title
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
 
+        // Dynamic meta description
         const setMeta = (name, content) => {
-            let el = document.querySelector(`meta[name="${name}"]`) || document.createElement('meta');
-            el.name = name; el.content = content; if (!el.isConnected) document.head.appendChild(el);
+            let el = document.querySelector(`meta[name="${name}"]`);
+            if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
+            el.content = content;
         };
-        setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'}`);
+        setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
 
+        // Dynamic canonical
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+        canonical.href = pageUrl;
+
+        // Dynamic OG tags
         const setOG = (prop, content) => {
-            let el = document.querySelector(`meta[property="og:${prop}"]`) || document.createElement('meta');
-            el.setAttribute('property', `og:${prop}`); el.content = content;
-            if (!el.isConnected) document.head.appendChild(el);
+            let el = document.querySelector(`meta[property="og:${prop}"]`);
+            if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
+            el.content = content;
         };
-        setOG('title', `${service.name} – #1 in ${fullLocation}`);
+        setOG('title', `${service.name} – #1 in ${fullLocation} | TrueWebX`);
         setOG('description', document.querySelector('meta[name="description"]').content);
         setOG('url', pageUrl);
         setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+
+        // Twitter tags
+        ['title', 'description', 'image'].forEach(p => {
+            let el = document.querySelector(`meta[name="twitter:${p}"]`);
+            if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
+            el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
+        });
+
+        // Dynamic favicons using business profile image
+        if (service.profile) {
+            ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
+                const [size, rel] = spec.split('|');
+                let link = document.querySelector(`link[rel="${rel}"]${size ? `[sizes="${size}x${size}"]` : ''}`);
+                if (!link) { link = document.createElement('link'); link.rel = rel; if (size) link.sizes = `${size}x${size}`; document.head.appendChild(link); }
+                link.href = service.profile;
+            });
+        }
+
+        // Enhanced LocalBusiness Schema
+        const lb = {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": service.name,
+            "image": service.profile || "",
+            "url": pageUrl,
+            "telephone": service.phone || "",
+            "email": service.gmail || "",
+            "address": {"@type":"PostalAddress","addressLocality":fullLocation},
+            "description": service.description || "Professional service with free consultation",
+            "priceRange": "$",
+            "openingHours": "Mo-Su 08:00-20:00",
+            "sameAs": service.social_links?.map(l => l.url) || []
+        };
+        let script = document.getElementById('lbSchema');
+        if (!script) { script = document.createElement('script'); script.id = 'lbSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
+        script.text = JSON.stringify(lb);
 
         const galleryHTML = service.photos?.length ? `
             <div class="gallery-wrapper" id="galleryWrapper">
