@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrueWebX – Global Business Directory | Find Local Services Worldwide</title>
-    <meta name="description" content="TrueWebX is a global business directory connecting customers with local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
+    <meta name="description" content="TrueWebX is a global business directory connecting customers with trusted local services and companies worldwide. Search for trusted businesses, view profiles, photos, and contact details. Free consultation available.">
     <meta name="keywords" content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
     <meta name="robots" content="index, follow">
 
@@ -16,7 +16,7 @@
     <meta property="og:image" content="https://truewebx.site/og-image.jpg">
     <meta property="og:locale" content="en_US">
 
-    <!-- Twitter -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- Canonical -->
@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root { 
             --coral: #ff6b6b; 
@@ -36,6 +37,7 @@
             --white: #ffffff;
             --light-glass: rgba(255, 255, 255, 0.22);
             --card-glass: rgba(255, 255, 255, 0.25);
+            --shadow: 0 8px 32px rgba(0,0,0,0.25);
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { 
@@ -47,290 +49,214 @@
         }
         .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
 
+        /* Header */
         .header-wrapper {
             position: fixed; top: 0; left: 0; right: 0;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px; z-index: 1000; background: rgba(0,0,0,0.1); backdrop-filter: blur(15px);
+            padding: 16px 24px; z-index: 1000; 
+            background: rgba(0,0,0,0.1); backdrop-filter: blur(15px);
             transition: background 0.3s ease;
         }
-        .header-wrapper.scrolled { background: rgba(0,0,0,0.4); }
-        .logo { font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 900; background: linear-gradient(45deg, #fff, #ff8fa3); -webkit-background-clip: text; color: transparent; }
-
+        .header-wrapper.scrolled { background: rgba(0,0,0,0.45); }
+        .logo { 
+            font-size: clamp(2.2rem, 7vw, 3.8rem); font-weight: 900; 
+            background: linear-gradient(45deg, #fff, #ff8fa3); 
+            -webkit-background-clip: text; color: transparent; 
+        }
         .login-btn {
             background: rgba(255,255,255,0.25); backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.4); color: white; font-weight: 600;
-            padding: 10px 20px; border-radius: 50px; cursor: pointer;
-            display: flex; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: 50px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; font-size: 1rem;
+            transition: all 0.3s;
         }
-        .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-3px); }
 
-        .main-content { padding-top: 100px; min-height: 100vh; display: flex; flex-direction: column; }
-        .hero { text-align: center; padding: 40px 16px 30px; }
-        .tagline { font-size: clamp(1.3rem, 5.5vw, 2rem); font-weight: 600; margin-bottom: 10px; }
-        .subtitle { font-size: clamp(0.95rem, 3.5vw, 1.35rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.6; }
+        .main-content { padding-top: 110px; min-height: 100vh; display: flex; flex-direction: column; }
 
-        .search-container {
-            max-width: 700px;
-            margin: 20px auto;
-            position: relative;
-        }
+        /* Hero */
+        .hero { text-align: center; padding: 50px 20px 40px; }
+        .tagline { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 700; margin-bottom: 16px; }
+        .subtitle { font-size: clamp(1.1rem, 4vw, 1.5rem); opacity: 0.95; max-width: 900px; margin: 0 auto 50px; line-height: 1.7; }
+
+        /* Search */
+        .search-container { max-width: 760px; margin: 0 auto 40px; position: relative; }
         .search-box {
-            width: 100%;
-            padding: 18px 60px 18px 24px;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            border: none;
-            background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(15px);
-            color: white;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            width: 100%; padding: 20px 70px 20px 30px; font-size: 1.3rem;
+            border-radius: 50px; border: none; background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(15px); color: white; box-shadow: var(--shadow);
         }
         .search-box::placeholder { color: rgba(255,255,255,0.7); }
-        .search-box:focus { outline: none; box-shadow: 0 0 0 4px rgba(255,107,107,0.3); }
-        .search-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; color: rgba(255,255,255,0.8); pointer-events: none; }
+        .search-box:focus { outline: none; box-shadow: 0 0 0 5px rgba(255,107,107,0.4); }
+        .search-icon { position: absolute; right: 26px; top: 50%; transform: translateY(-50%); font-size: 2rem; color: rgba(255,255,255,0.8); }
 
+        /* Glass Section */
         .glass { 
-            background: var(--light-glass);
-            backdrop-filter: blur(20px); 
-            border-radius: 28px; 
-            padding: 32px 20px; 
-            margin: 20px 0; 
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            flex: 1;
+            background: var(--light-glass); backdrop-filter: blur(20px); 
+            border-radius: 32px; padding: 40px 24px; margin: 20px 0; 
+            border: 1px solid rgba(255,255,255,0.3); box-shadow: var(--shadow); flex: 1;
         }
-        h2 { font-size: clamp(1.7rem, 5.5vw, 2.6rem); margin-bottom: 24px; text-align: center; }
+        h2 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 32px; text-align: center; font-weight: 700; }
 
-        /* Uniform Card Grid */
+        /* Uniform Grid Cards - ALWAYS 3 per row on desktop */
         .services { 
             display: grid; 
             grid-template-columns: 1fr; 
-            gap: 28px; 
+            gap: 32px; 
         }
         .card { 
-            background: var(--card-glass); 
-            backdrop-filter: blur(15px); 
-            border-radius: 32px; 
-            overflow: hidden;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.25); 
-            transition: transform 0.3s ease; 
-            display: flex;
-            flex-direction: column;
-            height: 100%; /* ensures equal height in row */
+            background: var(--card-glass); backdrop-filter: blur(18px); 
+            border-radius: 32px; overflow: hidden;
+            box-shadow: var(--shadow); transition: transform 0.4s ease; 
+            display: flex; flex-direction: column;
         }
-        .card:hover { transform: translateY(-8px); }
+        .card:hover { transform: translateY(-10px); }
 
-        .profile-img-wrapper {
-            width: 100%;
-            height: 280px;
-            overflow: hidden;
+        .profile-img-wrapper { width: 100%; height: 320px; overflow: hidden; }
+        .profile-img { 
+            width: 100%; height: 100%; object-fit: cover; 
+            transition: transform 0.5s ease;
         }
-        .profile-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+        .card:hover .profile-img { transform: scale(1.06); }
+
+        .card-content { 
+            padding: 28px; text-align: center; 
+            flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .card h3 { font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
+        .card .location { font-size: 1.2rem; opacity: 0.9; margin-bottom: 16px; }
+        .card .description-teaser { 
+            line-height: 1.7; opacity: 0.95; margin-bottom: 20px; flex-grow: 1;
+            overflow: hidden; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
         }
 
-        .card-content {
-            padding: 24px;
-            text-align: center;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+        /* Always exactly 3 preview photos side by side */
+        .card .photos { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 14px; 
+            margin: 20px 0;
         }
-        .card h3 { font-size: 1.9rem; margin-bottom: 8px; }
-        .card .location { font-size: 1.1rem; opacity: 0.9; margin-bottom: 12px; }
-        .card .description-teaser {
-            flex-grow: 1;
-            line-height: 1.6;
-            opacity: 0.95;
-            margin-bottom: 16px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
+        .card .photos img { 
+            width: 100%; height: 110px; object-fit: cover; border-radius: 16px; 
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
         }
-        .card .photos {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 16px 0;
-        }
-        .card .photos img {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
+
         .private { filter: blur(6px); transition: filter 0.3s; font-weight: 600; }
         .private:hover { filter: none; }
-        .price { font-size: 1.9rem !important; color: var(--coral) !important; font-weight: 800; margin: 16px 0; }
+        .price { font-size: 2rem !important; color: var(--coral) !important; font-weight: 800; margin: 20px 0; }
 
-        .links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 16px 0; }
-        .links a { color: #ffeb3b; padding: 8px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
-
-        .view-btn {
-            margin: 20px auto 0;
-            padding: 14px 32px;
-            background: var(--coral);
-            color: white;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
+        .links { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0; }
+        .links a { 
+            color: #ffeb3b; padding: 10px 18px; background: rgba(255,255,255,0.1); 
+            border-radius: 24px; font-size: 1rem; display: flex; align-items: center; gap: 8px; 
+            transition: background 0.3s;
         }
+        .links a:hover { background: rgba(255,255,255,0.25); }
+
+        .view-btn { 
+            margin: 24px auto 0; padding: 16px 36px; background: var(--coral); 
+            color: white; border-radius: 50px; text-decoration: none; font-weight: bold; 
+            font-size: 1.2rem; transition: all 0.3s;
+        }
+        .view-btn:hover { background: #ff8787; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 
         .share-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            z-index: 2;
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.4); border-radius: 50%;
+            width: 50px; height: 50px; display: grid; place-items: center;
+            cursor: pointer; font-size: 1.4rem; transition: all 0.3s; z-index: 2;
         }
-        .share-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); }
+        .share-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.15); }
 
-        .no-services { font-size: 1.4rem; text-align: center; padding: 60px 20px; opacity: 0.9; }
+        .no-services { font-size: 1.5rem; text-align: center; padding: 80px 20px; opacity: 0.9; }
 
-        /* Advanced Gallery for Individual Pages */
+        /* Advanced Gallery (Individual Page) */
         .gallery-wrapper {
-            position: relative;
-            max-width: 900px;
-            margin: 50px auto;
-            overflow: hidden;
-            border-radius: 28px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            position: relative; max-width: 960px; margin: 60px auto; overflow: hidden;
+            border-radius: 32px; box-shadow: 0 16px 50px rgba(0,0,0,0.5);
         }
-        .gallery-slider {
-            display: flex;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .gallery-slider img {
-            width: 100%;
-            height: 520px;
-            object-fit: cover;
-            flex-shrink: 0;
+        .gallery-slider { display: flex; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gallery-slider img { 
+            width: 100%; height: 560px; object-fit: cover; flex-shrink: 0; 
         }
         .gallery-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 56px;
-            height: 56px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            font-size: 2rem;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: all 0.3s;
-            z-index: 10;
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 60px; height: 60px; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px);
+            border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem;
+            cursor: pointer; opacity: 0.85; transition: all 0.3s; z-index: 10;
         }
-        .gallery-arrow:hover { opacity: 1; background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.1); }
-        .gallery-arrow.prev { left: 24px; }
-        .gallery-arrow.next { right: 24px; }
+        .gallery-arrow:hover { opacity: 1; background: rgba(0,0,0,0.7); transform: translateY(-50%) scale(1.15); }
+        .gallery-arrow.prev { left: 28px; }
+        .gallery-arrow.next { right: 28px; }
         @media (max-width: 768px) { .gallery-arrow { display: none; } }
 
-        .contact-item { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: 1.5rem; }
-        .contact-item i { color: var(--coral); }
+        .contact-item { display: flex; align-items: center; gap: 16px; margin: 20px 0; font-size: 1.6rem; }
+        .contact-item i { color: var(--coral); font-size: 1.8rem; }
 
-        @media (min-width: 640px) {
+        footer { text-align: center; padding: 32px 20px; font-size: 0.95rem; opacity: 0.8; margin-top: auto; }
+
+        /* Responsive - 3 cards on large screens */
+        @media (min-width: 768px) {
             .services { grid-template-columns: repeat(2, 1fr); }
-            .glass { padding: 44px 36px; }
-            .profile-img-wrapper { height: 300px; }
+            .profile-img-wrapper { height: 340px; }
         }
-        @media (min-width: 1024px) {
-            .services { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
-            .hero { padding: 70px 20px 60px; }
-            .glass { padding: 60px 50px; border-radius: 36px; }
-            .profile-img-wrapper { height: 360px; }
+        @media (min-width: 1100px) {
+            .services { grid-template-columns: repeat(3, 1fr); gap: 40px; }
+            .profile-img-wrapper { height: 380px; }
+            .gallery-slider img { height: 620px; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <header class="header-wrapper" id="header" role="banner">
+    <header class="header-wrapper" id="header">
         <h1 class="logo">TrueWebX</h1>
-        <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up">
+        <a href="dashboard.html" class="login-btn">
             <i class="fas fa-user-circle"></i> Login / Sign Up
         </a>
     </header>
 
-    <main class="main-content" role="main">
-        <section class="hero" aria-labelledby="hero-tagline">
-            <h2 id="hero-tagline" class="tagline">Promote Your Business Worldwide</h2>
+    <main class="main-content">
+        <section class="hero">
+            <h2 class="tagline">Promote Your Business Worldwide</h2>
             <p class="subtitle">
                 TrueWebX connects customers with trusted local professionals everywhere.<br>
-                <strong>Free consultations available – find your expert today.</strong>
+                <strong>Free consultations • Verified services • Global reach</strong>
             </p>
         </section>
 
-        <div class="search-container" role="search">
-            <input type="text" id="searchInput" class="search-box" placeholder="Search by service, business name, or city..." aria-label="Search businesses">
-            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search services, businesses, or cities..." aria-label="Search businesses">
+            <i class="fas fa-search search-icon"></i>
         </div>
 
-        <section class="glass" aria-labelledby="services-heading">
-            <h2 id="services-heading">Available Services Worldwide</h2>
-            <div class="services" id="list" role="list"></div>
+        <section class="glass">
+            <h2>Available Services Worldwide</h2>
+            <div class="services" id="list"></div>
         </section>
     </main>
 
-    <footer role="contentinfo">
-        © 2025 TrueWebX – Global directory for professional services
-    </footer>
+    <footer>© 2025 TrueWebX – The global directory for professional services</footer>
 </div>
 
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "TrueWebX",
-  "url": "https://truewebx.site/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://truewebx.site/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
+{"@context":"https://schema.org","@type":"WebSite","name":"TrueWebX","url":"https://truewebx.site/","potentialAction":{"@type":"SearchAction","target":"https://truewebx.site/?q={search_term_string}","query-input":"required name=search_term_string"}}
 </script>
 
 <script>
-    window.addEventListener('scroll', () => {
-        document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
-    });
+    window.addEventListener('scroll', () => document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50));
 
-    const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
     let allServices = [];
 
     async function loadServices() {
-        const { data: services, error } = await supabaseClient
-            .from('services')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error || !services || services.length === 0) {
+        const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
+        if (error || !services?.length) {
             document.getElementById('list').innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
-            allServices = [];
             return;
         }
-
         allServices = services;
         renderServices(services);
         handleSlugHash();
@@ -338,21 +264,13 @@
 
     function renderServices(services) {
         const list = document.getElementById('list');
-        if (services.length === 0) {
-            list.innerHTML = '<p class="no-services">No results found.</p>';
-            return;
-        }
-
-        list.innerHTML = services.map(s => `
+        list.innerHTML = services.length ? services.map(s => `
             <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness">
-                <button class="share-btn" aria-label="Copy link">
-                    <i class="fas fa-link"></i>
-                </button>
+                <button class="share-btn" aria-label="Copy link"><i class="fas fa-link"></i></button>
 
                 <div class="profile-img-wrapper">
                     <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
-                         alt="${s.name} featured image" 
-                         class="profile-img" itemprop="image">
+                         alt="${s.name} featured" class="profile-img" itemprop="image">
                 </div>
 
                 <div class="card-content">
@@ -363,44 +281,34 @@
                         </p>
                         <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
 
-                        ${Array.isArray(s.photos) && s.photos.length > 0 ? `
+                        ${s.photos?.length ? `
                         <div class="photos">
-                            ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name} gallery" loading="lazy">`).join('')}
+                            ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name} preview" loading="lazy">`).join('')}
+                            ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;">+${s.photos.length - 3} more</div>` : ''}
                         </div>` : ''}
 
                         <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
                         <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
 
-                        <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                            Free Consultation
-                        </strong></p>
+                        <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
 
-                        ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                        <div class="links">
-                            ${s.social_links.map(l => `
-                                <a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs">
-                                    <i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}
-                                </a>
-                            `).join('')}
-                        </div>` : ''}
+                        ${s.social_links?.length ? `<div class="links">${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}</div>` : ''}
                     </div>
 
                     <a href="#${s.slug}" class="view-btn">View Full Profile →</a>
                 </div>
             </article>
-        `).join('');
+        `).join('') : '<p class="no-services">No results found.</p>';
 
         document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
+            btn.onclick = e => {
                 e.stopPropagation();
-                const card = btn.closest('.card');
-                const service = allServices.find(s => `service-${s.id}` === card.id);
-                const url = service ? `${location.origin}/#${service.slug}` : location.href;
+                const url = `${location.origin}/#${btn.closest('.card').id.split('-')[1]}`;
                 navigator.clipboard.writeText(url).then(() => {
                     btn.innerHTML = '<i class="fas fa-check"></i>';
                     setTimeout(() => btn.innerHTML = '<i class="fas fa-link"></i>', 2000);
                 });
-            });
+            };
         });
     }
 
@@ -408,143 +316,116 @@
         const hash = window.location.hash.slice(1).toLowerCase();
         if (!hash) return false;
 
-        const { data: service, error } = await supabaseClient.from('services').select('*').eq('slug', hash).single();
-        if (error || !service) return false;
+        const { data: service } = await supabaseClient.from('services').select('*').eq('slug', hash).single();
+        if (!service) return false;
 
-        const cityPart = service.city ? service.city.split(',')[0].trim() : 'Your Area';
         const fullLocation = service.city || 'Your Area';
-        const pageUrl = window.location.href;
+        const pageUrl = location.href;
 
-        // Ultimate SEO
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
 
-        const updateMeta = (name, content) => {
-            let el = document.querySelector(`meta[name="${name}"]`);
-            if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
-            el.content = content;
+        const setMeta = (name, content) => {
+            let el = document.querySelector(`meta[name="${name}"]`) || document.createElement('meta');
+            el.name = name; el.content = content; if (!el.parentNode) document.head.appendChild(el);
         };
-        updateMeta('description', `${service.name} – Top-rated professional service in ${fullLocation}. ${service.description || 'Free consultation available.'}`);
-        updateMeta('robots', 'index, follow');
+        setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'}`);
 
-        const updateOG = (prop, content) => {
-            let el = document.querySelector(`meta[property="og:${prop}"]`);
-            if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
-            el.content = content;
+        const setOG = (prop, content) => {
+            let el = document.querySelector(`meta[property="og:${prop}"]`) || document.createElement('meta');
+            el.setAttribute('property', `og:${prop}`); el.content = content;
+            if (!el.parentNode) document.head.appendChild(el);
         };
-        updateOG('title', `${service.name} – #1 in ${fullLocation}`);
-        updateOG('description', updateMeta.description);
-        updateOG('url', pageUrl);
-        updateOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+        setOG('title', `${service.name} – #1 in ${fullLocation}`);
+        setOG('description', document.querySelector('meta[name="description"]').content);
+        setOG('url', pageUrl);
+        setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
 
-        // Twitter
-        ['title', 'description', 'image'].forEach(p => {
-            let el = document.querySelector(`meta[name="twitter:${p}"]`);
-            if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
-            el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : updateMeta.description);
+        ['title','description','image'].forEach(p => {
+            let el = document.querySelector(`meta[name="twitter:${p}"]`) || document.createElement('meta');
+            el.name = `twitter:${p}`; el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
+            if (!el.parentNode) document.head.appendChild(el);
         });
 
-        // Dynamic Favicons from business profile image
         if (service.profile) {
-            ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
+            ['180x180|apple-touch-icon','32x32|icon','16x16|icon'].forEach(spec => {
                 const [size, rel] = spec.split('|');
-                let link = document.querySelector(`link[rel="${rel}"][sizes="${size}x${size}"]`) ||
-                           document.querySelector(`link[rel="${rel}"]`);
-                if (!link) { link = document.createElement('link'); link.rel = rel; document.head.appendChild(link); }
-                if (size) link.sizes = `${size}x${size}`;
-                link.href = service.profile;
+                let link = document.querySelector(`link[rel="${rel}"]${size ? `[sizes="${size}x${size}"]` : ''}`) || document.createElement('link');
+                link.rel = rel; if (size) link.sizes = `${size}x${size}`; link.href = service.profile;
+                if (!link.parentNode) document.head.appendChild(link);
             });
         }
 
-        // Structured Data
-        const lbSchema = {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": service.name,
-            "image": service.profile,
-            "url": pageUrl,
-            "telephone": service.phone,
-            "email": service.gmail,
-            "address": { "@type": "PostalAddress", "addressLocality": cityPart, "addressRegion": service.city?.split(',')[1]?.trim() || "" },
-            "description": service.description,
-            "priceRange": "$$",
-            "openingHours": "Mo-Su 08:00-20:00",
-            "sameAs": (service.social_links || []).map(l => l.url)
+        const lb = {
+            "@context": "https://schema.org", "@type": "LocalBusiness", "name": service.name,
+            "image": service.profile, "url": pageUrl, "telephone": service.phone, "email": service.gmail,
+            "address": {"@type":"PostalAddress","addressLocality":fullLocation.split(',')[0]?.trim()},
+            "description": service.description, "priceRange": "$$", "openingHours": "Mo-Su 08:00-20:00",
+            "sameAs": service.social_links?.map(l => l.url) || []
         };
-        let script = document.getElementById('localBusinessSchema');
-        if (!script) { script = document.createElement('script'); script.id = 'localBusinessSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
-        script.text = JSON.stringify(lbSchema);
+        let script = document.getElementById('lbSchema') || document.createElement('script');
+        script.id = 'lbSchema'; script.type = 'application/ld+json'; script.text = JSON.stringify(lb);
+        if (!script.parentNode) document.head.appendChild(script);
 
-        // Render individual page
-        let galleryHTML = '';
-        if (service.photos?.length) {
-            galleryHTML = `
-                <div class="gallery-wrapper" id="galleryWrapper">
-                    <div class="gallery-slider" id="gallerySlider">
-                        ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery" loading="lazy">`).join('')}
-                    </div>
-                    <div class="gallery-arrow prev" id="prevBtn"><i class="fas fa-chevron-left"></i></div>
-                    <div class="gallery-arrow next" id="nextBtn"><i class="fas fa-chevron-right"></i></div>
-                </div>`;
-        }
+        const galleryHTML = service.photos?.length ? `
+            <div class="gallery-wrapper" id="galleryWrapper">
+                <div class="gallery-slider" id="gallerySlider">
+                    ${service.photos.map(p => `<img src="${p}" alt="${service.name} work" loading="lazy">`).join('')}
+                </div>
+                <div class="gallery-arrow prev" id="prevBtn"><i class="fas fa-chevron-left"></i></div>
+                <div class="gallery-arrow next" id="nextBtn"><i class="fas fa-chevron-right"></i></div>
+            </div>` : '<p style="opacity:0.8;">No gallery photos yet.</p>';
 
         document.querySelector('.glass').innerHTML = `
-            <div style="max-width:1000px;margin:0 auto;padding:0 16px;text-align:center;">
-                ${service.profile ? `<img src="${service.profile}" alt="${service.name}" style="width:100%;max-width:900px;border-radius:28px;margin:40px 0;box-shadow:0 12px 40px rgba(0,0,0,0.5);">` : ''}
+            <div style="max-width:1100px;margin:0 auto;padding:20px;text-align:center;">
+                ${service.profile ? `<img src="${service.profile}" alt="${service.name}" style="width:100%;max-width:960px;border-radius:32px;margin:50px 0;box-shadow:0 16px 50px rgba(0,0,0,0.5);">` : ''}
 
-                <p style="font-size:1.4rem;line-height:1.9;margin:30px 0;max-width:800px;margin-left:auto;margin-right:auto;opacity:0.95;">
-                    ${service.description || 'Professional, reliable service with free consultation.'}
+                <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
+                    ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
                 </p>
 
-                <div style="background:rgba(255,255,255,0.15);backdrop-filter:blur(12px);border-radius:28px;padding:36px;margin:40px auto;max-width:640px;">
+                <div style="background:rgba(255,255,255,0.15);backdrop-filter:blur(14px);border-radius:32px;padding:40px;margin:50px auto;max-width:700px;">
                     ${service.phone ? `<div class="contact-item"><i class="fas fa-phone"></i><div><a href="tel:${service.phone}">${service.phone}</a></div></div>` : ''}
                     ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope"></i><div><a href="mailto:${service.gmail}">${service.gmail}</a></div></div>` : ''}
                 </div>
 
-                <p style="font-size:2.4rem;color:var(--coral);font-weight:800;margin:50px 0;">Free Consultation Available</p>
+                <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
 
-                <h2 style="font-size:2.6rem;margin:60px 0 40px;">Gallery</h2>
-                ${galleryHTML || '<p style="opacity:0.8;">No photos yet.</p>'}
+                <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
+                ${galleryHTML}
 
-                <a href="/" style="display:inline-block;margin:70px auto;padding:16px 44px;background:var(--coral);color:white;border-radius:50px;font-size:1.4rem;font-weight:bold;">
+                <a href="/" style="display:inline-block;margin:80px auto;padding:18px 50px;background:var(--coral);color:white;border-radius:50px;font-size:1.5rem;font-weight:bold;box-shadow:0 8px 25px rgba(0,0,0,0.3);">
                     ← Back to Directory
                 </a>
-            </div>
-        `;
+            </div>`;
 
         if (service.photos?.length > 1) {
             const slider = document.getElementById('gallerySlider');
             const prev = document.getElementById('prevBtn');
             const next = document.getElementById('nextBtn');
-            let idx = 0;
-            const update = () => slider.style.transform = `translateX(-${idx * 100}%)`;
-            next.onclick = () => { idx = (idx + 1) % service.photos.length; update(); };
-            prev.onclick = () => { idx = (idx - 1 + service.photos.length) % service.photos.length; update(); };
-            let touchStart = 0;
-            slider.parentElement.addEventListener('touchstart', e => touchStart = e.touches[0].clientX, {passive:true});
+            let i = 0;
+            const move = () => slider.style.transform = `translateX(-${i * 100}%)`;
+            next.onclick = () => { i = (i + 1) % service.photos.length; move(); };
+            prev.onclick = () => { i = (i - 1 + service.photos.length) % service.photos.length; move(); };
+            let ts = 0;
+            slider.parentElement.addEventListener('touchstart', e => ts = e.touches[0].clientX, {passive:true});
             slider.parentElement.addEventListener('touchend', e => {
-                const diff = touchStart - e.changedTouches[0].clientX;
+                const diff = ts - e.changedTouches[0].clientX;
                 if (Math.abs(diff) > 50) diff > 0 ? next.onclick() : prev.onclick();
             });
         }
 
-        window.scrollTo(0, 0);
+        window.scrollTo(0,0);
         return true;
     }
 
     document.getElementById('searchInput').addEventListener('input', e => {
         const q = e.target.value.toLowerCase().trim();
-        const filtered = q ? allServices.filter(s => 
-            [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))
-        ) : allServices;
-        renderServices(filtered);
+        renderServices(q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices);
     });
 
     window.addEventListener('hashchange', () => window.location.hash ? handleSlugHash() : loadServices());
 
-    (async () => {
-        const single = await handleSlugHash();
-        if (!single) loadServices();
-    })();
+    (async () => (await handleSlugHash()) || loadServices())();
 </script>
 </body>
-</html>
+</html> 
