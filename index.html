@@ -131,6 +131,7 @@
             box-shadow: var(--shadow); transition: transform 0.4s ease; 
             display: flex; flex-direction: column;
             width: 100%;
+            position: relative;
         }
         .card:hover { transform: translateY(-10px); }
 
@@ -202,7 +203,6 @@
             padding: 20px;
         }
 
-        /* Profile image in full view - perfect size */
         .profile-view-content > img {
             width: 100%;
             max-width: 960px;
@@ -213,7 +213,6 @@
             display: block;
         }
 
-        /* Contact box - prevents email wrapping */
         .contact-box {
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(14px);
@@ -234,7 +233,7 @@
             flex-wrap: nowrap;
             overflow-x: auto;
             padding: 8px 0;
-            min-width: 0; /* Allows flex children to shrink */
+            min-width: 0;
         }
         .contact-item i {
             color: var(--coral);
@@ -248,7 +247,6 @@
             max-width: 100%;
         }
 
-        /* Gallery - better image sizing */
         .gallery-wrapper {
             position: relative;
             max-width: 960px;
@@ -338,6 +336,7 @@
 
     const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
     let allServices = [];
+    const BASE_PATH = '/profile'; // Clean URL base – e.g. https://truewebx.site/profile/your-slug
 
     async function loadServices() {
         const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
@@ -347,7 +346,7 @@
         }
         allServices = services;
         renderServices(services);
-        handleSlugHash();
+        checkPathAndRender();
     }
 
     function renderServices(services) {
@@ -383,7 +382,7 @@
                         ${s.social_links?.length ? `<div class="links">${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs"><i class="fab fa-${l.type.toLowerCase()}"></i> ${l.type}</a>`).join('')}</div>` : ''}
                     </div>
 
-                    <a href="#${s.slug}" class="view-btn">View Full Profile →</a>
+                    <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;">View Full Profile →</a>
                 </div>
             </article>
         `).join('') : '<p class="no-services">No results found.</p>';
@@ -391,7 +390,8 @@
         document.querySelectorAll('.share-btn').forEach(btn => {
             btn.onclick = e => {
                 e.stopPropagation();
-                const url = `${location.origin}/#${btn.closest('.card').id.split('-')[1]}`;
+                const slug = btn.closest('.card').querySelector('.view-btn').getAttribute('href').split('/').pop();
+                const url = `${location.origin}${BASE_PATH}/${slug}`;
                 navigator.clipboard.writeText(url).then(() => {
                     btn.innerHTML = '<i class="fas fa-check"></i>';
                     setTimeout(() => btn.innerHTML = '<i class="fas fa-link"></i>', 2000);
@@ -400,20 +400,20 @@
         });
     }
 
-    async function handleSlugHash() {
-        const hash = window.location.hash.slice(1).toLowerCase();
-        if (!hash) return false;
-
-        const { data: service } = await supabaseClient.from('services').select('*').eq('slug', hash).single();
-        if (!service) return false;
+    function showSingleProfile(slug) {
+        const service = allServices.find(s => s.slug === slug);
+        if (!service) {
+            renderServices(allServices);
+            history.pushState({}, '', '/');
+            return;
+        }
 
         const fullLocation = service.city || 'Your Area';
-        const pageUrl = location.href;
+        const pageUrl = `${location.origin}${BASE_PATH}/${slug}`;
 
-        // Ultimate dynamic title
+        // Dynamic meta tags (same excellent SEO as before)
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
 
-        // Dynamic meta description
         const setMeta = (name, content) => {
             let el = document.querySelector(`meta[name="${name}"]`);
             if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
@@ -421,12 +421,9 @@
         };
         setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
 
-        // Dynamic canonical
         let canonical = document.querySelector('link[rel="canonical"]');
-        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
         canonical.href = pageUrl;
 
-        // Dynamic OG tags
         const setOG = (prop, content) => {
             let el = document.querySelector(`meta[property="og:${prop}"]`);
             if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
@@ -437,14 +434,12 @@
         setOG('url', pageUrl);
         setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
 
-        // Twitter tags
         ['title', 'description', 'image'].forEach(p => {
             let el = document.querySelector(`meta[name="twitter:${p}"]`);
             if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
             el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
         });
 
-        // Dynamic favicons using business profile image
         if (service.profile) {
             ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
                 const [size, rel] = spec.split('|');
@@ -454,7 +449,7 @@
             });
         }
 
-        // Enhanced LocalBusiness Schema
+        // LocalBusiness Schema
         const lb = {
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
@@ -500,7 +495,7 @@
                 <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
                 ${galleryHTML}
 
-                <a href="/" style="display:inline-block;margin:80px auto;padding:18px 50px;background:var(--coral);color:white;border-radius:50px;font-size:1.5rem;font-weight:bold;box-shadow:0 8px 25px rgba(0,0,0,0.3);">
+                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.pushState({}, '', '/'); return false;">
                     ← Back to Directory
                 </a>
             </div>`;
@@ -521,18 +516,35 @@
             });
         }
 
+        history.pushState({slug: slug}, '', `${BASE_PATH}/${slug}`);
         window.scrollTo(0,0);
-        return true;
+    }
+
+    function getCurrentSlug() {
+        const path = window.location.pathname;
+        if (!path.startsWith(BASE_PATH + '/')) return null;
+        return path.slice(BASE_PATH.length + 1).replace(/\/$/, '') || null;
+    }
+
+    function checkPathAndRender() {
+        const slug = getCurrentSlug();
+        if (slug) {
+            showSingleProfile(slug);
+        } else {
+            renderServices(allServices);
+        }
     }
 
     document.getElementById('searchInput').addEventListener('input', e => {
         const q = e.target.value.toLowerCase().trim();
-        renderServices(q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices);
+        const filtered = q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices;
+        renderServices(filtered);
     });
 
-    window.addEventListener('hashchange', () => window.location.hash ? handleSlugHash() : loadServices());
+    window.addEventListener('popstate', checkPathAndRender);
 
-    (async () => (await handleSlugHash()) || loadServices())();
+    // Initial load
+    loadServices();
 </script>
 </body>
 </html>
