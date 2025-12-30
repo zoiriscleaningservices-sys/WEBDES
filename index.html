@@ -200,7 +200,7 @@
             padding: 20px;
         }
 
-        /* Profile image in full view */
+        /* Profile image in full view - perfect size */
         .profile-view-content > img {
             width: 100%;
             max-width: 960px;
@@ -211,43 +211,42 @@
             display: block;
         }
 
-        /* === FIXED: Contact box – centered, fits long email perfectly on mobile === */
+        /* Contact box - prevents email wrapping */
         .contact-box {
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(14px);
             border-radius: 32px;
             padding: 40px;
             margin: 50px auto;
-            width: fit-content;           /* Expands to fit content */
-            max-width: calc(100vw - 32px); /* Safe full width minus wrapper padding */
-            min-width: 280px;
+            max-width: 700px;
+            width: 100%;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            justify-content: center;      /* Perfect centering */
-            gap: 20px;
-            margin: 24px 0;
+            justify-content: center;
+            gap: 16px;
+            margin: 20px 0;
             font-size: 1.6rem;
             flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 8px 0;
+            min-width: 0; /* Allows flex children to shrink */
         }
-
         .contact-item i {
             color: var(--coral);
             font-size: 1.8rem;
             flex-shrink: 0;
         }
-
         .contact-item a {
-            color: white;
-            text-decoration: none;
-            white-space: nowrap;          /* Email stays on one line */
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: 100%;
         }
 
-        /* Gallery */
+        /* Gallery - better image sizing */
         .gallery-wrapper {
             position: relative;
             max-width: 960px;
@@ -293,8 +292,6 @@
         @media (max-width: 768px) {
             .gallery-arrow { display: none; }
             .gallery-slider img { max-height: 500px; }
-            .contact-item { font-size: 1.5rem; gap: 16px; }
-            .contact-item i { font-size: 1.7rem; }
         }
     </style>
 </head>
@@ -448,7 +445,7 @@
 
                 <div class="contact-box">
                     ${service.phone ? `<div class="contact-item"><i class="fas fa-phone"></i><div><a href="tel:${service.phone}">${service.phone}</a></div></div>` : ''}
-                    ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope"></i><div><a href="mailto:${service.gmail}">${service.gmail}</a></div></div>` : ''}
+                    ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
                 </div>
 
                 <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
