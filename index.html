@@ -200,7 +200,7 @@
             padding: 20px;
         }
 
-        /* Profile image in full view - perfect size */
+        /* Profile image in full view */
         .profile-view-content > img {
             width: 100%;
             max-width: 960px;
@@ -211,27 +211,26 @@
             display: block;
         }
 
-        /* === FIXED: Contact box for long emails === */
+        /* === FIXED: Contact box – centered, fits long email perfectly on mobile === */
         .contact-box {
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(14px);
             border-radius: 32px;
             padding: 40px;
             margin: 50px auto;
-            width: fit-content;           /* Key: expands to fit content */
-            max-width: 90vw;              /* Safe max on small screens */
-            min-width: 300px;
+            width: fit-content;           /* Expands to fit content */
+            max-width: calc(100vw - 32px); /* Safe full width minus wrapper padding */
+            min-width: 280px;
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            justify-content: flex-start;  /* Align left for natural flow */
+            justify-content: center;      /* Perfect centering */
             gap: 20px;
             margin: 24px 0;
             font-size: 1.6rem;
-            flex-wrap: nowrap;            /* Prevent wrapping */
-            overflow-x: hidden;
+            flex-wrap: nowrap;
         }
 
         .contact-item i {
@@ -243,13 +242,12 @@
         .contact-item a {
             color: white;
             text-decoration: none;
-            white-space: nowrap;          /* Critical: email stays on one line */
+            white-space: nowrap;          /* Email stays on one line */
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: calc(90vw - 100px);
         }
 
-        /* Gallery - better image sizing */
+        /* Gallery */
         .gallery-wrapper {
             position: relative;
             max-width: 960px;
@@ -295,8 +293,8 @@
         @media (max-width: 768px) {
             .gallery-arrow { display: none; }
             .gallery-slider img { max-height: 500px; }
-            .contact-item { font-size: 1.4rem; gap: 16px; }
-            .contact-item i { font-size: 1.6rem; }
+            .contact-item { font-size: 1.5rem; gap: 16px; }
+            .contact-item i { font-size: 1.7rem; }
         }
     </style>
 </head>
