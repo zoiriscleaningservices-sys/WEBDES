@@ -336,7 +336,7 @@
 
     const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
     let allServices = [];
-    const BASE_PATH = '/profile'; // Clean URL base – e.g. https://truewebx.site/profile/your-slug
+    const BASE_PATH = '/profile'; // Your profile path
 
     async function loadServices() {
         const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
@@ -404,14 +404,13 @@
         const service = allServices.find(s => s.slug === slug);
         if (!service) {
             renderServices(allServices);
-            history.pushState({}, '', '/');
+            history.replaceState({}, '', '/');
             return;
         }
 
         const fullLocation = service.city || 'Your Area';
         const pageUrl = `${location.origin}${BASE_PATH}/${slug}`;
 
-        // Dynamic meta tags (same excellent SEO as before)
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
 
         const setMeta = (name, content) => {
@@ -449,7 +448,6 @@
             });
         }
 
-        // LocalBusiness Schema
         const lb = {
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
@@ -495,7 +493,7 @@
                 <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
                 ${galleryHTML}
 
-                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.pushState({}, '', '/'); return false;">
+                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;">
                     ← Back to Directory
                 </a>
             </div>`;
@@ -516,7 +514,7 @@
             });
         }
 
-        history.pushState({slug: slug}, '', `${BASE_PATH}/${slug}`);
+        history.replaceState({slug: slug}, '', `${BASE_PATH}/${slug}`);
         window.scrollTo(0,0);
     }
 
@@ -543,8 +541,14 @@
 
     window.addEventListener('popstate', checkPathAndRender);
 
-    // Initial load
-    loadServices();
+    // GitHub Pages fix: use replaceState on initial load + DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+        const slug = getCurrentSlug();
+        if (slug) {
+            history.replaceState({slug: slug}, '', location.pathname);
+        }
+        loadServices();
+    });
 </script>
 </body>
 </html>
