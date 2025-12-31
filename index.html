@@ -301,6 +301,64 @@
             .gallery-arrow { display: none; }
             .gallery-slider img { max-height: 500px; }
         }
+
+        /* === NEW INTERACTION STYLES === */
+        .like-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.9;
+            transition: all 0.3s;
+            margin: 20px auto 0;
+        }
+        .like-btn:hover { opacity: 1; transform: scale(1.05); }
+        .like-btn.liked { color: var(--coral); }
+        .like-btn.liked i { animation: pulse 0.6s ease; }
+        @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.4)} 100%{transform:scale(1)} }
+
+        .like-btn.big { font-size: 2rem; margin: 40px auto; }
+
+        .comments-section {
+            max-width: 860px;
+            margin: 80px auto 40px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 40px;
+        }
+        .new-comment input, .new-comment textarea {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border-radius: 16px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-family: inherit;
+        }
+        .new-comment input::placeholder, .new-comment textarea::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        .new-comment textarea { resize: vertical; min-height: 100px; }
+        .post-comment-btn {
+            margin-top: 16px;
+            padding: 12px 32px;
+            font-size: 1.1rem;
+        }
+        .comment-item {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .comment-item strong { display: block; margin-bottom: 4px; }
+        .comment-item small { opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -347,6 +405,101 @@
     let allServices = [];
     const BASE_PATH = '/profile';
 
+    // === USER IDENTIFICATION FOR LIKES (anonymous) ===
+    function getUserIdentifier() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillText('TrueWebX fingerprint', 2, 2);
+        const data = canvas.toDataURL();
+        return btoa(navigator.userAgent + data + (navigator.deviceMemory || '')).slice(0, 32);
+    }
+    const userId = getUserIdentifier();
+
+    // === INTERACTION FUNCTIONS ===
+    async function loadInteractions(serviceId) {
+        const [likesRes, commentsRes] = await Promise.all([
+            supabaseClient.from('likes').select('user_identifier').eq('service_id', serviceId),
+            supabaseClient.from('comments').select('*').eq('service_id', serviceId).order('created_at', { ascending: false })
+        ]);
+
+        return {
+            likes: likesRes.data || [],
+            comments: commentsRes.data || [],
+            userHasLiked: likesRes.data?.some(l => l.user_identifier === userId) || false
+        };
+    }
+
+    async function toggleLike(serviceId, button) {
+        const { userHasLiked } = await loadInteractions(serviceId);
+        
+        if (userHasLiked) {
+            await supabaseClient.from('likes')
+                .delete()
+                .eq('service_id', serviceId)
+                .eq('user_identifier', userId);
+        } else {
+            await supabaseClient.from('likes')
+                .insert({ service_id: serviceId, user_identifier: userId });
+        }
+
+        updateLikeButton(serviceId, button);
+    }
+
+    async function updateLikeButton(serviceId, button) {
+        const { likes, userHasLiked } = await loadInteractions(serviceId);
+        const countEl = button.querySelector('.like-count');
+        if (countEl) countEl.textContent = likes.length;
+        button.classList.toggle('liked', userHasLiked);
+    }
+
+    async function renderComments(serviceId, container) {
+        const list = container.querySelector('.comments-list');
+        const { comments } = await loadInteractions(serviceId);
+        list.innerHTML = comments.length ? comments.map(c => `
+            <div class="comment-item">
+                <strong>${c.author_name || 'Anonymous'}</strong>
+                <small>– ${new Date(c.created_at).toLocaleDateString()}</small>
+                <p style="margin:12px 0 0;">${c.content.replace(/\n/g, '<br>')}</p>
+            </div>
+        `).join('') : '<p style="opacity:0.7; text-align:center;">No comments yet. Be the first!</p>';
+    }
+
+    async function addComment(serviceId, container) {
+        const input = container.querySelector('.comment-input');
+        const nameInput = container.querySelector('.name-input');
+        const content = input.value.trim();
+        const name = nameInput.value.trim() || 'Anonymous';
+
+        if (!content) return;
+
+        await supabaseClient.from('comments').insert({
+            service_id: serviceId,
+            author_name: name,
+            content: content
+        });
+
+        input.value = '';
+        nameInput.value = '';
+        renderComments(serviceId, container);
+    }
+
+    function attachInteractionHandlers() {
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            const serviceId = btn.dataset.id;
+            updateLikeButton(serviceId, btn);
+            btn.onclick = () => toggleLike(serviceId, btn);
+        });
+
+        document.querySelectorAll('.post-comment-btn').forEach(btn => {
+            const serviceId = btn.dataset.id;
+            const container = btn.closest('.comments-section');
+            btn.onclick = () => addComment(serviceId, container);
+        });
+    }
+
+    // === ORIGINAL FUNCTIONS (wrapped to re-attach handlers) ===
     async function loadServices() {
         const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
         if (error || !services?.length) {
@@ -391,6 +544,12 @@
                         ${s.social_links?.length ? `<div class="links" aria-label="Social links">
                             ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs" aria-label="${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}" aria-hidden="true"></i> ${l.type}</a>`).join('')}
                         </div>` : ''}
+
+                        <!-- LIKE BUTTON IN GRID CARD -->
+                        <button class="like-btn" data-id="${s.id}" aria-label="Like this business">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                            <span class="like-count">0</span> Likes
+                        </button>
                     </div>
 
                     <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;" aria-label="View full profile of ${s.name}">View Full Profile →</a>
@@ -398,6 +557,7 @@
             </article>
         `).join('') : '<p class="no-services">No results found.</p>';
 
+        // Share button logic (unchanged)
         document.querySelectorAll('.share-btn').forEach(btn => {
             btn.onclick = e => {
                 e.stopPropagation();
@@ -409,6 +569,8 @@
                 }).catch(() => alert('Copy failed – please copy URL manually'));
             };
         });
+
+        attachInteractionHandlers();
     }
 
     function showSingleProfile(slug) {
@@ -424,6 +586,7 @@
 
         document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
 
+        // Meta updates (unchanged)
         const setMeta = (name, content) => {
             let el = document.querySelector(`meta[name="${name}"]`);
             if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
@@ -505,11 +668,32 @@
                 <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
                 ${galleryHTML}
 
+                <!-- COMMENTS & BIG LIKE BUTTON -->
+                <div class="comments-section">
+                    <h2 style="font-size:2.4rem; margin-bottom:30px;">Comments & Reviews</h2>
+                    
+                    <div class="new-comment">
+                        <input type="text" class="name-input" placeholder="Your name (optional)">
+                        <textarea class="comment-input" placeholder="Leave a comment or review..." rows="4"></textarea>
+                        <button class="post-comment-btn view-btn" data-id="${service.id}">Post Comment</button>
+                    </div>
+
+                    <div class="comments-list"></div>
+
+                    <div style="margin-top:40px;">
+                        <button class="like-btn big" data-id="${service.id}">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                            <span class="like-count">0</span> Likes
+                        </button>
+                    </div>
+                </div>
+
                 <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;" aria-label="Back to directory">
                     ← Back to Directory
                 </a>
             </section>`;
 
+        // Gallery slider (unchanged)
         if (service.photos?.length > 1) {
             const slider = document.getElementById('gallerySlider');
             const prev = document.getElementById('prevBtn');
@@ -526,8 +710,12 @@
             });
         }
 
+        // Load comments for single view
+        renderComments(service.id, document.querySelector('.comments-section'));
+
         history.replaceState({slug: slug}, '', `${BASE_PATH}/${slug}`);
         window.scrollTo(0,0);
+        attachInteractionHandlers();
     }
 
     function getCurrentSlug() {
@@ -553,7 +741,6 @@
 
     window.addEventListener('popstate', checkPathAndRender);
 
-    // GitHub Pages fix + performance
     document.addEventListener('DOMContentLoaded', () => {
         const slug = getCurrentSlug();
         if (slug) {
