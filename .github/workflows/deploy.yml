@@ -7,16 +7,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write   # This fixes the git push error
     steps:
       - uses: actions/checkout@v4
 
-      - name: Inject Supabase Key
+      - name: Inject Supabase Anon Key
         run: |
-          sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|${{ secrets.TOKEN }}|g" index.html
+          sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
