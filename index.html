@@ -403,7 +403,7 @@
 
     // Secure Supabase initialization
     const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
-    const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
+    const anonKey = document.querySelector('meta[name="SUPABASE_ANON_KEYY"]')?.content?.trim();
 
     if (!anonKey || anonKey === 'your_supabase_anon_key_here') {
         console.error('Supabase anon key is missing or not set.');
