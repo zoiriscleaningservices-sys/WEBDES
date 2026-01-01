@@ -30,8 +30,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Inject your Supabase anon (public) key here -->
-    <meta name="supabase-anon-key" content="your_supabase_anon_key_here">
+    <!-- Placeholder replaced securely by GitHub Actions -->
+    <meta name="supabase-anon-key" content="YOUR_SUPABASE_ANON_KEY_HERE">
 
     <style>
         :root { 
@@ -57,12 +57,11 @@
             color: var(--white); 
             min-height: 100vh; 
             overflow-x: hidden;
-            transform: translateZ(0); /* Force GPU acceleration */
+            transform: translateZ(0);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Full-width centered layout */
         .wrapper {
             width: 100%;
             max-width: 100vw;
@@ -73,7 +72,6 @@
             min-height: 100vh;
         }
 
-        /* Header - Super performant */
         .header-wrapper {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -126,12 +124,10 @@
             align-items: center;
         }
 
-        /* Hero */
         .hero { text-align: center; padding: 50px 20px 40px; width: 100%; }
         .tagline { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 700; margin-bottom: 16px; }
         .subtitle { font-size: clamp(1.1rem, 4vw, 1.5rem); opacity: 0.95; max-width: 900px; margin: 0 auto 50px; line-height: 1.7; }
 
-        /* Search */
         .search-container { 
             width: 100%; 
             max-width: 760px; 
@@ -147,7 +143,6 @@
         .search-box:focus { outline: 2px solid var(--coral); outline-offset: 4px; box-shadow: 0 0 0 5px rgba(255,107,107,0.4); }
         .search-icon { position: absolute; right: 26px; top: 50%; transform: translateY(-50%); font-size: 2rem; color: rgba(255,255,255,0.8); pointer-events: none; }
 
-        /* Glass Section - Reduced blur for better performance */
         .glass { 
             background: var(--light-glass); 
             backdrop-filter: blur(12px);
@@ -159,7 +154,6 @@
         }
         h2 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 32px; text-align: center; font-weight: 700; }
 
-        /* Services Grid */
         .services { 
             display: grid; 
             grid-template-columns: 1fr; 
@@ -242,7 +236,6 @@
 
         .no-services { font-size: 1.5rem; text-align: center; padding: 80px 20px; opacity: 0.9; }
 
-        /* Individual Profile View */
         .profile-view-content {
             width: 100%;
             max-width: 1100px;
@@ -330,7 +323,6 @@
 
         footer { text-align: center; padding: 32px 20px; font-size: 0.95rem; opacity: 0.8; margin-top: auto; width: 100%; }
 
-        /* Responsive */
         @media (min-width: 768px) {
             .services { grid-template-columns: repeat(2, 1fr); }
             .profile-img-wrapper { height: 340px; }
@@ -383,7 +375,6 @@
 </script>
 
 <script>
-    /* Ultra-smooth throttled scroll handler */
     let ticking = false;
     function updateHeader() {
         const header = document.getElementById('header');
@@ -401,237 +392,231 @@
         }
     }, { passive: true });
 
-    // Secure Supabase initialization
     const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
-    const anonKey = document.querySelector('meta[name="SUPABASE_ANON_KEY"]')?.content?.trim();
+    const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
 
-    if (!anonKey || anonKey === 'your_supabase_anon_key_here') {
-        console.error('Supabase anon key is missing or not set.');
-        document.getElementById('list').innerHTML = '<p class="no-services">Service temporarily unavailable – please contact support.</p>';
-        throw new Error('Supabase configuration error');
-    }
+    if (!anonKey || anonKey === 'YOUR_SUPABASE_ANON_KEY_HERE') {
+        document.getElementById('list').innerHTML = '<p class="no-services">Service temporarily unavailable – please try again later.</p>';
+        console.error('Supabase anon key missing. Check deployment configuration.');
+    } else {
+        const supabaseClient = supabase.createClient(supabaseUrl, anonKey);
+        let allServices = [];
+        const BASE_PATH = '/profile';
 
-    const supabaseClient = supabase.createClient(supabaseUrl, anonKey);
-
-    let allServices = [];
-    const BASE_PATH = '/profile';
-
-    async function loadServices() {
-        const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
-        if (error || !services?.length) {
-            document.getElementById('list').innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
-            return;
+        async function loadServices() {
+            const { data: services, error } = await supabaseClient.from('services').select('*').order('created_at', { ascending: false });
+            if (error || !services?.length) {
+                document.getElementById('list').innerHTML = '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
+                return;
+            }
+            allServices = services;
+            renderServices(services);
+            checkPathAndRender();
         }
-        allServices = services;
-        renderServices(services);
-        checkPathAndRender();
-    }
 
-    // Rest of your original JavaScript (renderServices, showSingleProfile, etc.) remains unchanged below...
-    // (Copy-paste the entire original script functions here – they are identical)
+        function renderServices(services) {
+            const list = document.getElementById('list');
+            list.innerHTML = services.length ? services.map(s => `
+                <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness" role="listitem">
+                    <button class="share-btn" aria-label="Copy profile link"><i class="fas fa-link" aria-hidden="true"></i></button>
 
-    function renderServices(services) {
-        const list = document.getElementById('list');
-        list.innerHTML = services.length ? services.map(s => `
-            <article class="card" id="service-${s.id}" itemscope itemtype="https://schema.org/LocalBusiness" role="listitem">
-                <button class="share-btn" aria-label="Copy profile link"><i class="fas fa-link" aria-hidden="true"></i></button>
-
-                <div class="profile-img-wrapper">
-                    <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
-                         alt="${s.name || 'Business'} featured image" class="profile-img" itemprop="image" loading="lazy">
-                </div>
-
-                <div class="card-content">
-                    <div>
-                        <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
-                        <p class="location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                            <strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong>
-                        </p>
-                        <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
-
-                        ${s.photos?.length ? `
-                        <div class="photos" aria-label="Gallery preview">
-                            ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name || 'Business'} gallery image" loading="lazy">`).join('')}
-                            ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;" aria-hidden="true">+${s.photos.length - 3} more</div>` : ''}
-                        </div>` : ''}
-
-                        <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
-                        <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
-
-                        <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
-
-                        ${s.social_links?.length ? `<div class="links" aria-label="Social links">
-                            ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs" aria-label="${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}" aria-hidden="true"></i> ${l.type}</a>`).join('')}
-                        </div>` : ''}
+                    <div class="profile-img-wrapper">
+                        <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
+                             alt="${s.name || 'Business'} featured image" class="profile-img" itemprop="image" loading="lazy">
                     </div>
 
-                    <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;" aria-label="View full profile of ${s.name}">View Full Profile →</a>
-                </div>
-            </article>
-        `).join('') : '<p class="no-services">No results found.</p>';
+                    <div class="card-content">
+                        <div>
+                            <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
+                            <p class="location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                <strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong>
+                            </p>
+                            <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
 
-        document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.onclick = e => {
-                e.stopPropagation();
-                const slug = btn.closest('.card').querySelector('.view-btn').getAttribute('href').split('/').pop();
-                const url = `${location.origin}${BASE_PATH}/${slug}`;
-                navigator.clipboard.writeText(url).then(() => {
-                    btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
-                    setTimeout(() => btn.innerHTML = '<i class="fas fa-link" aria-hidden="true"></i>', 2000);
-                }).catch(() => alert('Copy failed – please copy URL manually'));
+                            ${s.photos?.length ? `
+                            <div class="photos" aria-label="Gallery preview">
+                                ${s.photos.slice(0,3).map(p => `<img src="${p}" alt="${s.name || 'Business'} gallery image" loading="lazy">`).join('')}
+                                ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;" aria-hidden="true">+${s.photos.length - 3} more</div>` : ''}
+                            </div>` : ''}
+
+                            <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
+                            <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
+
+                            <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
+
+                            ${s.social_links?.length ? `<div class="links" aria-label="Social links">
+                                ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs" aria-label="${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}" aria-hidden="true"></i> ${l.type}</a>`).join('')}
+                            </div>` : ''}
+                        </div>
+
+                        <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;" aria-label="View full profile of ${s.name}">View Full Profile →</a>
+                    </div>
+                </article>
+            `).join('') : '<p class="no-services">No results found.</p>';
+
+            document.querySelectorAll('.share-btn').forEach(btn => {
+                btn.onclick = e => {
+                    e.stopPropagation();
+                    const slug = btn.closest('.card').querySelector('.view-btn').getAttribute('href').split('/').pop();
+                    const url = `${location.origin}${BASE_PATH}/${slug}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                        btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
+                        setTimeout(() => btn.innerHTML = '<i class="fas fa-link" aria-hidden="true"></i>', 2000);
+                    }).catch(() => alert('Copy failed – please copy URL manually'));
+                };
+            });
+        }
+
+        function showSingleProfile(slug) {
+            const service = allServices.find(s => s.slug === slug);
+            if (!service) {
+                renderServices(allServices);
+                history.replaceState({}, '', '/');
+                return;
+            }
+
+            const fullLocation = service.city || 'Your Area';
+            const pageUrl = `${location.origin}${BASE_PATH}/${slug}`;
+
+            document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
+
+            const setMeta = (name, content) => {
+                let el = document.querySelector(`meta[name="${name}"]`);
+                if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
+                el.content = content;
             };
+            setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
+
+            let canonical = document.querySelector('link[rel="canonical"]');
+            if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+            canonical.href = pageUrl;
+
+            const setOG = (prop, content) => {
+                let el = document.querySelector(`meta[property="og:${prop}"]`);
+                if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
+                el.content = content;
+            };
+            setOG('title', `${service.name} – #1 in ${fullLocation} | TrueWebX`);
+            setOG('description', document.querySelector('meta[name="description"]').content);
+            setOG('url', pageUrl);
+            setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+
+            ['title', 'description', 'image'].forEach(p => {
+                let el = document.querySelector(`meta[name="twitter:${p}"]`);
+                if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
+                el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
+            });
+
+            if (service.profile) {
+                ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
+                    const [size, rel] = spec.split('|');
+                    let link = document.querySelector(`link[rel="${rel}"]${size ? `[sizes="${size}x${size}"]` : ''}`);
+                    if (!link) { link = document.createElement('link'); link.rel = rel; if (size) link.sizes = `${size}x${size}`; document.head.appendChild(link); }
+                    link.href = service.profile;
+                });
+            }
+
+            const lb = {
+                "@context": "https://schema.org",
+                "@type": "LocalBusiness",
+                "name": service.name,
+                "image": service.profile || "",
+                "url": pageUrl,
+                "telephone": service.phone || "",
+                "email": service.gmail || "",
+                "address": {"@type":"PostalAddress","addressLocality":fullLocation},
+                "description": service.description || "Professional service with free consultation",
+                "priceRange": "$",
+                "openingHours": "Mo-Su 08:00-20:00",
+                "sameAs": service.social_links?.map(l => l.url) || []
+            };
+            let script = document.getElementById('lbSchema');
+            if (!script) { script = document.createElement('script'); script.id = 'lbSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
+            script.textContent = JSON.stringify(lb);
+
+            const galleryHTML = service.photos?.length ? `
+                <div class="gallery-wrapper" id="galleryWrapper" aria-label="Business gallery">
+                    <div class="gallery-slider" id="gallerySlider">
+                        ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery image" loading="lazy">`).join('')}
+                    </div>
+                    <button class="gallery-arrow prev" id="prevBtn" aria-label="Previous image"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                    <button class="gallery-arrow next" id="nextBtn" aria-label="Next image"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                </div>` : '<p style="opacity:0.8;">No gallery photos yet.</p>';
+
+            document.querySelector('.glass').innerHTML = `
+                <section class="profile-view-content" aria-labelledby="profile-title">
+                    ${service.profile ? `<img src="${service.profile}" alt="${service.name} profile" loading="lazy">` : ''}
+
+                    <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
+                        ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
+                    </p>
+
+                    <div class="contact-box" aria-label="Contact information">
+                        ${service.phone ? `<div class="contact-item"><i class="fas fa-phone" aria-hidden="true"></i><div><a href="tel:${service.phone.replace(/[^0-9+]/g,'')}">${service.phone}</a></div></div>` : ''}
+                        ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope" aria-hidden="true"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
+                    </div>
+
+                    <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
+
+                    <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
+                    ${galleryHTML}
+
+                    <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;" aria-label="Back to directory">
+                        ← Back to Directory
+                    </a>
+                </section>`;
+
+            if (service.photos?.length > 1) {
+                const slider = document.getElementById('gallerySlider');
+                const prev = document.getElementById('prevBtn');
+                const next = document.getElementById('nextBtn');
+                let i = 0;
+                const move = () => slider.style.transform = `translateX(-${i * 100}%)`;
+                next.onclick = () => { i = (i + 1) % service.photos.length; move(); };
+                prev.onclick = () => { i = (i - 1 + service.photos.length) % service.photos.length; move(); };
+                let ts = 0;
+                slider.parentElement.addEventListener('touchstart', e => ts = e.touches[0].clientX, {passive:true});
+                slider.parentElement.addEventListener('touchend', e => {
+                    const diff = ts - e.changedTouches[0].clientX;
+                    if (Math.abs(diff) > 50) diff > 0 ? next.onclick() : prev.onclick();
+                });
+            }
+
+            history.replaceState({slug: slug}, '', `${BASE_PATH}/${slug}`);
+            window.scrollTo(0,0);
+        }
+
+        function getCurrentSlug() {
+            const path = window.location.pathname;
+            if (!path.startsWith(BASE_PATH + '/')) return null;
+            return path.slice(BASE_PATH.length + 1).replace(/\/$/, '') || null;
+        }
+
+        function checkPathAndRender() {
+            const slug = getCurrentSlug();
+            if (slug) {
+                showSingleProfile(slug);
+            } else {
+                renderServices(allServices);
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', e => {
+            const q = e.target.value.toLowerCase().trim();
+            const filtered = q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices;
+            renderServices(filtered);
+        });
+
+        window.addEventListener('popstate', checkPathAndRender);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const slug = getCurrentSlug();
+            if (slug) {
+                history.replaceState({slug: slug}, '', location.pathname);
+            }
+            loadServices();
         });
     }
-
-    function showSingleProfile(slug) {
-        const service = allServices.find(s => s.slug === slug);
-        if (!service) {
-            renderServices(allServices);
-            history.replaceState({}, '', '/');
-            return;
-        }
-
-        const fullLocation = service.city || 'Your Area';
-        const pageUrl = `${location.origin}${BASE_PATH}/${slug}`;
-
-        document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
-
-        const setMeta = (name, content) => {
-            let el = document.querySelector(`meta[name="${name}"]`);
-            if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
-            el.content = content;
-        };
-        setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
-
-        let canonical = document.querySelector('link[rel="canonical"]');
-        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
-        canonical.href = pageUrl;
-
-        const setOG = (prop, content) => {
-            let el = document.querySelector(`meta[property="og:${prop}"]`);
-            if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
-            el.content = content;
-        };
-        setOG('title', `${service.name} – #1 in ${fullLocation} | TrueWebX`);
-        setOG('description', document.querySelector('meta[name="description"]').content);
-        setOG('url', pageUrl);
-        setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
-
-        ['title', 'description', 'image'].forEach(p => {
-            let el = document.querySelector(`meta[name="twitter:${p}"]`);
-            if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
-            el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
-        });
-
-        if (service.profile) {
-            ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
-                const [size, rel] = spec.split('|');
-                let link = document.querySelector(`link[rel="${rel}"]${size ? `[sizes="${size}x${size}"]` : ''}`);
-                if (!link) { link = document.createElement('link'); link.rel = rel; if (size) link.sizes = `${size}x${size}`; document.head.appendChild(link); }
-                link.href = service.profile;
-            });
-        }
-
-        const lb = {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": service.name,
-            "image": service.profile || "",
-            "url": pageUrl,
-            "telephone": service.phone || "",
-            "email": service.gmail || "",
-            "address": {"@type":"PostalAddress","addressLocality":fullLocation},
-            "description": service.description || "Professional service with free consultation",
-            "priceRange": "$",
-            "openingHours": "Mo-Su 08:00-20:00",
-            "sameAs": service.social_links?.map(l => l.url) || []
-        };
-        let script = document.getElementById('lbSchema');
-        if (!script) { script = document.createElement('script'); script.id = 'lbSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
-        script.textContent = JSON.stringify(lb);
-
-        const galleryHTML = service.photos?.length ? `
-            <div class="gallery-wrapper" id="galleryWrapper" aria-label="Business gallery">
-                <div class="gallery-slider" id="gallerySlider">
-                    ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery image" loading="lazy">`).join('')}
-                </div>
-                <button class="gallery-arrow prev" id="prevBtn" aria-label="Previous image"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-                <button class="gallery-arrow next" id="nextBtn" aria-label="Next image"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
-            </div>` : '<p style="opacity:0.8;">No gallery photos yet.</p>';
-
-        document.querySelector('.glass').innerHTML = `
-            <section class="profile-view-content" aria-labelledby="profile-title">
-                ${service.profile ? `<img src="${service.profile}" alt="${service.name} profile" loading="lazy">` : ''}
-
-                <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
-                    ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
-                </p>
-
-                <div class="contact-box" aria-label="Contact information">
-                    ${service.phone ? `<div class="contact-item"><i class="fas fa-phone" aria-hidden="true"></i><div><a href="tel:${service.phone.replace(/[^0-9+]/g,'')}">${service.phone}</a></div></div>` : ''}
-                    ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope" aria-hidden="true"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
-                </div>
-
-                <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
-
-                <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
-                ${galleryHTML}
-
-                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;" aria-label="Back to directory">
-                    ← Back to Directory
-                </a>
-            </section>`;
-
-        if (service.photos?.length > 1) {
-            const slider = document.getElementById('gallerySlider');
-            const prev = document.getElementById('prevBtn');
-            const next = document.getElementById('nextBtn');
-            let i = 0;
-            const move = () => slider.style.transform = `translateX(-${i * 100}%)`;
-            next.onclick = () => { i = (i + 1) % service.photos.length; move(); };
-            prev.onclick = () => { i = (i - 1 + service.photos.length) % service.photos.length; move(); };
-            let ts = 0;
-            slider.parentElement.addEventListener('touchstart', e => ts = e.touches[0].clientX, {passive:true});
-            slider.parentElement.addEventListener('touchend', e => {
-                const diff = ts - e.changedTouches[0].clientX;
-                if (Math.abs(diff) > 50) diff > 0 ? next.onclick() : prev.onclick();
-            });
-        }
-
-        history.replaceState({slug: slug}, '', `${BASE_PATH}/${slug}`);
-        window.scrollTo(0,0);
-    }
-
-    function getCurrentSlug() {
-        const path = window.location.pathname;
-        if (!path.startsWith(BASE_PATH + '/')) return null;
-        return path.slice(BASE_PATH.length + 1).replace(/\/$/, '') || null;
-    }
-
-    function checkPathAndRender() {
-        const slug = getCurrentSlug();
-        if (slug) {
-            showSingleProfile(slug);
-        } else {
-            renderServices(allServices);
-        }
-    }
-
-    document.getElementById('searchInput').addEventListener('input', e => {
-        const q = e.target.value.toLowerCase().trim();
-        const filtered = q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices;
-        renderServices(filtered);
-    });
-
-    window.addEventListener('popstate', checkPathAndRender);
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const slug = getCurrentSlug();
-        if (slug) {
-            history.replaceState({slug: slug}, '', location.pathname);
-        }
-        loadServices();
-    });
 </script>
 </body>
 </html>
