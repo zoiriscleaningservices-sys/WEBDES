@@ -12,7 +12,7 @@ jobs:
 
       - name: Inject Supabase Anon Key
         run: |
-          sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
+          sed -i "s|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
