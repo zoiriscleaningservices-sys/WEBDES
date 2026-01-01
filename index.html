@@ -47,6 +47,7 @@
             color: var(--white); 
             min-height: 100vh; 
             overflow-x: hidden;
+            background-attachment: fixed; /* Prevents gradient repaint on scroll */
         }
 
         /* Full-width centered layout */
@@ -60,25 +61,45 @@
             min-height: 100vh;
         }
 
-        /* Header */
+        /* Header - Fixed & Smooth */
         .header-wrapper {
-            position: fixed; top: 0; left: 0; right: 0;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 24px; z-index: 1000; 
-            background: rgba(0,0,0,0.1); backdrop-filter: blur(15px);
-            transition: background 0.3s ease;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            transition: background 0.4s ease;
+            will-change: background;
         }
-        .header-wrapper.scrolled { background: rgba(0,0,0,0.45); }
+        .header-wrapper.scrolled {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
         .logo { 
-            font-size: clamp(2.2rem, 7vw, 3.8rem); font-weight: 900; 
+            font-size: clamp(2.2rem, 7vw, 3.8rem);
+            font-weight: 900; 
             background: linear-gradient(45deg, #fff, #ff8fa3); 
-            -webkit-background-clip: text; color: transparent; 
+            -webkit-background-clip: text;
+            color: transparent; 
         }
         .login-btn {
-            background: rgba(255,255,255,0.25); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.4); color: white; font-weight: 600;
-            padding: 12px 24px; border-radius: 50px; cursor: pointer;
-            display: flex; align-items: center; gap: 10px; font-size: 1rem;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
             transition: all 0.3s;
             text-decoration: none;
         }
@@ -341,7 +362,25 @@
 </script>
 
 <script>
-    window.addEventListener('scroll', () => document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50));
+    /* Optimized scroll handler - throttled with requestAnimationFrame */
+    let ticking = false;
+
+    function updateHeader() {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateHeader);
+            ticking = true;
+        }
+    }, { passive: true });
 
     const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
     let allServices = [];
@@ -553,7 +592,7 @@
 
     window.addEventListener('popstate', checkPathAndRender);
 
-    // GitHub Pages fix + performance
+    // Load on DOM ready
     document.addEventListener('DOMContentLoaded', () => {
         const slug = getCurrentSlug();
         if (slug) {
