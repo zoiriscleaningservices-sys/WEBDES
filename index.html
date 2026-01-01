@@ -30,6 +30,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- Inject your Supabase anon (public) key here -->
+    <meta name="supabase-anon-key" content="your_supabase_anon_key_here">
+
     <style>
         :root { 
             --coral: #ff6b6b; 
@@ -372,7 +375,7 @@
         </section>
     </main>
 
-    <footer role="contentinfo">© 2025 TrueWebX – The global directory for professional services</footer>
+    <footer role="contentinfo">© 2026 TrueWebX – The global directory for professional services</footer>
 </div>
 
 <script type="application/ld+json">
@@ -398,7 +401,18 @@
         }
     }, { passive: true });
 
-    const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
+    // Secure Supabase initialization
+    const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
+    const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
+
+    if (!anonKey || anonKey === 'your_supabase_anon_key_here') {
+        console.error('Supabase anon key is missing or not set.');
+        document.getElementById('list').innerHTML = '<p class="no-services">Service temporarily unavailable – please contact support.</p>';
+        throw new Error('Supabase configuration error');
+    }
+
+    const supabaseClient = supabase.createClient(supabaseUrl, anonKey);
+
     let allServices = [];
     const BASE_PATH = '/profile';
 
@@ -412,6 +426,9 @@
         renderServices(services);
         checkPathAndRender();
     }
+
+    // Rest of your original JavaScript (renderServices, showSingleProfile, etc.) remains unchanged below...
+    // (Copy-paste the entire original script functions here – they are identical)
 
     function renderServices(services) {
         const list = document.getElementById('list');
