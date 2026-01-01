@@ -2,19 +2,21 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # Change if your branch is different (e.g., master)
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # This is the key line – allows pushing to gh-pages
     steps:
       - uses: actions/checkout@v4
 
-      - name: Inject Supabase Anon Key
+      - name: Inject Supabase Key
         run: |
           sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
 
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
