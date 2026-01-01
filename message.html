@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueWebX – Customer Messages</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signOut, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            GoogleAuthProvider, 
+            signInWithPopup 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBam-ZJXtbgHnhI7IeGLgKS-HeRdSBQNS0",
+            authDomain: "limpieza-digital.firebaseapp.com",
+            projectId: "limpieza-digital",
+            storageBucket: "limpieza-digital.firebasestorage.app",
+            messagingSenderId: "410437614466",
+            appId: "1:410437614466:web:8abec9eb1189a2369bad9b",
+            measurementId: "G-PEEH86LR43"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        window.auth = auth;
+        window.googleProvider = googleProvider;
+        window.signInWithPopup = signInWithPopup;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { 
+            --coral: #ff6b6b; 
+            --turquoise: #0d9488; 
+            --glass-bg: rgba(255,255,255,0.18); 
+            --text: #ffffff; 
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, var(--turquoise), var(--coral)); 
+            color: var(--text); 
+            min-height:100vh; 
+            display:flex;
+            flex-direction:column;
+        }
+
+        .login-container { 
+            display:flex; justify-content:center; align-items:center; flex:1; padding:20px; 
+        }
+        .form { 
+            width:100%; max-width:450px; background:#ffffff; color:#151717; padding:40px; border-radius:20px; 
+            box-shadow:0 10px 40px rgba(0,0,0,.15); text-align:center;
+        }
+        .inputForm { 
+            height:56px; 
+            border:2px solid #e0e0e0; 
+            border-radius:12px; 
+            padding:0 16px; 
+            display:flex; 
+            align-items:center; 
+            margin-bottom:16px;
+            background:white;
+        }
+        .inputForm:focus-within { 
+            border-color:#2d79f3; 
+            box-shadow:0 0 0 3px rgba(45,121,243,0.15);
+        }
+        .input { 
+            width:100%; 
+            height:100%; 
+            border:none; 
+            background:transparent; 
+            font-size:16px; 
+            color:#151717;
+            outline:none;
+        }
+        .input::placeholder { color:#aaa; }
+        .button-submit { 
+            background:#151717; 
+            color:white; 
+            height:56px; 
+            border-radius:12px; 
+            font-weight:600; 
+            font-size:16px; 
+            cursor:pointer; 
+            width:100%; 
+            margin:20px 0;
+            border:none;
+        }
+        .button-submit:hover { background:#2d79f3; }
+        .btn.google { 
+            background:white; 
+            border:2px solid #e0e0e0; 
+            height:56px; 
+            border-radius:12px; 
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            gap:12px; 
+            cursor:pointer; 
+            width:100%; 
+            font-weight:600;
+            color:#151717;
+        }
+        .btn.google:hover { border-color:#2d79f3; }
+        .error { color:#e74c3c; background:#fff5f5; padding:12px; border-radius:8px; text-align:center; margin:10px 0; }
+        .toggle-link { color:#2d79f3; cursor:pointer; font-weight:600; }
+
+        .bottom-nav {
+            position:fixed; bottom:0; left:0; right:0; height:80px; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px);
+            display:flex; align-items:center; justify-content:center; z-index:9999; padding-bottom:env(safe-area-inset-bottom);
+        }
+        .nav-container {
+            background:rgba(255,255,255,0.1); backdrop-filter:blur(20px); border-radius:50px; padding:12px 30px;
+            display:flex; gap:40px; box-shadow:0 8px 32px rgba(0,0,0,0.5);
+        }
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:6px; color:#888; font-size:11px; font-weight:600; cursor:pointer; }
+        .nav-item i { font-size:24px; }
+        .nav-item.active, .nav-item.active i { color:var(--coral); transform:scale(1.15); }
+
+        .main-content {
+            flex:1;
+            padding:20px;
+            padding-top:80px;
+            padding-bottom:100px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+        }
+        .logo { 
+            font-size: clamp(2.5rem, 8vw, 4rem); 
+            font-weight:900; 
+            background:linear-gradient(45deg,#fff,#ff8fa3); 
+            -webkit-background-clip:text; 
+            color:transparent; 
+            text-align:center; 
+            margin:20px 0; 
+            cursor:pointer;
+        }
+        .glass { 
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 32px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
+        .card { 
+            background:rgba(255,255,255,0.15); 
+            border-radius:24px; 
+            padding:24px; 
+            position:relative; 
+            width:100%; 
+            text-align:center;
+        }
+        .card img.profile-img {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            margin: 16px auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .card h3 {
+            margin: 16px 0 8px;
+            font-size: 1.6rem;
+        }
+        .card p {
+            margin: 10px 0;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+        .card .photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .card .photos img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .private { filter:blur(6px); user-select:none; transition: filter 0.3s; font-weight: 500; }
+        .private:hover, .private:focus { filter:none; }
+
+        .links { margin-top:20px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
+        .links a { color:var(--coral); text-decoration:none; font-weight:600; padding:10px 16px; background:rgba(255,255,255,0.1); border-radius:20px; display:flex; align-items:center; gap:8px; }
+
+        .message-btn {
+            background: var(--coral);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+            transition: all 0.3s;
+        }
+        .message-btn:hover { background: #ff5252; transform: translateY(-3px); }
+
+        .inbox-list { display: grid; gap: 16px; }
+        .inbox-item {
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .inbox-item:hover { background: rgba(255,255,255,0.25); transform: translateY(-4px); }
+        .inbox-item.unread { border-left: 4px solid var(--coral); }
+        .inbox-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--coral);
+        }
+        .inbox-item .info {
+            flex: 1;
+            text-align: left;
+        }
+        .inbox-item .info strong {
+            font-size: 1.2rem;
+            display: block;
+        }
+        .inbox-item .info div {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            margin-top: 4px;
+        }
+        .inbox-item small {
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        .chat-window {
+            display: none;
+            flex-direction: column;
+            height: 70vh;
+            margin-top: 20px;
+        }
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .chat-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--coral);
+        }
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            line-height: 1.4;
+        }
+        .message.client { align-self: flex-end; background: var(--coral); color: white; }
+        .message.owner { align-self: flex-start; background: rgba(255,255,255,0.3); }
+        .message small { display: block; margin-top: 6px; opacity: 0.7; font-size: 0.8em; }
+        .chat-input {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .chat-input input::placeholder { color: rgba(255,255,255,0.7); }
+        .chat-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--coral);
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .glass { padding: 24px; }
+            .card img.profile-img { max-width: 260px; }
+            .inbox-item img { width: 50px; height: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN / SIGN UP -->
+<div id="loginScreen" class="login-container">
+    <div class="form">
+        <h2 style="margin-bottom:30px; color:#151717;" id="formTitle">Sign In</h2>
+
+        <form id="authForm">
+            <div class="inputForm">
+                <input id="email" placeholder="Your email" class="input" type="email" required>
+            </div>
+
+            <div class="inputForm">
+                <input id="password" placeholder="Your password" class="input" type="password" required>
+            </div>
+
+            <button type="submit" class="button-submit" id="authButton">Sign In</button>
+        </form>
+
+        <div id="message"></div>
+
+        <p style="margin-top:20px; color:#666;">
+            <span id="toggleText">Don't have an account?</span> 
+            <span class="toggle-link" onclick="toggleAuthMode()">Sign up here</span>
+        </p>
+
+        <div style="margin-top:20px;">
+            <button type="button" class="btn google" id="googleBtn">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="currentColor">
+                    <path d="M113.47,309.408L95.648,375.94l-65.139,1.378C11.042,341.211,0,299.9,0,256 c0-42.451,10.324-82.483,28.624-117.732h0.014l57.992,10.632l25.404,57.644c-5.317,15.501-8.215,32.141-8.215,49.456 C103.821,274.792,107.225,292.797,113.47,309.408z" style="fill:#FBBB00;"></path>
+                    <path d="M507.527,208.176C510.467,223.662,512,239.655,512,256c0,18.328-1.927,36.206-5.598,53.451 c-12.462,58.683-45.025,109.925-90.134,146.187l-0.014-0.014l-73.044-3.727l-10.338-64.535 c29.932-17.554,53.324-45.025,65.646-77.911h-136.89V208.176h138.887L507.527,208.176z" style="fill:#518EF8;"></path>
+                    <path d="M416.253,455.624l0.014,0.014C372.396,490.901,316.666,512,256,512 c-97.491,0-182.252-54.491-225.491-134.681l82.961-67.91c21.619,57.698,77.278,98.771,142.53,98.771 c28.047,0,54.323-7.582,76.87-20.818L416.253,455.624z" style="fill:#28B446;"></path>
+                    <path d="M419.404,58.936l-82.933,67.896c-23.335-14.586-50.919-23.012-80.471-23.012 c-66.729,0-123.429,42.957-143.965,102.724l-83.397-68.276h-0.014C71.23,56.123,157.06,0,256,0 C318.115,0,375.068,22.126,419.404,58.936z" style="fill:#F14336;"></path>
+                </svg>
+                Continue with Google
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- CUSTOMER DASHBOARD -->
+<div id="dashboardScreen" style="display:none;">
+    <div class="bottom-nav">
+        <div class="nav-container">
+            <div class="nav-item active" onclick="show('services')"><i class="fas fa-list"></i><span>All Services</span></div>
+            <div class="nav-item" onclick="show('messages')"><i class="fas fa-envelope"></i><span>Messages</span></div>
+            <div class="nav-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Sign Out</span></div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="logo">TrueWebX</h1>
+        <p style="text-align:center; margin-bottom:30px;" id="welcomeMsg"></p>
+
+        <!-- All Services View -->
+        <div id="services" class="glass">
+            <h2 style="text-align:center; margin-bottom:24px;">All Available Services</h2>
+            <div class="services" id="list">
+                <!-- Services will be loaded here -->
+                <p style="text-align:center; opacity:0.7;">Loading services...</p>
+            </div>
+        </div>
+
+        <!-- Messages View -->
+        <div id="messages" class="glass" style="display:none;">
+            <h2>My Conversations</h2>
+            <div id="inboxList" class="inbox-list"></div>
+
+            <div id="chatWindow" class="glass chat-window">
+                <div class="chat-header">
+                    <img id="chatBusinessPic" src="" alt="Business">
+                    <div id="chatBusinessName">Business Name</div>
+                </div>
+                <div class="chat-body" id="chatBody"></div>
+                <div class="chat-input">
+                    <input type="text" id="replyInput" placeholder="Type your message...">
+                    <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    const { createClient } = supabase;
+    const supabaseClient = createClient('https://vrpyomevjlsacourdmki.supabase.co', 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV');
+
+    let currentUser = null;
+    let currentChatServiceId = null;
+
+    function toggleAuthMode() {
+        const isSignup = document.getElementById('formTitle').textContent === 'Sign In';
+        document.getElementById('formTitle').textContent = isSignup ? 'Create Account' : 'Sign In';
+        document.getElementById('authButton').textContent = isSignup ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggleText').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+    }
+
+    document.getElementById('authForm').onsubmit = async e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const isSignup = document.getElementById('authButton').textContent === 'Sign Up';
+
+        try {
+            if (isSignup) {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+            loadDashboard();
+        } catch (err) {
+            document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`;
+        }
+    };
+
+    document.getElementById('googleBtn').onclick = async () => {
+        try {
+            await signInWithPopup(auth, googleProvider);
+            loadDashboard();
+        } catch (err) {
+            document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`;
+        }
+    };
+
+    function logout() {
+        signOut(auth).then(() => {
+            window.location.href = 'https://truewebx.site/';
+        });
+    }
+
+    onAuthStateChanged(auth, user => {
+        currentUser = user;
+        if (user) loadDashboard();
+        else {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+        }
+    });
+
+    async function loadDashboard() {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        document.getElementById('welcomeMsg').textContent = `Hello ${currentUser.displayName || currentUser.email.split('@')[0]}!`;
+
+        await loadAllServices(); // Ensure services load after login
+    }
+
+    function show(section) {
+        document.getElementById('services').style.display = section === 'services' ? 'block' : 'none';
+        document.getElementById('messages').style.display = section === 'messages' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', i === (section === 'services' ? 0 : 1)));
+        if (section === 'messages') loadInbox();
+    }
+
+    async function loadAllServices() {
+        const { data: services, error } = await supabaseClient
+            .from('services')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error loading services:', error);
+            document.getElementById('list').innerHTML = '<p style="text-align:center; color:red;">Error loading services. Check console.</p>';
+            return;
+        }
+
+        const list = document.getElementById('list');
+        if (!services || services.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:40px; opacity:0.9;">No services available yet.</p>';
+            return;
+        }
+
+        list.innerHTML = services.map(s => `
+            <div class="card">
+                <img src="${s.profile || 'https://via.placeholder.com/400x300?text=Logo'}" class="profile-img" alt="${s.name || 'Business'} profile">
+                <h3>${s.name || 'Business Name'}</h3>
+                <p><strong>${s.city || 'Location'}</strong></p>
+                <p>${s.description || 'No description'}</p>
+                ${Array.isArray(s.photos) && s.photos.length > 0 ? `
+                <div class="photos">
+                    ${s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('')}
+                </div>` : ''}
+                <p>Phone: <span class="private">${s.phone || 'Hidden'}</span></p>
+                <p>Email: <span class="private">${s.gmail || 'Hidden'}</span></p>
+
+                <button class="message-btn" onclick="openChat('${s.id}', '${(s.name || 'Business').replace(/'/g, "\\'")}', '${s.profile || 'https://via.placeholder.com/50'}')">
+                    Message Business
+                </button>
+
+                ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                <div class="links">
+                    ${s.social_links.map(link => `
+                        <a href="${link.url}" target="_blank">
+                            <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                        </a>
+                    `).join('')}
+                </div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    async function loadInbox() {
+        const { data: messages, error } = await supabaseClient.from('messages')
+            .select('service_id, text, created_at, is_from_owner')
+            .eq('customer_id', currentUser.uid)
+            .order('created_at', { ascending: false });
+
+        if (error || !messages || messages.length === 0) {
+            document.getElementById('inboxList').innerHTML = '<p style="text-align:center; opacity:0.8;">No messages yet. Start a conversation!</p>';
+            return;
+        }
+
+        const uniqueServiceIds = [...new Set(messages.map(m => m.service_id))];
+        const { data: services } = await supabaseClient.from('services')
+            .select('id, name, profile')
+            .in('id', uniqueServiceIds);
+
+        const chats = {};
+        messages.forEach(m => {
+            const service = services.find(s => s.id === m.service_id);
+            if (service && !chats[m.service_id]) {
+                chats[m.service_id] = {
+                    name: service.name || 'Business',
+                    profile: service.profile || 'https://via.placeholder.com/60',
+                    lastMessage: m.text,
+                    time: m.created_at,
+                    unread: m.is_from_owner
+                };
+            }
+        });
+
+        document.getElementById('inboxList').innerHTML = Object.values(chats).map(chat => `
+            <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openChat('${Object.keys(chats).find(k => chats[k].name === chat.name)}', '${chat.name.replace(/'/g, "\\'")}', '${chat.profile}')">
+                <img src="${chat.profile}" alt="${chat.name}">
+                <div class="info">
+                    <strong>${chat.name}</strong>
+                    <div>${chat.lastMessage}</div>
+                </div>
+                <small>${new Date(chat.time).toLocaleDateString()}</small>
+            </div>
+        `).join('');
+    }
+
+    function openChat(serviceId, name, profile) {
+        currentChatServiceId = serviceId;
+        document.getElementById('chatBusinessName').textContent = name;
+        document.getElementById('chatBusinessPic').src = profile || 'https://via.placeholder.com/50';
+        document.getElementById('chatWindow').style.display = 'flex';
+        loadChatMessages();
+        document.getElementById('replyInput').focus();
+    }
+
+    async function loadChatMessages() {
+        const { data } = await supabaseClient.from('messages')
+            .select('*')
+            .eq('service_id', currentChatServiceId)
+            .order('created_at', { ascending: true });
+
+        const body = document.getElementById('chatBody');
+        body.innerHTML = data?.length
+            ? data.map(m => `
+                <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
+                    ${m.text}
+                    <small>${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>
+                </div>
+            `).join('')
+            : '<p style="text-align:center; opacity:0.7; margin-top:20px;">Start the conversation!</p>';
+        body.scrollTop = body.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('replyInput');
+        const text = input.value.trim();
+        if (!text || !currentChatServiceId) return;
+
+        const { error } = await supabaseClient.from('messages').insert([
+            {
+                service_id: currentChatServiceId,
+                customer_id: currentUser.uid,
+                text,
+                is_from_owner: false,
+                created_at: new Date().toISOString()
+            }
+        ]);
+
+        if (error) {
+            console.error('Send error:', error);
+            alert(`Failed to send: ${error.message || 'Unknown error'}`);
+        } else {
+            input.value = '';
+            loadChatMessages();
+            loadInbox();
+        }
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('replyInput').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
