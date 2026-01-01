@@ -2,13 +2,14 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]  # Change if your branch is different (e.g., master)
+    branches: [ main ]  # Triggers on every push to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # This is the key line – allows pushing to gh-pages
+      contents: write   # Required to push to the gh-pages branch
+
     steps:
       - uses: actions/checkout@v4
 
