@@ -25,14 +25,10 @@
     <link rel="icon" type="image/png" sizes="16x16" href="https://truewebx.site/favicon.png">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-<link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
 
-
-
-
-    
     <!-- Preload critical resources -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" as="style">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" media="print" onload="this.media='all'">
@@ -100,13 +96,23 @@
             background: rgba(0, 0, 0, 0.45);
         }
 
-        .logo { 
-            font-size: clamp(2.2rem, 7vw, 3.8rem);
-            font-weight: 900; 
-            background: linear-gradient(45deg, #fff, #ff8fa3); 
-            -webkit-background-clip: text;
-            color: transparent; 
+        /* Logo container - improved sizing logic */
+        .logo {
+            display: block;
+            max-width: clamp(160px, 35vw, 280px);
+            max-height: 64px;
+            height: auto;
+            line-height: 0; /* removes unwanted vertical space */
         }
+        .logo img {
+            width: 100%;
+            height: auto;
+            max-height: 64px;
+            object-fit: contain;
+            display: block;
+            vertical-align: middle;
+        }
+
         .login-btn {
             background: rgba(255,255,255,0.25);
             backdrop-filter: blur(15px);
@@ -124,6 +130,10 @@
             text-decoration: none;
         }
         .login-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-3px); }
+
+        /* ──────────────────────────────────────────────── */
+        /* rest of your styles remain unchanged below       */
+        /* ──────────────────────────────────────────────── */
 
         .main-content { 
             padding-top: 110px; 
@@ -349,7 +359,11 @@
 <body>
 <div class="wrapper">
     <header class="header-wrapper" id="header">
-        <h1 class="logo">TrueWebX</h1>
+        <!-- Logo now sizes naturally while respecting max bounds -->
+        <a href="/" class="logo" aria-label="TrueWebX Home">
+            <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo">
+        </a>
+
         <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up">
             <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
         </a>
