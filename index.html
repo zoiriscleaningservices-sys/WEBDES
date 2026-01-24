@@ -35,11 +35,6 @@
 
     <meta name="supabase-anon-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM">
 
-    <!-- Google AdSense loading script (ONLY ONCE here) -->
-    <!-- REPLACE ca-pub-9852676431523320 with YOUR real publisher ID -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9852676431523320"
-         crossorigin="anonymous"></script>
-
     <style>
         :root { 
             --coral: #ff6b6b; 
@@ -157,17 +152,6 @@
         .search-box::placeholder { color: rgba(255,255,255,0.7); }
         .search-box:focus { outline: 2px solid var(--coral); outline-offset: 4px; box-shadow: 0 0 0 5px rgba(255,107,107,0.4); }
         .search-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-size: 1.9rem; color: rgba(255,255,255,0.8); pointer-events: none; }
-
-        .ad-container {
-            width: 100%;
-            max-width: 980px;
-            margin: 20px auto;
-            text-align: center;
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,0.12);
-        }
 
         /* ── Modern compact rotator ─────────────────────────────────────── */
         .promo-rotator {
@@ -476,6 +460,12 @@
             .profile-img-wrapper { min-height: 240px; }
         }
     </style>
+
+    <!-- Google AdSense loading script (REQUIRED for ads to work) -->
+    <!-- REPLACE ca-pub-XXXXXXXXXXXXXXX with YOUR real publisher ID from AdSense dashboard -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9852676431523320"
+         crossorigin="anonymous"></script>
+
 </head>
 <body>
 <div class="wrapper">
@@ -504,70 +494,17 @@
             <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
 
-        <!-- AdSense - Position 1: Below hero/search (high visibility) -->
-        <div class="ad-container">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-9852676431523320"
-                 data-ad-slot="4453926220"   <!-- REPLACE with your real slot ID -->
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-
-        <!-- Promotional rotator -->
+        <!-- Promotional rotator - no dots container anymore -->
         <section class="promo-rotator" id="promoRotator" aria-label="Featured businesses">
-            <!-- dots removed -->
+            <!-- dots div removed completely -->
         </section>
-
-        <!-- AdSense - Position 2: Between rotator and services list -->
-        <div class="ad-container">
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-9852676431523320"
-                 data-ad-slot="2925222135"   <!-- REPLACE with your real slot ID -->
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
 
         <section class="glass" aria-labelledby="services-heading">
             <h2 id="services-heading">Available Services Worldwide</h2>
             <div class="services" id="list" role="list"></div>
-
-            <!-- AdSense - Position 3: Mid-services list (after ~half the cards load) -->
-            <div class="ad-container" style="margin: 30px auto;">
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-9852676431523320"
-                     data-ad-slot="8393171234"   <!-- REPLACE with your real slot ID -->
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-                <script>
-                     (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-            </div>
-
             <button id="loadMoreBtn" class="load-more-btn" style="display:none;">Load More</button>
         </section>
     </main>
-
-    <!-- AdSense - Position 4: Footer/bottom area -->
-    <div class="ad-container" style="margin-top: 40px; margin-bottom: 20px;">
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-9852676431523320"
-             data-ad-slot="4565606865"   <!-- REPLACE with your real slot ID -->
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
 
     <footer role="contentinfo">© 2026 TrueWebX – The global directory for professional services</footer>
 </div>
@@ -720,7 +657,7 @@
             });
         }
 
-        // ── Featured rotator logic ────────────────────────────────────────
+        // ── Featured rotator logic – now infinite & unstoppable ────────
         let currentPromoIndex = 0;
         let promoInterval = null;
         const PROMO_DURATION = 5200;
@@ -774,6 +711,7 @@
                 showSlide(nextIdx);
             }
 
+            // Start infinite cycling - no pause, no stop condition
             promoInterval = setInterval(nextSlide, PROMO_DURATION);
         }
 
