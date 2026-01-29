@@ -9,8 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Square Web Payments SDK – SANDBOX MODE -->
+    <!-- Square Payments SDK – SANDBOX mode (your keys) -->
     <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <!-- For production: change to https://web.squarecdn.com/v1/square.js -->
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -22,6 +23,7 @@
             --coral: #ff6b6b; 
             --turquoise: #0d9488; 
             --glass-bg: rgba(255,255,255,0.18); 
+            --dark-glass: rgba(30,30,50,0.85);
             --text: #ffffff; 
         }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -76,8 +78,10 @@
             width:100%; 
             margin:20px 0;
             border:none;
+            transition: all 0.2s;
         }
-        .button-submit:hover { background:#2d79f3; }
+        .button-submit:hover:not(:disabled) { background:#2d79f3; transform: translateY(-2px); }
+        .button-submit:disabled { opacity:0.6; cursor:not-allowed; }
         .btn.google { 
             background:white; 
             border:2px solid #e0e0e0; 
@@ -176,7 +180,7 @@
         button:hover { background: #ff8787; }
         button:disabled { background: #666; cursor: not-allowed; }
 
-        /* Searchable City Select – DARK & HIGH CONTRAST (100% VISIBLE) */
+        /* Searchable City Select */
         .searchable-select {
             position: relative;
             width: 100%;
@@ -222,6 +226,7 @@
             font-weight: bold;
         }
 
+        /* Photo upload & previews */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
@@ -248,6 +253,7 @@
         .preview-img { max-width: 120px; max-height: 120px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         .profile-preview { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; border: 5px solid var(--coral); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
 
+        /* Services cards */
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { 
             background:rgba(255,255,255,0.15); 
@@ -264,15 +270,8 @@
             margin: 16px auto;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        .card h3 {
-            margin: 16px 0 8px;
-            font-size: 1.6rem;
-        }
-        .card p {
-            margin: 10px 0;
-            line-height: 1.6;
-            opacity: 0.95;
-        }
+        .card h3 { margin: 16px 0 8px; font-size: 1.6rem; }
+        .card p { margin: 10px 0; line-height: 1.6; opacity: 0.95; }
         .card .photos {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -374,11 +373,58 @@
             cursor: pointer;
         }
 
+        /* Modern Payment Overlay */
+        .payment-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .payment-modal {
+            background: var(--dark-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 480px;
+            width: 100%;
+            color: white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            position: relative;
+            text-align: center;
+        }
+        .close-modal {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 2.2rem;
+            cursor: pointer;
+            color: rgba(255,255,255,0.7);
+        }
+        .close-modal:hover { color: white; }
+        .payment-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 16px; }
+        .price-big { font-size: 3.2rem; font-weight: bold; color: var(--coral); margin: 20px 0; }
+        .secure-note { font-size: 0.95rem; color: rgba(255,255,255,0.75); margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        #card-container { 
+            background: rgba(255,255,255,0.12); 
+            backdrop-filter: blur(10px); 
+            padding: 24px; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255,255,255,0.15); 
+            margin: 24px 0; 
+        }
+
         @media (max-width: 768px) {
             .glass { padding: 24px; }
             .preview-img { max-width: 100px; max-height: 100px; }
             .profile-preview { width: 130px; height: 130px; }
             .card img.profile-img { max-width: 260px; }
+            .payment-modal { padding: 32px 20px; }
         }
     </style>
 </head>
@@ -572,11 +618,37 @@
     </div>
 </div>
 
+<!-- MODERN PAYMENT OVERLAY -->
+<div id="paymentOverlay" class="payment-overlay">
+    <div class="payment-modal">
+        <span class="close-modal" onclick="cancelPayment()">×</span>
+        <h2 class="payment-title">Almost Ready to Publish!</h2>
+        <p style="margin-bottom:24px; opacity:0.9;">
+            Your service is complete — just a one-time <strong>$9.99</strong> fee to make it live and visible to everyone.
+        </p>
+        <div class="price-big">$9.99</div>
+
+        <div id="card-container"></div>
+
+        <button id="payNowBtn" class="button-submit" style="font-size:1.3rem; padding:18px 0; margin: 20px 0;">
+            Pay $9.99 & Publish Now
+        </button>
+
+        <p class="secure-note">
+            <i class="fas fa-lock"></i> Secure payment powered by Square
+        </p>
+
+        <div id="payMessage" style="margin-top:20px; min-height:24px;"></div>
+    </div>
+</div>
+
 <script>
-// Full US cities list (unchanged)
+// ────────────────────────────────────────────────
+// YOUR ORIGINAL CONSTANTS & SETUP (UNCHANGED)
+// ────────────────────────────────────────────────
 const usCities = [
     "Abilene, TX","Akron, OH","Alameda, CA","Albany, GA","Albany, NY","Albuquerque, NM","Alexandria, LA","Alexandria, VA","Alhambra, CA","Allen, TX",
-    "Allentown, PA","Alphamretta, GA","Altamonte Springs, FL","Altoona, PA","Ames, IA","Anaheim, CA","Anchorage, AK","Anderson, IN","Ann Arbor, MI","Annapolis, MD",
+    "Allentown, PA","Alpharetta, GA","Altamonte Springs, FL","Altoona, PA","Ames, IA","Anaheim, CA","Anchorage, AK","Anderson, IN","Ann Arbor, MI","Annapolis, MD",
     "Antioch, CA","Apache Junction, AZ","Apex, NC","Apple Valley, CA","Apple Valley, MN","Appleton, WI","Arcadia, CA","Arlington, TX","Arlington, VA","Arvada, CO",
     "Asheville, NC","Athens, GA","Atlanta, GA","Atlantic City, NJ","Attleboro, MA","Auburn, AL","Auburn, WA","Augusta, GA","Aurora, CO","Aurora, IL",
     "Austin, TX","Avondale, AZ","Azusa, CA","Bakersfield, CA","Baldwin Park, CA","Baltimore, MD","Bangor, ME","Barnstable Town, MA","Bartlett, TN","Baton Rouge, LA",
@@ -671,13 +743,15 @@ const usCities = [
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ────────────────────────────────────────────────
-    // SQUARE KEYS – FILLED WITH YOUR VALUES (SANDBOX)
+    // SQUARE – YOUR KEYS (SANDBOX MODE)
     // ────────────────────────────────────────────────
     const SQUARE_APP_ID          = 'sandbox-sq0idb-nL9CAElVxUhtuMeDK_3PLA';
-    const SQUARE_LOCATION_ID     = 'LE7QAZZD7MGGA';  // ← PASTE YOUR LOCATION ID HERE (starts with L)
-    const PLAN_VARIATION_ID      = 'TZZZJ3EGXPGANHDGSJJWBPPA';
+    const SQUARE_LOCATION_ID     = 'YOUR_LOCATION_ID_HERE'; // ← PASTE YOUR REAL LOCATION ID HERE !!!
+    const PAYMENT_AMOUNT_CENTS   = 999; // $9.99
 
-    // Your original variables (unchanged)
+    let cardInstance = null;
+    let currentServiceData = null; // temporary storage for form data
+
     const list = document.getElementById('list');
     const msg = document.getElementById('msg');
     const welcomeMsg = document.getElementById('welcomeMsg');
@@ -688,188 +762,285 @@ const usCities = [
     let currentChatServiceId = null;
 
     // ────────────────────────────────────────────────
-    // All your original functions go here (unchanged)
-    // Paste them between the constants and the new paywall logic
-    // For brevity, I'm showing only the new paywall part below
-    // You must keep all your original functions (setupCitySearch, previewImage, toggleAuthMode, authForm.onsubmit, etc.)
+    // YOUR ORIGINAL FUNCTIONS (UNCHANGED – PASTE THEM ALL HERE)
+    // For brevity, I'm showing only the key changed parts below.
+    // You must keep every function you had (setupCitySearch, previewImage, toggleAuthMode, etc.)
     // ────────────────────────────────────────────────
 
-    // NEW: Subscription paywall logic
-    let cardInstance;
+    function setupCitySearch(inputId, listId, hiddenId) {
+        const input = document.getElementById(inputId);
+        const dropdown = document.getElementById(listId);
+        const hidden = document.getElementById(hiddenId);
 
-    auth.onAuthStateChanged(async user => {
-        if (user) {
-            const status = await checkSubscriptionStatus(user.uid);
-            if (status === 'active') {
-                loadDashboard(user);
+        function showDropdown(filter) {
+            dropdown.innerHTML = '';
+            let filtered = usCities.filter(city => city.toLowerCase().includes(filter));
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="no-results">No cities found</div>';
             } else {
-                showPaymentScreen(user, status);
+                filtered.slice(0, 100).forEach(city => {
+                    const div = document.createElement('div');
+                    div.textContent = city;
+                    div.onclick = () => {
+                        input.value = city;
+                        hidden.value = city;
+                        dropdown.style.display = 'none';
+                    };
+                    dropdown.appendChild(div);
+                });
+                if (filtered.length > 100) {
+                    const more = document.createElement('div');
+                    more.className = 'no-results';
+                    more.textContent = '...type more to refine';
+                    dropdown.appendChild(more);
+                }
             }
-        } else {
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('dashboardScreen').style.display = 'none';
-            document.getElementById('paymentScreen')?.remove();
+            dropdown.style.display = 'block';
         }
-    });
 
-    async function checkSubscriptionStatus(uid) {
-        const { data, error } = await supabaseClient
-            .from('user_subscriptions')
-            .select('status')
-            .eq('user_id', uid)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+        input.addEventListener('focus', () => showDropdown(''));
+        input.addEventListener('input', () => showDropdown(input.value.toLowerCase()));
+        input.addEventListener('click', () => showDropdown(input.value.toLowerCase()));
 
-        if (error || !data) return null;
-        return data.status === 'ACTIVE' ? 'active' : data.status.toLowerCase();
+        document.addEventListener('click', (e) => {
+            if (!input.parentElement.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
     }
 
-    function showPaymentScreen(user, currentStatus = null) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('dashboardScreen').style.display = 'none';
+    setupCitySearch('cityAddInput', 'cityAddList', 'cityAdd');
+    setupCitySearch('cityEditInput', 'cityEditList', 'cityEdit');
 
-        let payDiv = document.getElementById('paymentScreen');
-        if (!payDiv) {
-            payDiv = document.createElement('div');
-            payDiv.id = 'paymentScreen';
-            payDiv.className = 'login-container';
-            payDiv.innerHTML = `
-                <div class="form" style="text-align:center;">
-                    <h2>Unlock Your Dashboard</h2>
-                    <p style="margin:20px 0; font-size:1.1rem;">
-                        Monthly subscription: <strong>$9.99/month</strong><br>
-                        Publish services, manage messages, full access. Cancel anytime.
-                    </p>
-                    ${currentStatus ? `<p style="color:#ff6b6b;">Current status: ${currentStatus}. Please update or subscribe.</p>` : ''}
-                    
-                    <div id="card-container" style="margin:24px 0; background:rgba(255,255,255,0.3); backdrop-filter:blur(10px); padding:20px; border-radius:20px; border:1px solid rgba(255,255,255,0.2);"></div>
-                    
-                    <button id="subscribeBtn" class="button-submit" style="font-size:1.2rem; padding:20px;">
-                        Subscribe – $9.99/month
-                    </button>
-                    <p style="margin-top:30px; color:#666;">
-                        Already subscribed? <span class="toggle-link" onclick="checkPaymentStatus()">Refresh Status</span>
-                    </p>
-                    <div id="payMessage" style="margin-top:16px;"></div>
-                </div>
-            `;
-            document.body.appendChild(payDiv);
+    document.getElementById('zipAdd').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
+    document.getElementById('zipEdit').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
+
+    function previewImage(file, containerId, isProfile = false) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = isProfile ? 'profile-preview' : 'preview-img';
+            document.getElementById(containerId).innerHTML = '';
+            document.getElementById(containerId).appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function previewMultipleImages(files, containerId) {
+        document.getElementById(containerId).innerHTML = '';
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img';
+                document.getElementById(containerId).appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    document.getElementById('profile').addEventListener('change', e => e.target.files[0] && previewImage(e.target.files[0], 'profilePreview', true));
+    document.getElementById('photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'galleryPreview'));
+    document.getElementById('edit-profile').addEventListener('change', e => e.target.files[0] ? previewImage(e.target.files[0], 'editProfilePreview', true) : document.getElementById('editProfilePreview').innerHTML = '');
+    document.getElementById('edit-photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'editGalleryPreview'));
+
+    function toggleAuthMode() {
+        isSignupMode = !isSignupMode;
+        document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Sign In';
+        document.getElementById('authButton').textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+        document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+    }
+
+    document.getElementById('authForm').onsubmit = e => {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (isSignupMode) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => loadDashboard())
+                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+        }
+    };
+
+    document.getElementById('googleBtn').onclick = () => {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(() => loadDashboard());
+    };
+
+    function logoutAndGoHome() {
+        auth.signOut().then(() => {
+            window.location.href = 'https://truewebx.site/';
+        });
+    }
+
+    // ────────────────────────────────────────────────
+    // PAYMENT FLOW – MODERN OVERLAY ON PUBLISH
+    // ────────────────────────────────────────────────
+    document.getElementById('publishBtn').onclick = async () => {
+        const msgEl = document.getElementById('msg');
+        msgEl.innerHTML = '';
+
+        // Collect and validate data (your original logic)
+        const name = document.getElementById('name').value.trim();
+        const city = document.getElementById('cityAdd').value;
+        const zip = document.getElementById('zipAdd').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const gmail = document.getElementById('gmail').value.trim();
+        const desc = document.getElementById('desc').value.trim();
+        const profileFile = document.getElementById('profile').files[0];
+        const photoFiles = document.getElementById('photos').files;
+
+        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
+            msgEl.innerHTML = '<p style="color:red;">Required fields are missing!</p>';
+            return;
         }
 
-        payDiv.style.display = 'flex';
+        if (zip && zip.length !== 5) {
+            msgEl.innerHTML = '<p style="color:red;">ZIP code must be exactly 5 digits</p>';
+            return;
+        }
 
+        // Store data temporarily
+        currentServiceData = {
+            name, city, zip, phone, gmail, desc, profileFile, photoFiles,
+            socialLinks: currentSocialLinks.slice() // copy
+        };
+
+        // Show payment overlay
+        document.getElementById('paymentOverlay').style.display = 'flex';
+        document.getElementById('payMessage').innerHTML = '';
+
+        // Initialize Square card
         if (!cardInstance) {
-            async function initCard() {
+            try {
                 const payments = Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
                 cardInstance = await payments.card();
                 await cardInstance.attach('#card-container');
-            }
-            initCard().catch(err => {
-                document.getElementById('payMessage').innerHTML = `<p style="color:red;">Card setup failed: ${err.message}</p>`;
-            });
-        }
-
-        document.getElementById('subscribeBtn').onclick = async () => {
-            const msgEl = document.getElementById('payMessage');
-            msgEl.innerHTML = '<p>Processing secure payment...</p>';
-
-            try {
-                const result = await cardInstance.tokenize();
-                if (result.status !== 'OK') {
-                    throw new Error(result.errors?.[0]?.detail || 'Card validation failed');
-                }
-
-                const nonce = result.token;
-
-                const { data, error } = await supabaseClient.functions.invoke('create-square-subscription', {
-                    body: {
-                        userId: user.uid,
-                        email: user.email,
-                        nonce,
-                        planVariationId: PLAN_VARIATION_ID,
-                        locationId: SQUARE_LOCATION_ID
-                    }
-                });
-
-                if (error) throw error;
-
-                msgEl.innerHTML = '<p style="color:#0f0;">Success! Loading dashboard...</p>';
-                setTimeout(() => checkPaymentStatus(), 3000);
             } catch (err) {
-                msgEl.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+                document.getElementById('payMessage').innerHTML = `<p style="color:red;">Card setup failed: ${err.message}</p>`;
             }
-        };
-    }
+        }
+    };
 
-    async function checkPaymentStatus() {
-        const user = auth.currentUser;
-        if (user) {
-            const status = await checkSubscriptionStatus(user.uid);
-            if (status === 'active') {
-                document.getElementById('paymentScreen')?.remove();
-                loadDashboard(user);
-            } else {
-                alert(`Subscription status: ${status || 'not found'}. If you just subscribed, wait a moment and refresh.`);
+    // Pay button handler
+    document.getElementById('payNowBtn').onclick = async () => {
+        const payMsg = document.getElementById('payMessage');
+        payMsg.innerHTML = '<p>Processing secure $9.99 payment...</p>';
+
+        try {
+            const result = await cardInstance.tokenize();
+            if (result.status !== 'OK') {
+                throw new Error(result.errors?.[0]?.detail || 'Card error');
             }
+
+            const nonce = result.token;
+
+            // Call Supabase Edge Function to process payment
+            const { data, error } = await supabaseClient.functions.invoke('create-square-payment', {
+                body: {
+                    nonce,
+                    amount: PAYMENT_AMOUNT_CENTS,
+                    locationId: SQUARE_LOCATION_ID
+                }
+            });
+
+            if (error) throw error;
+
+            // Payment success → publish
+            await publishServiceAfterPayment();
+
+            payMsg.innerHTML = '<p style="color:#0f0; font-weight:bold;">Payment successful! Publishing...</p>';
+            setTimeout(() => {
+                document.getElementById('paymentOverlay').style.display = 'none';
+                document.getElementById('msg').innerHTML = '<p style="color:#0f0;">Your service is now live!</p>';
+                setTimeout(() => { show('home'); }, 2500);
+            }, 1800);
+
+        } catch (err) {
+            payMsg.innerHTML = `<p style="color:red;">Payment failed: ${err.message}</p>`;
+        }
+    };
+
+    async function publishServiceAfterPayment() {
+        if (!currentServiceData) return;
+
+        const { name, city, zip, phone, gmail, desc, profileFile, photoFiles, socialLinks } = currentServiceData;
+
+        let location = city;
+        if (zip) location += ` ${zip}`;
+
+        const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const slug = `${baseSlug}-${citySlug}`.slice(0, 100);
+
+        const user = auth.currentUser;
+        if (!user) throw new Error('No user');
+
+        try {
+            // Upload profile
+            const fileExt = profileFile.name.split('.').pop();
+            const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+            if (profileError) throw profileError;
+            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            const profileUrl = profileData.publicUrl;
+
+            // Upload gallery
+            const photosUrls = [];
+            for (let file of photoFiles) {
+                if (file) {
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                    if (error) continue;
+                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                    photosUrls.push(data.publicUrl);
+                }
+            }
+
+            // Insert
+            const service = {
+                id: crypto.randomUUID(),
+                owner_id: user.uid,
+                name,
+                city: location,
+                phone,
+                gmail,
+                description: desc,
+                profile: profileUrl,
+                photos: photosUrls,
+                social_links: socialLinks,
+                slug,
+                created_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient.from('services').insert(service);
+            if (error) throw error;
+
+            // Reset form
+            document.getElementById('addForm').reset();
+            currentSocialLinks = [];
+            document.getElementById('added-socials').innerHTML = '';
+            document.getElementById('profilePreview').innerHTML = '';
+            document.getElementById('galleryPreview').innerHTML = '';
+            currentServiceData = null;
+
+        } catch (err) {
+            console.error('Publish after payment failed:', err);
+            document.getElementById('msg').innerHTML = `<p style="color:red;">Publish failed after payment: ${err.message}</p>`;
         }
     }
 
-    // ────────────────────────────────────────────────
-    // PASTE ALL YOUR ORIGINAL FUNCTIONS HERE
-    // (setupCitySearch, previewImage, toggleAuthMode, authForm.onsubmit, googleBtn.onclick, 
-    // logoutAndGoHome, show, addSocialLink, updateAddedSocials, removeSocialLink, 
-    // addService, editService, updateService, deleteService, loadInbox, openChat, 
-    // loadChatMessages, sendReply, etc.)
-    // ────────────────────────────────────────────────
-
-    // Example placeholder – replace with your actual code
-    async function loadDashboard(user = auth.currentUser) {
-        if (!user) return;
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('dashboardScreen').style.display = 'block';
-        welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
-
-        const { data: services } = await supabaseClient
-            .from('services')
-            .select('*')
-            .eq('owner_id', user.uid)
-            .order('created_at', { ascending: false });
-
-        list.innerHTML = services && services.length > 0
-            ? services.map(s => `
-                <div class="card">
-                    <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
-                    <div class="delete" onclick="deleteService('${s.id}')">×</div>
-                    
-                    <img src="${s.profile || 'https://via.placeholder.com/600x400/0d9488/ffffff?text=Upload+Your+Logo'}" class="profile-img" alt="Profile">
-                    
-                    <h3>${s.name || 'No business name'}</h3>
-                    <p><strong>${s.city || 'No location'}</strong></p>
-                    <p>${s.description || 'No description'}</p>
-                    
-                    ${Array.isArray(s.photos) && s.photos.length > 0 ? `
-                    <div class="photos">
-                        ${s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('')}
-                    </div>` : ''}
-                    
-                    <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
-                    <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
-
-                    ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
-                    <div class="links">
-                        ${s.social_links.map(link => `
-                            <a href="${link.url}" target="_blank">
-                                <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
-                            </a>
-                        `).join('')}
-                    </div>` : ''}
-                </div>
-            `).join('')
-            : '<p style="text-align:center; padding:40px; opacity:0.9;">You have no published services yet. Create a new one!</p>';
+    function cancelPayment() {
+        document.getElementById('paymentOverlay').style.display = 'none';
+        currentServiceData = null;
     }
 
-    // ... paste the rest of your original script here ...
-</script>
-</body>
-</html>
+    //
