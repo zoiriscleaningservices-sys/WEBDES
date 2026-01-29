@@ -9,9 +9,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Square Payments SDK – SANDBOX mode (your keys) -->
+    <!-- Square Web Payments SDK – SANDBOX mode (your keys) -->
     <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
-    <!-- For production: change to https://web.squarecdn.com/v1/square.js -->
+    <!-- Production: change to https://web.squarecdn.com/v1/square.js -->
 
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -180,7 +180,7 @@
         button:hover { background: #ff8787; }
         button:disabled { background: #666; cursor: not-allowed; }
 
-        /* Searchable City Select */
+        /* Searchable City Select – DARK & HIGH CONTRAST (100% VISIBLE) */
         .searchable-select {
             position: relative;
             width: 100%;
@@ -226,7 +226,6 @@
             font-weight: bold;
         }
 
-        /* Photo upload & previews */
         .photo-upload {
             position: relative;
             background: rgba(255,255,255,0.15);
@@ -253,7 +252,6 @@
         .preview-img { max-width: 120px; max-height: 120px; object-fit: cover; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
         .profile-preview { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; border: 5px solid var(--coral); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
 
-        /* Services cards */
         .services { display:grid; grid-template-columns:1fr; gap:24px; margin-top:20px; width:100%; }
         .card { 
             background:rgba(255,255,255,0.15); 
@@ -270,8 +268,15 @@
             margin: 16px auto;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        .card h3 { margin: 16px 0 8px; font-size: 1.6rem; }
-        .card p { margin: 10px 0; line-height: 1.6; opacity: 0.95; }
+        .card h3 {
+            margin: 16px 0 8px;
+            font-size: 1.6rem;
+        }
+        .card p {
+            margin: 10px 0;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
         .card .photos {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
@@ -373,13 +378,13 @@
             cursor: pointer;
         }
 
-        /* Modern Payment Overlay */
+        /* Modern Payment Overlay – appears after filling form */
         .payment-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.65);
-            backdrop-filter: blur(6px);
-            z-index: 9999;
+            backdrop-filter: blur(8px);
+            z-index: 99999;
             display: none;
             justify-content: center;
             align-items: center;
@@ -388,13 +393,13 @@
         .payment-modal {
             background: var(--dark-glass);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.25);
             border-radius: 24px;
-            padding: 40px 30px;
-            max-width: 480px;
+            padding: 40px 32px;
+            max-width: 460px;
             width: 100%;
             color: white;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 70px rgba(0,0,0,0.7);
             position: relative;
             text-align: center;
         }
@@ -402,21 +407,44 @@
             position: absolute;
             top: 16px;
             right: 20px;
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             cursor: pointer;
             color: rgba(255,255,255,0.7);
+            transition: color 0.2s;
         }
         .close-modal:hover { color: white; }
-        .payment-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 16px; }
-        .price-big { font-size: 3.2rem; font-weight: bold; color: var(--coral); margin: 20px 0; }
-        .secure-note { font-size: 0.95rem; color: rgba(255,255,255,0.75); margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        #card-container { 
-            background: rgba(255,255,255,0.12); 
-            backdrop-filter: blur(10px); 
-            padding: 24px; 
-            border-radius: 16px; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            margin: 24px 0; 
+        .payment-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .payment-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+        .price-big {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--coral);
+            margin: 24px 0 32px;
+        }
+        .secure-note {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.7);
+            margin-top: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        #card-container {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin: 24px 0;
         }
 
         @media (max-width: 768px) {
@@ -425,12 +453,13 @@
             .profile-preview { width: 130px; height: 130px; }
             .card img.profile-img { max-width: 260px; }
             .payment-modal { padding: 32px 20px; }
+            .price-big { font-size: 3rem; }
         }
     </style>
 </head>
 <body>
 
-<!-- LOGIN / SIGN UP -->
+<!-- LOGIN / SIGN UP (exactly the same) -->
 <div id="loginScreen" class="login-container">
     <div class="form">
         <h2 style="margin-bottom:30px; color:#151717;" id="formTitle">Sign In</h2>
@@ -468,7 +497,7 @@
     </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- DASHBOARD (exactly the same) -->
 <div id="dashboardScreen" style="display:none;">
     <div class="bottom-nav">
         <div class="nav-container">
@@ -618,19 +647,19 @@
     </div>
 </div>
 
-<!-- MODERN PAYMENT OVERLAY -->
+<!-- MODERN PAYMENT OVERLAY – appears right after filling form -->
 <div id="paymentOverlay" class="payment-overlay">
     <div class="payment-modal">
         <span class="close-modal" onclick="cancelPayment()">×</span>
-        <h2 class="payment-title">Almost Ready to Publish!</h2>
-        <p style="margin-bottom:24px; opacity:0.9;">
-            Your service is complete — just a one-time <strong>$9.99</strong> fee to make it live and visible to everyone.
+        <h2 class="payment-title">Almost there!</h2>
+        <p class="payment-text">
+            Your service is ready — just a one-time <strong>$9.99</strong> fee to make it live.
         </p>
         <div class="price-big">$9.99</div>
 
         <div id="card-container"></div>
 
-        <button id="payNowBtn" class="button-submit" style="font-size:1.3rem; padding:18px 0; margin: 20px 0;">
+        <button id="payNowBtn" class="button-submit" style="font-size:1.3rem; padding:18px 0; margin: 24px 0;">
             Pay $9.99 & Publish Now
         </button>
 
@@ -644,7 +673,7 @@
 
 <script>
 // ────────────────────────────────────────────────
-// YOUR ORIGINAL CONSTANTS & SETUP (UNCHANGED)
+// YOUR ORIGINAL CONSTANTS & SETUP – 100% UNCHANGED
 // ────────────────────────────────────────────────
 const usCities = [
     "Abilene, TX","Akron, OH","Alameda, CA","Albany, GA","Albany, NY","Albuquerque, NM","Alexandria, LA","Alexandria, VA","Alhambra, CA","Allen, TX",
@@ -727,320 +756,604 @@ const usCities = [
     "Yonkers, NY","Yorba Linda, CA","Youngstown, OH","Yuba City, CA","Yucaipa, CA","Yuma, AZ"
 ].sort();
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
-        authDomain: "truewebx-78890.firebaseapp.com",
-        projectId: "truewebx-78890",
-        storageBucket: "truewebx-78890.firebasestorage.app",
-        messagingSenderId: "578628752073",
-        appId: "1:578628752073:web:c916cc3f234865a2947318"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+const firebaseConfig = {
+    apiKey: "AIzaSyAHZ5v86FWK9uU-9LfZKaBsMR6QQ92JqQM",
+    authDomain: "truewebx-78890.firebaseapp.com",
+    projectId: "truewebx-78890",
+    storageBucket: "truewebx-78890.firebasestorage.app",
+    messagingSenderId: "578628752073",
+    appId: "1:578628752073:web:c916cc3f234865a2947318"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-    const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ────────────────────────────────────────────────
-    // SQUARE – YOUR KEYS (SANDBOX MODE)
-    // ────────────────────────────────────────────────
-    const SQUARE_APP_ID          = 'sandbox-sq0idb-nL9CAElVxUhtuMeDK_3PLA';
-    const SQUARE_LOCATION_ID     = 'YOUR_LOCATION_ID_HERE'; // ← PASTE YOUR REAL LOCATION ID HERE !!!
-    const PAYMENT_AMOUNT_CENTS   = 999; // $9.99
+// SQUARE CONFIG – SANDBOX MODE (your keys)
+const SQUARE_APP_ID = 'sandbox-sq0idb-nL9CAElVxUhtuMeDK_3PLA';
+const SQUARE_LOCATION_ID = 'YOUR_LOCATION_ID_HERE'; // ← PASTE YOUR REAL LOCATION ID HERE !!!
+const PAYMENT_AMOUNT_CENTS = 999; // $9.99
 
-    let cardInstance = null;
-    let currentServiceData = null; // temporary storage for form data
+let cardInstance = null;
+let currentServiceData = null; // temporary storage for form data
 
-    const list = document.getElementById('list');
-    const msg = document.getElementById('msg');
-    const welcomeMsg = document.getElementById('welcomeMsg');
-    let currentEditId = null;
-    let currentSocialLinks = [];
-    let isSignupMode = false;
-    let isPublishing = false;
-    let currentChatServiceId = null;
+const list = document.getElementById('list');
+const msg = document.getElementById('msg');
+const welcomeMsg = document.getElementById('welcomeMsg');
+let currentEditId = null;
+let currentSocialLinks = [];
+let isSignupMode = false;
+let isPublishing = false;
+let currentChatServiceId = null;
 
-    // ────────────────────────────────────────────────
-    // YOUR ORIGINAL FUNCTIONS (UNCHANGED – PASTE THEM ALL HERE)
-    // For brevity, I'm showing only the key changed parts below.
-    // You must keep every function you had (setupCitySearch, previewImage, toggleAuthMode, etc.)
-    // ────────────────────────────────────────────────
+// ────────────────────────────────────────────────
+// YOUR ORIGINAL FUNCTIONS – 100% UNCHANGED
+// ────────────────────────────────────────────────
 
-    function setupCitySearch(inputId, listId, hiddenId) {
-        const input = document.getElementById(inputId);
-        const dropdown = document.getElementById(listId);
-        const hidden = document.getElementById(hiddenId);
+function setupCitySearch(inputId, listId, hiddenId) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(listId);
+    const hidden = document.getElementById(hiddenId);
 
-        function showDropdown(filter) {
-            dropdown.innerHTML = '';
-            let filtered = usCities.filter(city => city.toLowerCase().includes(filter));
-            if (filtered.length === 0) {
-                dropdown.innerHTML = '<div class="no-results">No cities found</div>';
-            } else {
-                filtered.slice(0, 100).forEach(city => {
-                    const div = document.createElement('div');
-                    div.textContent = city;
-                    div.onclick = () => {
-                        input.value = city;
-                        hidden.value = city;
-                        dropdown.style.display = 'none';
-                    };
-                    dropdown.appendChild(div);
-                });
-                if (filtered.length > 100) {
-                    const more = document.createElement('div');
-                    more.className = 'no-results';
-                    more.textContent = '...type more to refine';
-                    dropdown.appendChild(more);
-                }
+    function showDropdown(filter) {
+        dropdown.innerHTML = '';
+        let filtered = usCities.filter(city => city.toLowerCase().includes(filter));
+        if (filtered.length === 0) {
+            dropdown.innerHTML = '<div class="no-results">No cities found</div>';
+        } else {
+            filtered.slice(0, 100).forEach(city => {
+                const div = document.createElement('div');
+                div.textContent = city;
+                div.onclick = () => {
+                    input.value = city;
+                    hidden.value = city;
+                    dropdown.style.display = 'none';
+                };
+                dropdown.appendChild(div);
+            });
+            if (filtered.length > 100) {
+                const more = document.createElement('div');
+                more.className = 'no-results';
+                more.textContent = '...type more to refine';
+                dropdown.appendChild(more);
             }
-            dropdown.style.display = 'block';
         }
-
-        input.addEventListener('focus', () => showDropdown(''));
-        input.addEventListener('input', () => showDropdown(input.value.toLowerCase()));
-        input.addEventListener('click', () => showDropdown(input.value.toLowerCase()));
-
-        document.addEventListener('click', (e) => {
-            if (!input.parentElement.contains(e.target)) {
-                dropdown.style.display = 'none';
-            }
-        });
+        dropdown.style.display = 'block';
     }
 
-    setupCitySearch('cityAddInput', 'cityAddList', 'cityAdd');
-    setupCitySearch('cityEditInput', 'cityEditList', 'cityEdit');
+    input.addEventListener('focus', () => showDropdown(''));
+    input.addEventListener('input', () => showDropdown(input.value.toLowerCase()));
+    input.addEventListener('click', () => showDropdown(input.value.toLowerCase()));
 
-    document.getElementById('zipAdd').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
-    document.getElementById('zipEdit').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
+    document.addEventListener('click', (e) => {
+        if (!input.parentElement.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+}
 
-    function previewImage(file, containerId, isProfile = false) {
+setupCitySearch('cityAddInput', 'cityAddList', 'cityAdd');
+setupCitySearch('cityEditInput', 'cityEditList', 'cityEdit');
+
+document.getElementById('zipAdd').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
+document.getElementById('zipEdit').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g, '').slice(0,5));
+
+function previewImage(file, containerId, isProfile = false) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.className = isProfile ? 'profile-preview' : 'preview-img';
+        document.getElementById(containerId).innerHTML = '';
+        document.getElementById(containerId).appendChild(img);
+    };
+    reader.readAsDataURL(file);
+}
+
+function previewMultipleImages(files, containerId) {
+    document.getElementById(containerId).innerHTML = '';
+    Array.from(files).forEach(file => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const img = document.createElement('img');
             img.src = e.target.result;
-            img.className = isProfile ? 'profile-preview' : 'preview-img';
-            document.getElementById(containerId).innerHTML = '';
+            img.className = 'preview-img';
             document.getElementById(containerId).appendChild(img);
         };
         reader.readAsDataURL(file);
+    });
+}
+
+document.getElementById('profile').addEventListener('change', e => e.target.files[0] && previewImage(e.target.files[0], 'profilePreview', true));
+document.getElementById('photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'galleryPreview'));
+document.getElementById('edit-profile').addEventListener('change', e => e.target.files[0] ? previewImage(e.target.files[0], 'editProfilePreview', true) : document.getElementById('editProfilePreview').innerHTML = '');
+document.getElementById('edit-photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'editGalleryPreview'));
+
+function toggleAuthMode() {
+    isSignupMode = !isSignupMode;
+    document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Sign In';
+    document.getElementById('authButton').textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+    document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+}
+
+document.getElementById('authForm').onsubmit = e => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (isSignupMode) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(() => loadDashboard())
+            .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+    } else {
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => loadDashboard())
+            .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
+    }
+};
+
+document.getElementById('googleBtn').onclick = () => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(() => loadDashboard());
+};
+
+function logoutAndGoHome() {
+    auth.signOut().then(() => {
+        window.location.href = 'https://truewebx.site/';
+    });
+}
+
+auth.onAuthStateChanged(user => {
+    if (user) loadDashboard(user);
+});
+
+async function loadDashboard(user = auth.currentUser) {
+    if (!user) return;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboardScreen').style.display = 'block';
+    welcomeMsg.textContent = `Hello ${user.displayName || user.email.split('@')[0]}!`;
+
+    const { data: services } = await supabaseClient
+        .from('services')
+        .select('*')
+        .eq('owner_id', user.uid)
+        .order('created_at', { ascending: false });
+
+    list.innerHTML = services && services.length > 0
+        ? services.map(s => `
+            <div class="card">
+                <div class="edit" onclick="editService('${s.id}')"><i class="fas fa-edit"></i></div>
+                <div class="delete" onclick="deleteService('${s.id}')">×</div>
+                
+                <img src="${s.profile || 'https://via.placeholder.com/600x400/0d9488/ffffff?text=Upload+Your+Logo'}" class="profile-img" alt="Profile">
+                
+                <h3>${s.name || 'No business name'}</h3>
+                <p><strong>${s.city || 'No location'}</strong></p>
+                <p>${s.description || 'No description'}</p>
+                
+                ${Array.isArray(s.photos) && s.photos.length > 0 ? `
+                <div class="photos">
+                    ${s.photos.map(p => `<img src="${p}" alt="Gallery photo">`).join('')}
+                </div>` : ''}
+                
+                <p>Phone: <span class="private">${s.phone || 'Not available'}</span></p>
+                <p>Email: <span class="private">${s.gmail || 'Not available'}</span></p>
+
+                ${Array.isArray(s.social_links) && s.social_links.length > 0 ? `
+                <div class="links">
+                    ${s.social_links.map(link => `
+                        <a href="${link.url}" target="_blank">
+                            <i class="fab fa-${link.type.toLowerCase()}"></i> ${link.type}
+                        </a>
+                    `).join('')}
+                </div>` : ''}
+            </div>
+        `).join('')
+        : '<p style="text-align:center; padding:40px; opacity:0.9;">You have no published services yet. Create a new one!</p>';
+}
+
+function show(section) {
+    ['home', 'add', 'edit', 'messages'].forEach(s => document.getElementById(s).style.display = s === section ? 'block' : 'none');
+    document.querySelectorAll('.nav-item').forEach((el, i) => el.classList.toggle('active', i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'messages' ? 2 : 3)));
+    if (section === 'home') loadDashboard();
+    if (section === 'add') {
+        currentSocialLinks = [];
+        document.getElementById('added-socials').innerHTML = '';
+        document.getElementById('publishBtn').disabled = false;
+        document.getElementById('addForm').reset();
+        document.getElementById('profilePreview').innerHTML = '';
+        document.getElementById('galleryPreview').innerHTML = '';
+        document.getElementById('cityAddInput').value = '';
+        document.getElementById('cityAdd').value = '';
+    }
+    if (section === 'messages') loadInbox();
+}
+
+function addSocialLink(isEdit = false) {
+    const select = isEdit ? document.getElementById('edit-social-type') : document.getElementById('social-type');
+    const input = isEdit ? document.getElementById('edit-social-url') : document.getElementById('social-url');
+    const type = select.value;
+    const url = input.value.trim();
+    if (url && url.startsWith('http')) {
+        currentSocialLinks.push({ type, url });
+        updateAddedSocials(isEdit);
+        input.value = '';
+    } else if (url) {
+        alert('Please enter a valid URL (starting with https://)');
+    }
+}
+
+function updateAddedSocials(isEdit = false) {
+    const container = isEdit ? 'edit-added-socials' : 'added-socials';
+    document.getElementById(container).innerHTML = currentSocialLinks.map((link, i) => `
+        <div class="added-link">
+            <i class="fab fa-${link.type.toLowerCase()}"></i>
+            <span>${link.type}: ${link.url}</span>
+            <button onclick="removeSocialLink(${i}, ${isEdit})">×</button>
+        </div>
+    `).join('');
+}
+
+function removeSocialLink(index, isEdit = false) {
+    currentSocialLinks.splice(index, 1);
+    updateAddedSocials(isEdit);
+}
+
+// ────────────────────────────────────────────────
+// NEW PAYMENT FLOW – EXACTLY AFTER FILLING FORM
+// ────────────────────────────────────────────────
+
+document.getElementById('publishBtn').onclick = async () => {
+    msg.innerHTML = '';
+
+    // Your original validation (unchanged)
+    const name = document.getElementById('name').value.trim();
+    const city = document.getElementById('cityAdd').value;
+    const zip = document.getElementById('zipAdd').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const gmail = document.getElementById('gmail').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const profileFile = document.getElementById('profile').files[0];
+    const photoFiles = document.getElementById('photos').files;
+
+    if (!name || !city || !phone || !gmail || !desc || !profileFile) {
+        msg.innerHTML = '<p style="color:red;">Required fields are missing!</p>';
+        return;
     }
 
-    function previewMultipleImages(files, containerId) {
-        document.getElementById(containerId).innerHTML = '';
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'preview-img';
-                document.getElementById(containerId).appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
+    if (zip && zip.length !== 5) {
+        msg.innerHTML = '<p style="color:red;">ZIP code must be exactly 5 digits</p>';
+        return;
     }
 
-    document.getElementById('profile').addEventListener('change', e => e.target.files[0] && previewImage(e.target.files[0], 'profilePreview', true));
-    document.getElementById('photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'galleryPreview'));
-    document.getElementById('edit-profile').addEventListener('change', e => e.target.files[0] ? previewImage(e.target.files[0], 'editProfilePreview', true) : document.getElementById('editProfilePreview').innerHTML = '');
-    document.getElementById('edit-photos').addEventListener('change', e => e.target.files.length && previewMultipleImages(e.target.files, 'editGalleryPreview'));
-
-    function toggleAuthMode() {
-        isSignupMode = !isSignupMode;
-        document.getElementById('formTitle').textContent = isSignupMode ? 'Create Account' : 'Sign In';
-        document.getElementById('authButton').textContent = isSignupMode ? 'Sign Up' : 'Sign In';
-        document.getElementById('toggleText').textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
-    }
-
-    document.getElementById('authForm').onsubmit = e => {
-        e.preventDefault();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-
-        if (isSignupMode) {
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(() => loadDashboard())
-                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
-        } else {
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => loadDashboard())
-                .catch(err => document.getElementById('message').innerHTML = `<div class="error">${err.message}</div>`);
-        }
+    // Store form data temporarily
+    currentServiceData = {
+        name, city, zip, phone, gmail, desc, profileFile, photoFiles,
+        socialLinks: currentSocialLinks.slice()
     };
 
-    document.getElementById('googleBtn').onclick = () => {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-            .then(() => loadDashboard());
-    };
+    // Show modern payment overlay
+    document.getElementById('paymentOverlay').style.display = 'flex';
+    document.getElementById('payMessage').innerHTML = '';
 
-    function logoutAndGoHome() {
-        auth.signOut().then(() => {
-            window.location.href = 'https://truewebx.site/';
-        });
+    // Initialize Square card form
+    if (!cardInstance) {
+        try {
+            const payments = Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+            cardInstance = await payments.card();
+            await cardInstance.attach('#card-container');
+        } catch (err) {
+            document.getElementById('payMessage').innerHTML = `<p style="color:red;">Card setup failed: ${err.message}</p>`;
+        }
     }
+};
 
-    // ────────────────────────────────────────────────
-    // PAYMENT FLOW – MODERN OVERLAY ON PUBLISH
-    // ────────────────────────────────────────────────
-    document.getElementById('publishBtn').onclick = async () => {
-        const msgEl = document.getElementById('msg');
-        msgEl.innerHTML = '';
+// Handle payment submission
+document.getElementById('payNowBtn').onclick = async () => {
+    const payMsg = document.getElementById('payMessage');
+    payMsg.innerHTML = '<p>Processing secure $9.99 payment...</p>';
 
-        // Collect and validate data (your original logic)
-        const name = document.getElementById('name').value.trim();
-        const city = document.getElementById('cityAdd').value;
-        const zip = document.getElementById('zipAdd').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const gmail = document.getElementById('gmail').value.trim();
-        const desc = document.getElementById('desc').value.trim();
-        const profileFile = document.getElementById('profile').files[0];
-        const photoFiles = document.getElementById('photos').files;
-
-        if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-            msgEl.innerHTML = '<p style="color:red;">Required fields are missing!</p>';
-            return;
+    try {
+        const result = await cardInstance.tokenize();
+        if (result.status !== 'OK') {
+            throw new Error(result.errors?.[0]?.detail || 'Card error');
         }
 
-        if (zip && zip.length !== 5) {
-            msgEl.innerHTML = '<p style="color:red;">ZIP code must be exactly 5 digits</p>';
-            return;
+        const nonce = result.token;
+
+        // Charge via Supabase Edge Function
+        const { data, error } = await supabaseClient.functions.invoke('create-square-payment', {
+            body: {
+                nonce,
+                amount: PAYMENT_AMOUNT_CENTS,
+                locationId: SQUARE_LOCATION_ID
+            }
+        });
+
+        if (error) throw error;
+
+        // Payment success → publish service
+        await publishServiceAfterPayment();
+
+        payMsg.innerHTML = '<p style="color:#0f0; font-weight:bold;">Payment successful! Publishing...</p>';
+        setTimeout(() => {
+            document.getElementById('paymentOverlay').style.display = 'none';
+            msg.innerHTML = `<p style="color:#0f0;">Published successfully!<br>Your public page: <strong>https://truewebx.site/#${currentServiceData ? currentServiceData.slug : ''}</strong></p>`;
+            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 6000);
+        }, 1800);
+
+    } catch (err) {
+        payMsg.innerHTML = `<p style="color:red;">Payment failed: ${err.message}</p>`;
+    }
+};
+
+async function publishServiceAfterPayment() {
+    if (!currentServiceData) return;
+
+    const { name, city, zip, phone, gmail, desc, profileFile, photoFiles, socialLinks } = currentServiceData;
+
+    let location = city;
+    if (zip) location += ` ${zip}`;
+
+    const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const slug = `${baseSlug}-${citySlug}`.slice(0, 100);
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        const fileExt = profileFile.name.split('.').pop();
+        const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+        const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
+        if (profileError) throw profileError;
+        const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+        const profileUrl = profileData.publicUrl;
+
+        const photosUrls = [];
+        for (let file of photoFiles) {
+            if (file) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                if (error) continue;
+                const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                photosUrls.push(data.publicUrl);
+            }
         }
 
-        // Store data temporarily
-        currentServiceData = {
-            name, city, zip, phone, gmail, desc, profileFile, photoFiles,
-            socialLinks: currentSocialLinks.slice() // copy
+        const service = {
+            id: crypto.randomUUID(),
+            owner_id: user.uid,
+            name,
+            city: location,
+            phone,
+            gmail,
+            description: desc,
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: socialLinks,
+            slug,
+            created_at: new Date().toISOString()
         };
 
-        // Show payment overlay
-        document.getElementById('paymentOverlay').style.display = 'flex';
-        document.getElementById('payMessage').innerHTML = '';
+        const { error } = await supabaseClient.from('services').insert(service);
+        if (error) throw error;
 
-        // Initialize Square card
-        if (!cardInstance) {
-            try {
-                const payments = Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
-                cardInstance = await payments.card();
-                await cardInstance.attach('#card-container');
-            } catch (err) {
-                document.getElementById('payMessage').innerHTML = `<p style="color:red;">Card setup failed: ${err.message}</p>`;
-            }
-        }
-    };
+        // Reset form
+        document.getElementById('addForm').reset();
+        currentSocialLinks = [];
+        document.getElementById('added-socials').innerHTML = '';
+        document.getElementById('profilePreview').innerHTML = '';
+        document.getElementById('galleryPreview').innerHTML = '';
+        document.getElementById('cityAddInput').value = '';
+        document.getElementById('cityAdd').value = '';
+        currentServiceData = null;
 
-    // Pay button handler
-    document.getElementById('payNowBtn').onclick = async () => {
-        const payMsg = document.getElementById('payMessage');
-        payMsg.innerHTML = '<p>Processing secure $9.99 payment...</p>';
+    } catch (err) {
+        console.error(err);
+        msg.innerHTML = `<p style="color:red;">Error publishing: ${err.message}</p>`;
+    }
+}
 
-        try {
-            const result = await cardInstance.tokenize();
-            if (result.status !== 'OK') {
-                throw new Error(result.errors?.[0]?.detail || 'Card error');
-            }
+function cancelPayment() {
+    document.getElementById('paymentOverlay').style.display = 'none';
+    currentServiceData = null;
+}
 
-            const nonce = result.token;
+// ────────────────────────────────────────────────
+// REST OF YOUR ORIGINAL SCRIPT (unchanged)
+// ────────────────────────────────────────────────
 
-            // Call Supabase Edge Function to process payment
-            const { data, error } = await supabaseClient.functions.invoke('create-square-payment', {
-                body: {
-                    nonce,
-                    amount: PAYMENT_AMOUNT_CENTS,
-                    locationId: SQUARE_LOCATION_ID
-                }
-            });
+async function editService(id) {
+    currentEditId = id;
+    const { data: service } = await supabaseClient.from('services').select('*').eq('id', id).single();
 
-            if (error) throw error;
+    document.getElementById('edit-name').value = service.name || '';
+    document.getElementById('edit-phone').value = service.phone || '';
+    document.getElementById('edit-gmail').value = service.gmail || '';
+    document.getElementById('edit-desc').value = service.description || '';
 
-            // Payment success → publish
-            await publishServiceAfterPayment();
+    const locationParts = service.city ? service.city.trim().split(' ') : [];
+    const zipPart = locationParts.length > 1 && /^\d{5}$/.test(locationParts[locationParts.length - 1]) ? locationParts.pop() : '';
+    const cityWithState = locationParts.join(' ');
 
-            payMsg.innerHTML = '<p style="color:#0f0; font-weight:bold;">Payment successful! Publishing...</p>';
-            setTimeout(() => {
-                document.getElementById('paymentOverlay').style.display = 'none';
-                document.getElementById('msg').innerHTML = '<p style="color:#0f0;">Your service is now live!</p>';
-                setTimeout(() => { show('home'); }, 2500);
-            }, 1800);
+    document.getElementById('cityEditInput').value = cityWithState;
+    document.getElementById('cityEdit').value = cityWithState;
+    document.getElementById('zipEdit').value = zipPart;
 
-        } catch (err) {
-            payMsg.innerHTML = `<p style="color:red;">Payment failed: ${err.message}</p>`;
-        }
-    };
+    currentSocialLinks = Array.isArray(service.social_links) ? service.social_links : [];
+    updateAddedSocials(true);
+    document.getElementById('editProfilePreview').innerHTML = '';
+    document.getElementById('editGalleryPreview').innerHTML = '';
 
-    async function publishServiceAfterPayment() {
-        if (!currentServiceData) return;
+    show('edit');
+}
 
-        const { name, city, zip, phone, gmail, desc, profileFile, photoFiles, socialLinks } = currentServiceData;
+async function updateService() {
+    if (!currentEditId) return;
 
-        let location = city;
-        if (zip) location += ` ${zip}`;
+    const name = document.getElementById('edit-name').value.trim();
+    const city = document.getElementById('cityEdit').value;
+    const zip = document.getElementById('zipEdit').value.trim();
+    const phone = document.getElementById('edit-phone').value.trim();
+    const gmail = document.getElementById('edit-gmail').value.trim();
+    const desc = document.getElementById('edit-desc').value.trim();
 
-        const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        const slug = `${baseSlug}-${citySlug}`.slice(0, 100);
+    if (!name || !city || !phone || !gmail || !desc) {
+        document.getElementById('edit-msg').innerHTML = '<p style="color:red;">Required fields cannot be empty</p>';
+        return;
+    }
 
-        const user = auth.currentUser;
-        if (!user) throw new Error('No user');
+    if (zip && zip.length !== 5) {
+        document.getElementById('edit-msg').innerHTML = '<p style="color:red;">ZIP code must be exactly 5 digits</p>';
+        return;
+    }
 
-        try {
-            // Upload profile
+    let location = city;
+    if (zip) location += ` ${zip}`;
+
+    const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const slug = `${baseSlug}-${citySlug}`.slice(0, 100);
+
+    try {
+        const profileFile = document.getElementById('edit-profile').files[0];
+        const { data: current } = await supabaseClient.from('services').select('profile, photos').eq('id', currentEditId).single();
+
+        let profileUrl = current.profile;
+        if (profileFile) {
             const fileExt = profileFile.name.split('.').pop();
             const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-            const { error: profileError } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-            if (profileError) throw profileError;
-            const { data: profileData } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
-            const profileUrl = profileData.publicUrl;
-
-            // Upload gallery
-            const photosUrls = [];
-            for (let file of photoFiles) {
-                if (file) {
-                    const fileExt = file.name.split('.').pop();
-                    const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
-                    const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
-                    if (error) continue;
-                    const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
-                    photosUrls.push(data.publicUrl);
-                }
-            }
-
-            // Insert
-            const service = {
-                id: crypto.randomUUID(),
-                owner_id: user.uid,
-                name,
-                city: location,
-                phone,
-                gmail,
-                description: desc,
-                profile: profileUrl,
-                photos: photosUrls,
-                social_links: socialLinks,
-                slug,
-                created_at: new Date().toISOString()
-            };
-
-            const { error } = await supabaseClient.from('services').insert(service);
+            const { error } = await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
             if (error) throw error;
-
-            // Reset form
-            document.getElementById('addForm').reset();
-            currentSocialLinks = [];
-            document.getElementById('added-socials').innerHTML = '';
-            document.getElementById('profilePreview').innerHTML = '';
-            document.getElementById('galleryPreview').innerHTML = '';
-            currentServiceData = null;
-
-        } catch (err) {
-            console.error('Publish after payment failed:', err);
-            document.getElementById('msg').innerHTML = `<p style="color:red;">Publish failed after payment: ${err.message}</p>`;
+            const { data } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+            profileUrl = data.publicUrl;
         }
+
+        let photosUrls = current.photos || [];
+        const photoFiles = document.getElementById('edit-photos').files;
+        for (let file of photoFiles) {
+            if (file) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `photo_${crypto.randomUUID()}.${fileExt}`;
+                const { error } = await supabaseClient.storage.from('photos').upload(fileName, file);
+                if (error) throw error;
+                const { data } = supabaseClient.storage.from('photos').getPublicUrl(fileName);
+                photosUrls.push(data.publicUrl);
+            }
+        }
+
+        const updates = {
+            name,
+            city: location,
+            phone,
+            gmail,
+            description: desc,
+            profile: profileUrl,
+            photos: photosUrls,
+            social_links: currentSocialLinks,
+            slug
+        };
+
+        const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+        if (error) throw error;
+
+        document.getElementById('edit-msg').innerHTML = '<p style="color:#0f0;">Updated successfully! New URL: https://truewebx.site/#' + slug + '</p>';
+        setTimeout(() => { show('home'); document.getElementById('edit-msg').innerHTML = ''; }, 4000);
+    } catch (err) {
+        document.getElementById('edit-msg').innerHTML = `<p style="color:red;">Error: ${err.message || 'Unknown error'}</p>`;
+    }
+}
+
+async function deleteService(id) {
+    if (confirm('Are you sure you want to delete this service?')) {
+        const { error } = await supabaseClient.from('services').delete().eq('id', id);
+        if (error) alert('Error: ' + error.message);
+        loadDashboard();
+    }
+}
+
+async function loadInbox() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const { data: services } = await supabaseClient.from('services').select('id, name').eq('owner_id', user.uid);
+    if (!services || services.length === 0) {
+        document.getElementById('inboxList').innerHTML = '<p style="text-align:center;">No services yet</p>';
+        return;
     }
 
-    function cancelPayment() {
-        document.getElementById('paymentOverlay').style.display = 'none';
-        currentServiceData = null;
-    }
+    const { data: messages } = await supabaseClient.from('messages')
+        .select('service_id, text, created_at, is_from_owner')
+        .in('service_id', services.map(s => s.id))
+        .order('created_at', { ascending: false });
 
-    //
+    const chats = {};
+    messages.forEach(m => {
+        if (!chats[m.service_id]) {
+            chats[m.service_id] = {
+                name: services.find(s => s.id === m.service_id)?.name || 'Unknown',
+                lastMessage: m.text,
+                time: m.created_at,
+                unread: !m.is_from_owner
+            };
+        }
+    });
+
+    document.getElementById('inboxList').innerHTML = Object.keys(chats).length ? 
+        Object.values(chats).map(chat => `
+            <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openChat('${services.find(s => s.name === chat.name)?.id}', '${chat.name.replace(/'/g, "\\'")}')">
+                <strong>${chat.name}</strong>
+                <div style="opacity:0.9;font-size:0.95rem;margin-top:6px;">${chat.lastMessage}</div>
+                <small>${new Date(chat.time).toLocaleString()}</small>
+            </div>
+        `).join('') : '<p style="text-align:center; opacity:0.8;">No messages yet</p>';
+}
+
+async function openChat(serviceId, name) {
+    currentChatServiceId = serviceId;
+    document.getElementById('chatHeader').textContent = `Chat – ${name}`;
+    document.getElementById('chatWindow').style.display = 'flex';
+    loadChatMessages();
+}
+
+async function loadChatMessages() {
+    const { data } = await supabaseClient.from('messages')
+        .select('*')
+        .eq('service_id', currentChatServiceId)
+        .order('created_at', { ascending: true });
+
+    const body = document.getElementById('chatBody');
+    body.innerHTML = data.map(m => `
+        <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
+            ${m.text}
+            <small>${new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</small>
+        </div>
+    `).join('');
+    body.scrollTop = body.scrollHeight;
+}
+
+async function sendReply() {
+    const input = document.getElementById('replyInput');
+    const text = input.value.trim();
+    if (!text || !currentChatServiceId) return;
+
+    await supabaseClient.from('messages').insert({
+        service_id: currentChatServiceId,
+        text,
+        is_from_owner: true
+    });
+
+    input.value = '';
+    loadChatMessages();
+}
+
+document.getElementById('replyInput')?.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendReply();
+});
+</script>
+</body>
+</html>
