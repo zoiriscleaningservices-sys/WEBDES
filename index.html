@@ -19,20 +19,19 @@
 
     <link rel="canonical" href="https://truewebx.site/">
 
-    <!-- Preconnects + Favicons (cleaned duplicates) -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="https://vrpyomevjlsacourdmki.supabase.co">
-
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="https://truewebx.site/favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://truewebx.site/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://truewebx.site/favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
 
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" as="style">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" media="print" onload="this.media='all';this.onload=null" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" media="print" onload="this.media='all'">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <meta name="supabase-anon-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM">
 
@@ -45,10 +44,12 @@
             --card-glass: rgba(255, 255, 255, 0.14);
             --shadow: 0 8px 32px rgba(0,0,0,0.25);
         }
-        *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+        *, *::before, *::after { box-sizing: border-box; }
         html, body {
             height: 100%;
             width: 100%;
+            margin: 0;
+            padding: 0;
             overscroll-behavior: none;
         }
         body { 
@@ -58,6 +59,7 @@
             color: var(--white); 
             min-height: 100vh; 
             overflow-x: hidden;
+            transform: translateZ(0);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -74,7 +76,7 @@
 
         .header-wrapper {
             position: fixed;
-            inset: 0 0 auto 0;
+            top: 0; left: 0; right: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -82,13 +84,29 @@
             z-index: 1000;
             background: rgba(0, 0, 0, 0.38);
             border-bottom: 1px solid rgba(255,255,255,0.08);
-            transition: background 0.25s ease;
-            contain: style layout;
+            transition: background 0.35s ease;
+            will-change: background;
+            transform: translateZ(0);
         }
-        .header-wrapper.scrolled { background: rgba(0, 0, 0, 0.58); }
+        .header-wrapper.scrolled {
+            background: rgba(0, 0, 0, 0.58);
+        }
 
-        .logo { max-width: clamp(160px, 35vw, 280px); max-height: 64px; height: auto; }
-        .logo img { width: 100%; height: auto; max-height: 64px; object-fit: contain; display: block; }
+        .logo {
+            display: block;
+            max-width: clamp(160px, 35vw, 280px);
+            max-height: 64px;
+            height: auto;
+            line-height: 0;
+        }
+        .logo img {
+            width: 100%;
+            height: auto;
+            max-height: 64px;
+            object-fit: contain;
+            display: block;
+            vertical-align: middle;
+        }
 
         .login-btn {
             background: rgba(255,255,255,0.18);
@@ -97,32 +115,45 @@
             font-weight: 600;
             padding: 12px 24px;
             border-radius: 50px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
             font-size: 1rem;
-            transition: all 0.22s ease;
+            transition: all 0.3s;
             text-decoration: none;
         }
-        .login-btn:hover { background: rgba(255,255,255,0.32); transform: translateY(-2px); }
+        .login-btn:hover { background: rgba(255,255,255,0.32); transform: translateY(-3px); }
 
-        .main-content { padding-top: 110px; flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .main-content { 
+            padding-top: 110px; 
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
         .hero { text-align: center; padding: 50px 20px 30px; width: 100%; }
         .tagline { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 700; margin-bottom: 16px; }
         .subtitle { font-size: clamp(1.1rem, 4vw, 1.5rem); opacity: 0.95; max-width: 900px; margin: 0 auto 40px; line-height: 1.7; }
 
-        .search-container { width: 100%; max-width: 760px; margin: 0 auto 30px; position: relative; }
+        .search-container { 
+            width: 100%; 
+            max-width: 760px; 
+            margin: 0 auto 30px; 
+            position: relative; 
+        }
         .search-box {
             width: 100%; padding: 18px 70px 18px 28px; font-size: 1.25rem;
-            border-radius: 50px; border: none;
-            background: rgba(255,255,255,0.18); color: white;
-            box-shadow: var(--shadow);
+            border-radius: 50px; border: none; 
+            background: rgba(255,255,255,0.18);
+            color: white; box-shadow: var(--shadow);
         }
         .search-box::placeholder { color: rgba(255,255,255,0.7); }
-        .search-box:focus { outline: 2px solid var(--coral); outline-offset: 3px; box-shadow: 0 0 0 5px rgba(255,107,107,.36); }
+        .search-box:focus { outline: 2px solid var(--coral); outline-offset: 4px; box-shadow: 0 0 0 5px rgba(255,107,107,0.4); }
         .search-icon { position: absolute; right: 24px; top: 50%; transform: translateY(-50%); font-size: 1.9rem; color: rgba(255,255,255,0.8); pointer-events: none; }
 
+        /* ── Modern compact rotator ─────────────────────────────────────── */
         .promo-rotator {
             position: relative;
             width: 100%;
@@ -134,37 +165,82 @@
             box-shadow: var(--shadow);
             background: var(--card-glass);
             border: 1px solid rgba(255,255,255,0.18);
-            contain: content;
         }
+
         .promo-slide {
             position: absolute;
             inset: 0;
             opacity: 0;
-            transition: opacity 1.1s ease-in-out;
+            transition: opacity 1.4s ease-in-out;
             pointer-events: none;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
-        .promo-slide.active { opacity: 1; pointer-events: auto; }
+
+        .promo-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
         .promo-slide .card {
-            width: 100%; max-width: 860px; height: 100%;
+            width: 100%;
+            max-width: 860px;
+            height: 100%;
+            margin: 0;
             border-radius: 20px;
             background: var(--card-glass);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
             overflow: hidden;
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
         }
 
+        .promo-slide .profile-img-wrapper {
+            height: 70%;
+            flex: 0 0 auto;
+        }
+
+        .promo-slide .card-content {
+            padding: 20px 24px;
+            flex: 1;
+        }
+
+        .promo-slide h3 {
+            font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+            margin-bottom: 8px;
+        }
+
+        .promo-slide .location {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .promo-slide .description-teaser {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            -webkit-line-clamp: 3;
+        }
+
+        .promo-slide .price {
+            font-size: 1.8rem !important;
+            margin: 14px 0;
+        }
+
+        .promo-slide .view-btn {
+            padding: 14px 32px;
+            font-size: 1.1rem;
+        }
+
+        /* ── Rest of styles unchanged ───────────────────────────────────── */
         .glass { 
             background: var(--light-glass); 
             border-radius: 32px; padding: 40px 24px; margin: 20px 0; 
             border: 1px solid rgba(255,255,255,0.22); box-shadow: var(--shadow); 
-            width: 100%; max-width: 1400px;
-            contain: content;
+            width: 100%;
+            max-width: 1400px;
         }
         h2 { font-size: clamp(2rem, 6vw, 3rem); margin-bottom: 32px; text-align: center; font-weight: 700; }
 
@@ -178,15 +254,18 @@
             background: var(--card-glass); 
             border-radius: 32px; overflow: hidden;
             box-shadow: var(--shadow); 
-            transition: transform 0.28s ease, opacity 0.4s ease; 
+            transition: transform 0.4s ease, opacity 0.5s ease; 
             opacity: 0;
-            transform: translateY(16px);
+            transform: translateY(20px);
             display: flex; flex-direction: column;
             width: 100%;
             position: relative;
         }
-        .card.loaded { opacity: 1; transform: translateY(0); }
-        .card:hover { transform: translateY(-8px); }
+        .card.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card:hover { transform: translateY(-10px); }
 
         .profile-img-wrapper { 
             width: 100%; 
@@ -194,14 +273,18 @@
             min-height: 280px;
             overflow: hidden; 
             background: rgba(0,0,0,0.15);
+            flex: 0 0 auto;
         }
         .profile-img { 
-            width: 100%; height: 100%; 
-            object-fit: cover; object-position: top center;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: top center;
             image-rendering: -webkit-optimize-contrast;
-            transition: transform 0.35s ease;
+            transition: transform 0.5s ease;
+            will-change: transform;
         }
-        .card:hover .profile-img { transform: scale(1.06); }
+        .card:hover .profile-img { transform: scale(1.08); }
 
         .card-content { 
             padding: 28px; text-align: center; 
@@ -228,7 +311,7 @@
             box-shadow: 0 4px 14px rgba(0,0,0,0.3);
         }
 
-        .private { filter: blur(6px); transition: filter 0.25s; font-weight: 600; }
+        .private { filter: blur(6px); transition: filter 0.3s; font-weight: 600; }
         .private:hover, .private:focus { filter: none; }
         .price { font-size: 2rem !important; color: var(--coral) !important; font-weight: 800; margin: 20px 0; }
 
@@ -236,7 +319,7 @@
         .links a { 
             color: #ffeb3b; padding: 10px 18px; background: rgba(255,255,255,0.1); 
             border-radius: 24px; font-size: 1rem; display: flex; align-items: center; gap: 8px; 
-            transition: background 0.22s;
+            transition: background 0.3s;
             text-decoration: none;
         }
         .links a:hover { background: rgba(255,255,255,0.25); }
@@ -244,9 +327,9 @@
         .view-btn { 
             margin: 24px auto 0; padding: 16px 36px; background: var(--coral); 
             color: white; border-radius: 50px; text-decoration: none; font-weight: bold; 
-            font-size: 1.2rem; transition: all 0.24s ease; display: inline-block;
+            font-size: 1.2rem; transition: all 0.3s; display: inline-block;
         }
-        .view-btn:hover, .view-btn:focus { background: #ff8787; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .view-btn:hover, .view-btn:focus { background: #ff8787; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); outline: none; }
 
         .share-btn {
             position: absolute; top: 20px; right: 20px;
@@ -254,9 +337,9 @@
             border: 1px solid rgba(255,255,255,0.32);
             border-radius: 50%;
             width: 50px; height: 50px; display: grid; place-items: center;
-            cursor: pointer; font-size: 1.4rem; transition: all 0.24s; z-index: 2;
+            cursor: pointer; font-size: 1.4rem; transition: all 0.3s; z-index: 2;
         }
-        .share-btn:hover, .share-btn:focus { background: rgba(255,255,255,0.32); transform: scale(1.12); }
+        .share-btn:hover, .share-btn:focus { background: rgba(255,255,255,0.32); transform: scale(1.15); outline: none; }
 
         .load-more-btn {
             margin: 40px auto 0;
@@ -267,9 +350,11 @@
             color: white;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.24s;
+            transition: all 0.3s;
         }
-        .load-more-btn:hover { background: rgba(255,255,255,0.3); }
+        .load-more-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
 
         .no-services { font-size: 1.5rem; text-align: center; padding: 80px 20px; opacity: 0.9; }
 
@@ -313,7 +398,11 @@
             padding: 8px 0;
             min-width: 0;
         }
-        .contact-item i { color: var(--coral); font-size: 1.8rem; flex-shrink: 0; }
+        .contact-item i {
+            color: var(--coral);
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
         .contact-item a {
             white-space: nowrap;
             overflow: hidden;
@@ -333,7 +422,7 @@
         }
         .gallery-slider {
             display: flex;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .gallery-slider img {
             width: 100%;
@@ -348,9 +437,9 @@
             position: absolute; top: 50%; transform: translateY(-50%);
             width: 60px; height: 60px; background: rgba(0,0,0,0.55);
             border-radius: 50%; display: grid; place-items: center; font-size: 2.2rem;
-            cursor: pointer; opacity: 0.85; transition: all 0.24s; z-index: 10;
+            cursor: pointer; opacity: 0.85; transition: all 0.3s; z-index: 10;
         }
-        .gallery-arrow:hover, .gallery-arrow:focus { opacity: 1; background: rgba(0,0,0,0.75); transform: translateY(-50%) scale(1.12); }
+        .gallery-arrow:hover, .gallery-arrow:focus { opacity: 1; background: rgba(0,0,0,0.75); transform: translateY(-50%) scale(1.15); outline: none; }
         .gallery-arrow.prev { left: 28px; }
         .gallery-arrow.next { right: 28px; }
 
@@ -358,11 +447,11 @@
 
         @media (min-width: 768px) {
             .services { grid-template-columns: repeat(2, 1fr); }
-            .profile-img-wrapper { min-height: 340px; }
+            .profile-img-wrapper { min-height: 340px; aspect-ratio: 16 / 9; }
         }
         @media (min-width: 1100px) {
             .services { grid-template-columns: repeat(3, 1fr); gap: 40px; }
-            .profile-img-wrapper { min-height: 380px; }
+            .profile-img-wrapper { min-height: 380px; aspect-ratio: 16 / 9; }
         }
         @media (max-width: 768px) {
             .gallery-arrow { display: none; }
@@ -372,14 +461,17 @@
         }
     </style>
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9852676431523320" crossorigin="anonymous"></script>
+    <!-- Google AdSense loading script (REQUIRED for ads to work) -->
+    <!-- REPLACE ca-pub-XXXXXXXXXXXXXXX with YOUR real publisher ID from AdSense dashboard -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9852676431523320"
+         crossorigin="anonymous"></script>
+
 </head>
 <body>
-
 <div class="wrapper">
     <header class="header-wrapper" id="header">
         <a href="/" class="logo" aria-label="TrueWebX Home">
-            <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo" width="240" height="64" loading="eager" decoding="async" fetchpriority="high">
+            <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo" width="240" height="64" loading="eager">
         </a>
 
         <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up">
@@ -402,7 +494,10 @@
             <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
 
-        <section class="promo-rotator" id="promoRotator" aria-label="Featured businesses"></section>
+        <!-- Promotional rotator - no dots container anymore -->
+        <section class="promo-rotator" id="promoRotator" aria-label="Featured businesses">
+            <!-- dots div removed completely -->
+        </section>
 
         <section class="glass" aria-labelledby="services-heading">
             <h2 id="services-heading">Available Services Worldwide</h2>
@@ -419,356 +514,358 @@
 </script>
 
 <script>
-let ticking = false;
-function updateHeader() {
-    document.getElementById('header').classList.toggle('scrolled', scrollY > 50);
-    ticking = false;
-}
-addEventListener('scroll', () => {
-    if (!ticking) requestAnimationFrame(updateHeader), ticking = true;
-}, {passive: true});
-
-const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
-const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
-
-if (!anonKey || anonKey.includes('YOUR_SUPABASE')) {
-    document.getElementById('list').innerHTML = '<p class="no-services">Service temporarily unavailable.</p>';
-} else {
-    const supabaseClient = supabase.createClient(supabaseUrl, anonKey);
-    let allServices = [];
-    let displayedCount = 0;
-    const PAGE_SIZE = 9;
-    const BASE_PATH = '/profile';
-
-    async function loadInitialServices() {
-        const { data, error } = await supabaseClient
-            .from('services')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .range(0, PAGE_SIZE - 1);
-
-        if (error) {
-            document.getElementById('list').innerHTML = '<p class="no-services">Error loading services.</p>';
-            return;
-        }
-
-        allServices = data || [];
-        displayedCount = allServices.length;
-        renderServices(allServices);
-        updateLoadMoreVisibility();
-        checkPathAndRender();
-        requestIdleCallback(startPromoRotator);
+    let ticking = false;
+    function updateHeader() {
+        const header = document.getElementById('header');
+        header.classList.toggle('scrolled', window.scrollY > 50);
+        ticking = false;
     }
-
-    async function loadMoreServices() {
-        const { data, error } = await supabaseClient
-            .from('services')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .range(displayedCount, displayedCount + PAGE_SIZE - 1);
-
-        if (error || !data?.length) {
-            document.getElementById('loadMoreBtn').style.display = 'none';
-            return;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateHeader);
+            ticking = true;
         }
+    }, { passive: true });
 
-        allServices = allServices.concat(data);
-        displayedCount += data.length;
-        renderServices(allServices, true);
-        updateLoadMoreVisibility();
-    }
+    const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
+    const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
 
-    function updateLoadMoreVisibility() {
-        document.getElementById('loadMoreBtn').style.display = 
-            (allServices.length >= PAGE_SIZE && displayedCount === allServices.length) ? 'block' : 'none';
-    }
+    if (!anonKey || anonKey === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM') {
+        document.getElementById('list').innerHTML = '<p class="no-services">Service temporarily unavailable – please try again later.</p>';
+        console.error('Supabase anon key missing.');
+    } else {
+        const supabaseClient = supabase.createClient(supabaseUrl, anonKey);
+        let allServices = [];
+        let displayedCount = 0;
+        const PAGE_SIZE = 9;
+        const BASE_PATH = '/profile';
 
-    function renderServices(services, append = false) {
-        const list = document.getElementById('list');
-        const html = services.map((s, index) => {
-            const staggerDelay = Math.min(index * 60, 600);
-            return `
-            <article class="card" id="service-${s.id}" style="transition-delay: ${staggerDelay}ms;" itemscope itemtype="https://schema.org/LocalBusiness" role="listitem">
-                <button class="share-btn" aria-label="Copy profile link"><i class="fas fa-link" aria-hidden="true"></i></button>
+        async function loadInitialServices() {
+            const { data: services, error } = await supabaseClient
+                .from('services')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .range(0, PAGE_SIZE - 1);
 
-                <div class="profile-img-wrapper">
-                    <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
-                         alt="${s.name || 'Business'} featured image" 
-                         class="profile-img" 
-                         itemprop="image" 
-                         width="800" height="600" 
-                         loading="${index < 4 ? 'eager' : 'lazy'}" 
-                         decoding="async" 
-                         fetchpriority="${index < 3 ? 'high' : 'low'}">
-                </div>
+            if (error) {
+                document.getElementById('list').innerHTML = '<p class="no-services">Error loading services.</p>';
+                return;
+            }
 
-                <div class="card-content">
-                    <div>
-                        <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
-                        <p class="location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
-                            <strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong>
-                        </p>
-                        <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
-
-                        ${s.photos?.length ? `
-                        <div class="photos" aria-label="Gallery preview">
-                            ${s.photos.slice(0,3).map(p => `
-                                <img src="${p}" alt="${s.name || 'Business'} gallery image" width="300" height="300" loading="lazy" decoding="async">
-                            `).join('')}
-                            ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;" aria-hidden="true">+${s.photos.length - 3} more</div>` : ''}
-                        </div>` : ''}
-
-                        <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
-                        <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
-
-                        <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
-
-                        ${s.social_links?.length ? `<div class="links" aria-label="Social links">
-                            ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs" aria-label="${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}" aria-hidden="true"></i> ${l.type}</a>`).join('')}
-                        </div>` : ''}
-                    </div>
-
-                    <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;" aria-label="View full profile of ${s.name}">View Full Profile →</a>
-                </div>
-            </article>`;
-        }).join('');
-
-        if (append) {
-            list.insertAdjacentHTML('beforeend', html);
-        } else {
-            list.innerHTML = services.length ? html : '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
-        }
-
-        // Fade-in observer (replaces setTimeout)
-        const observer = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('loaded');
-                    obs.unobserve(entry.target);
-                }
-            });
-        }, { rootMargin: '120px' });
-
-        document.querySelectorAll('.card:not(.loaded)').forEach(card => observer.observe(card));
-
-        // Share button listeners
-        document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.onclick = e => {
-                e.stopPropagation();
-                const slug = btn.closest('.card').querySelector('.view-btn').getAttribute('href').split('/').pop();
-                const url = `${location.origin}${BASE_PATH}/${slug}`;
-                navigator.clipboard.writeText(url).then(() => {
-                    btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
-                    setTimeout(() => btn.innerHTML = '<i class="fas fa-link" aria-hidden="true"></i>', 1800);
-                }).catch(() => alert('Copy failed – please copy URL manually'));
-            };
-        });
-    }
-
-    // ── Featured rotator (unchanged except idle callback) ────────
-    let currentPromoIndex = 0;
-    let promoInterval = null;
-    const PROMO_DURATION = 5200;
-
-    function startPromoRotator() {
-        const rotator = document.getElementById('promoRotator');
-        if (!rotator) return;
-
-        const featured = allServices.filter(s => 
-            s.profile && !s.profile.includes('via.placeholder.com') && s.name && s.profile.trim()
-        );
-
-        if (featured.length === 0) {
-            rotator.innerHTML += '<p style="padding:60px 20px;text-align:center;opacity:0.8;font-size:1.3rem;">No featured businesses yet</p>';
-            return;
-        }
-
-        let slidesHTML = '';
-
-        featured.forEach((s, i) => {
-            const active = i === 0 ? 'active' : '';
-            slidesHTML += `
-            <div class="promo-slide ${active}" data-index="${i}">
-                <article class="card">
-                    <div class="profile-img-wrapper">
-                        <img src="${s.profile}" alt="${s.name}" class="profile-img" loading="eager" decoding="async">
-                    </div>
-                    <div class="card-content">
-                        <h3>${s.name}</h3>
-                        <p class="location">${s.city || 'Global'}</p>
-                        <p class="description-teaser">${(s.description || '').substring(0,110)}${(s.description || '').length > 110 ? '...' : ''}</p>
-                        <p class="price"><strong>Free Consultation</strong></p>
-                        <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;">View Profile →</a>
-                    </div>
-                </article>
-            </div>`;
-        });
-
-        rotator.insertAdjacentHTML('beforeend', slidesHTML);
-
-        const slides = rotator.querySelectorAll('.promo-slide');
-
-        function showSlide(idx) {
-            slides.forEach(s => s.classList.remove('active'));
-            slides[idx].classList.add('active');
-            currentPromoIndex = idx;
-        }
-
-        function nextSlide() {
-            const nextIdx = (currentPromoIndex + 1) % featured.length;
-            showSlide(nextIdx);
-        }
-
-        promoInterval = setInterval(nextSlide, PROMO_DURATION);
-    }
-
-    // ── Single profile view (unchanged) ───────────────────────────
-    function showSingleProfile(slug) {
-        const service = allServices.find(s => s.slug === slug);
-        if (!service) {
+            allServices = services || [];
+            displayedCount = allServices.length;
             renderServices(allServices);
-            history.replaceState({}, '', '/');
-            return;
+            updateLoadMoreVisibility();
+            checkPathAndRender();
+            startPromoRotator();
         }
 
-        const fullLocation = service.city || 'Your Area';
-        const pageUrl = `${location.origin}${BASE_PATH}/${slug}`;
+        async function loadMoreServices() {
+            const { data, error } = await supabaseClient
+                .from('services')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .range(displayedCount, displayedCount + PAGE_SIZE - 1);
 
-        document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
+            if (error || !data?.length) {
+                document.getElementById('loadMoreBtn').style.display = 'none';
+                return;
+            }
 
-        const setMeta = (name, content) => {
-            let el = document.querySelector(`meta[name="${name}"]`);
-            if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
-            el.content = content;
-        };
-        setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
+            allServices = allServices.concat(data);
+            displayedCount += data.length;
+            renderServices(allServices, true);
+            updateLoadMoreVisibility();
+        }
 
-        let canonical = document.querySelector('link[rel="canonical"]');
-        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
-        canonical.href = pageUrl;
+        function updateLoadMoreVisibility() {
+            document.getElementById('loadMoreBtn').style.display = 
+                (allServices.length >= PAGE_SIZE && displayedCount === allServices.length) ? 'block' : 'none';
+        }
 
-        const setOG = (prop, content) => {
-            let el = document.querySelector(`meta[property="og:${prop}"]`);
-            if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
-            el.content = content;
-        };
-        setOG('title', `${service.name} – #1 in ${fullLocation} | TrueWebX`);
-        setOG('description', document.querySelector('meta[name="description"]').content);
-        setOG('url', pageUrl);
-        setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+        function renderServices(services, append = false) {
+            const list = document.getElementById('list');
+            const html = services.map((s, index) => {
+                const staggerDelay = Math.min(index * 60, 600);
+                return `
+                <article class="card" id="service-${s.id}" style="transition-delay: ${staggerDelay}ms;" itemscope itemtype="https://schema.org/LocalBusiness" role="listitem">
+                    <button class="share-btn" aria-label="Copy profile link"><i class="fas fa-link" aria-hidden="true"></i></button>
 
-        ['title', 'description', 'image'].forEach(p => {
-            let el = document.querySelector(`meta[name="twitter:${p}"]`);
-            if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
-            el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
+                    <div class="profile-img-wrapper">
+                        <img src="${s.profile || 'https://via.placeholder.com/800x600/0d9488/ffffff?text=Upload+Photo'}" 
+                             alt="${s.name || 'Business'} featured image" 
+                             class="profile-img" 
+                             itemprop="image" 
+                             width="800" 
+                             height="600" 
+                             loading="${index < 4 ? 'eager' : 'lazy'}" 
+                             decoding="async" 
+                             fetchpriority="${index < 3 ? 'high' : 'low'}">
+                    </div>
+
+                    <div class="card-content">
+                        <div>
+                            <h3 itemprop="name">${s.name || 'Professional Service'}</h3>
+                            <p class="location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                <strong itemprop="addressLocality">${s.city || 'Location not specified'}</strong>
+                            </p>
+                            <p class="description-teaser" itemprop="description">${s.description || 'Professional service with free consultation'}</p>
+
+                            ${s.photos?.length ? `
+                            <div class="photos" aria-label="Gallery preview">
+                                ${s.photos.slice(0,3).map(p => `
+                                    <img src="${p}" alt="${s.name || 'Business'} gallery image" width="300" height="300" loading="lazy" decoding="async">
+                                `).join('')}
+                                ${s.photos.length > 3 ? `<div style="grid-column:1/-1;text-align:center;font-size:1rem;opacity:0.8;margin-top:8px;" aria-hidden="true">+${s.photos.length - 3} more</div>` : ''}
+                            </div>` : ''}
+
+                            <p>Phone: <span class="private" itemprop="telephone">${s.phone || 'Contact for details'}</span></p>
+                            <p>Email: <span class="private" itemprop="email">${s.gmail || 'Contact for details'}</span></p>
+
+                            <p class="price"><strong itemprop="offers" itemscope itemtype="https://schema.org/Offer">Free Consultation</strong></p>
+
+                            ${s.social_links?.length ? `<div class="links" aria-label="Social links">
+                                ${s.social_links.map(l => `<a href="${l.url}" target="_blank" rel="noopener" itemprop="sameAs" aria-label="${l.type} profile"><i class="fab fa-${l.type.toLowerCase()}" aria-hidden="true"></i> ${l.type}</a>`).join('')}
+                            </div>` : ''}
+                        </div>
+
+                        <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;" aria-label="View full profile of ${s.name}">View Full Profile →</a>
+                    </div>
+                </article>`;
+            }).join('');
+
+            if (append) {
+                list.insertAdjacentHTML('beforeend', html);
+            } else {
+                list.innerHTML = services.length ? html : '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('.card:not(.loaded)').forEach(card => card.classList.add('loaded'));
+            }, 100);
+
+            document.querySelectorAll('.share-btn').forEach(btn => {
+                btn.onclick = e => {
+                    e.stopPropagation();
+                    const slug = btn.closest('.card').querySelector('.view-btn').getAttribute('href').split('/').pop();
+                    const url = `${location.origin}${BASE_PATH}/${slug}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                        btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
+                        setTimeout(() => btn.innerHTML = '<i class="fas fa-link" aria-hidden="true"></i>', 2000);
+                    }).catch(() => alert('Copy failed – please copy URL manually'));
+                };
+            });
+        }
+
+        // ── Featured rotator logic – now infinite & unstoppable ────────
+        let currentPromoIndex = 0;
+        let promoInterval = null;
+        const PROMO_DURATION = 5200;
+
+        function startPromoRotator() {
+            const rotator = document.getElementById('promoRotator');
+            if (!rotator) return;
+
+            const featured = allServices.filter(s => 
+                s.profile && !s.profile.includes('via.placeholder.com') && s.name && s.profile.trim()
+            );
+
+            if (featured.length === 0) {
+                rotator.innerHTML += '<p style="padding:60px 20px;text-align:center;opacity:0.8;font-size:1.3rem;">No featured businesses yet</p>';
+                return;
+            }
+
+            let slidesHTML = '';
+
+            featured.forEach((s, i) => {
+                const active = i === 0 ? 'active' : '';
+                slidesHTML += `
+                <div class="promo-slide ${active}" data-index="${i}">
+                    <article class="card">
+                        <div class="profile-img-wrapper">
+                            <img src="${s.profile}" alt="${s.name}" class="profile-img" loading="eager">
+                        </div>
+                        <div class="card-content">
+                            <h3>${s.name}</h3>
+                            <p class="location">${s.city || 'Global'}</p>
+                            <p class="description-teaser">${(s.description || '').substring(0,110)}${(s.description || '').length > 110 ? '...' : ''}</p>
+                            <p class="price"><strong>Free Consultation</strong></p>
+                            <a href="${BASE_PATH}/${s.slug}" class="view-btn" onclick="showSingleProfile('${s.slug}'); return false;">View Profile →</a>
+                        </div>
+                    </article>
+                </div>`;
+            });
+
+            rotator.insertAdjacentHTML('beforeend', slidesHTML);
+
+            const slides = rotator.querySelectorAll('.promo-slide');
+
+            function showSlide(idx) {
+                slides.forEach(s => s.classList.remove('active'));
+                slides[idx].classList.add('active');
+                currentPromoIndex = idx;
+            }
+
+            function nextSlide() {
+                const nextIdx = (currentPromoIndex + 1) % featured.length;
+                showSlide(nextIdx);
+            }
+
+            // Start infinite cycling - no pause, no stop condition
+            promoInterval = setInterval(nextSlide, PROMO_DURATION);
+        }
+
+        function showSingleProfile(slug) {
+            const service = allServices.find(s => s.slug === slug);
+            if (!service) {
+                renderServices(allServices);
+                history.replaceState({}, '', '/');
+                return;
+            }
+
+            const fullLocation = service.city || 'Your Area';
+            const pageUrl = `${location.origin}${BASE_PATH}/${slug}`;
+
+            document.title = `#1 ${service.name} in ${fullLocation} | Free Consultation | TrueWebX`;
+
+            const setMeta = (name, content) => {
+                let el = document.querySelector(`meta[name="${name}"]`);
+                if (!el) { el = document.createElement('meta'); el.name = name; document.head.appendChild(el); }
+                el.content = content;
+            };
+            setMeta('description', `${service.name} – Professional service in ${fullLocation}. ${service.description?.slice(0,150) || 'Free consultation available.'} Contact today.`);
+
+            let canonical = document.querySelector('link[rel="canonical"]');
+            if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+            canonical.href = pageUrl;
+
+            const setOG = (prop, content) => {
+                let el = document.querySelector(`meta[property="og:${prop}"]`);
+                if (!el) { el = document.createElement('meta'); el.setAttribute('property', `og:${prop}`); document.head.appendChild(el); }
+                el.content = content;
+            };
+            setOG('title', `${service.name} – #1 in ${fullLocation} | TrueWebX`);
+            setOG('description', document.querySelector('meta[name="description"]').content);
+            setOG('url', pageUrl);
+            setOG('image', service.profile || 'https://truewebx.site/og-image.jpg');
+
+            ['title', 'description', 'image'].forEach(p => {
+                let el = document.querySelector(`meta[name="twitter:${p}"]`);
+                if (!el) { el = document.createElement('meta'); el.name = `twitter:${p}`; document.head.appendChild(el); }
+                el.content = p === 'image' ? (service.profile || 'https://truewebx.site/og-image.jpg') : (p === 'title' ? document.title : document.querySelector('meta[name="description"]').content);
+            });
+
+            if (service.profile) {
+                ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
+                    const [size, rel] = spec.split('|');
+                    let link = document.querySelector(`link[rel="${rel}"]${size ? `[sizes="${size}x${size}"]` : ''}`);
+                    if (!link) { link = document.createElement('link'); link.rel = rel; if (size) link.sizes = `${size}x${size}`; document.head.appendChild(link); }
+                    link.href = service.profile;
+                });
+            }
+
+            const lb = {
+                "@context": "https://schema.org",
+                "@type": "LocalBusiness",
+                "name": service.name,
+                "image": service.profile || "",
+                "url": pageUrl,
+                "telephone": service.phone || "",
+                "email": service.gmail || "",
+                "address": {"@type":"PostalAddress","addressLocality":fullLocation},
+                "description": service.description || "Professional service with free consultation",
+                "priceRange": "$",
+                "openingHours": "Mo-Su 08:00-20:00",
+                "sameAs": service.social_links?.map(l => l.url) || []
+            };
+            let script = document.getElementById('lbSchema');
+            if (!script) { script = document.createElement('script'); script.id = 'lbSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
+            script.textContent = JSON.stringify(lb);
+
+            const galleryHTML = service.photos?.length ? `
+                <div class="gallery-wrapper" id="galleryWrapper" aria-label="Business gallery">
+                    <div class="gallery-slider" id="gallerySlider">
+                        ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery image" loading="lazy" decoding="async" width="960" height="620">`).join('')}
+                    </div>
+                    <button class="gallery-arrow prev" id="prevBtn" aria-label="Previous image"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                    <button class="gallery-arrow next" id="nextBtn" aria-label="Next image"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                </div>` : '<p style="opacity:0.8;">No gallery photos yet.</p>';
+
+            document.querySelector('.glass').innerHTML = `
+                <section class="profile-view-content" aria-labelledby="profile-title">
+                    ${service.profile ? `<img src="${service.profile}" alt="${service.name} profile" loading="lazy" decoding="async" width="960" height="720">` : ''}
+
+                    <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
+                        ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
+                    </p>
+
+                    <div class="contact-box" aria-label="Contact information">
+                        ${service.phone ? `<div class="contact-item"><i class="fas fa-phone" aria-hidden="true"></i><div><a href="tel:${service.phone.replace(/[^0-9+]/g,'')}">${service.phone}</a></div></div>` : ''}
+                        ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope" aria-hidden="true"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
+                    </div>
+
+                    <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
+
+                    <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
+                    ${galleryHTML}
+
+                    <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;" aria-label="Back to directory">
+                        ← Back to Directory
+                    </a>
+                </section>`;
+
+            if (service.photos?.length > 1) {
+                const slider = document.getElementById('gallerySlider');
+                const prev = document.getElementById('prevBtn');
+                const next = document.getElementById('nextBtn');
+                let i = 0;
+                const move = () => slider.style.transform = `translateX(-${i * 100}%)`;
+                next.onclick = () => { i = (i + 1) % service.photos.length; move(); };
+                prev.onclick = () => { i = (i - 1 + service.photos.length) % service.photos.length; move(); };
+                let ts = 0;
+                slider.parentElement.addEventListener('touchstart', e => ts = e.touches[0].clientX, {passive:true});
+                slider.parentElement.addEventListener('touchend', e => {
+                    const diff = ts - e.changedTouches[0].clientX;
+                    if (Math.abs(diff) > 50) diff > 0 ? next.onclick() : prev.onclick();
+                });
+            }
+
+            history.replaceState({slug: slug}, '', `${BASE_PATH}/${slug}`);
+            window.scrollTo(0,0);
+        }
+
+        function getCurrentSlug() {
+            const path = window.location.pathname;
+            if (!path.startsWith(BASE_PATH + '/')) return null;
+            return path.slice(BASE_PATH.length + 1).replace(/\/$/, '') || null;
+        }
+
+        function checkPathAndRender() {
+            const slug = getCurrentSlug();
+            if (slug) {
+                showSingleProfile(slug);
+            } else {
+                renderServices(allServices);
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', e => {
+            const q = e.target.value.toLowerCase().trim();
+            const filtered = q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices;
+            renderServices(filtered);
         });
 
-        if (service.profile) {
-            ['180x180|apple-touch-icon', '32x32|icon', '16x16|icon'].forEach(spec => {
-                const [size, rel] = spec.split('|');
-                let link = document.querySelector(`link[rel="${rel}"]${size ? `[sizes="${size}x${size}"]` : ''}`);
-                if (!link) { link = document.createElement('link'); link.rel = rel; if (size) link.sizes = `${size}x${size}`; document.head.appendChild(link); }
-                link.href = service.profile;
-            });
-        }
+        window.addEventListener('popstate', checkPathAndRender);
 
-        const lb = {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": service.name,
-            "image": service.profile || "",
-            "url": pageUrl,
-            "telephone": service.phone || "",
-            "email": service.gmail || "",
-            "address": {"@type":"PostalAddress","addressLocality":fullLocation},
-            "description": service.description || "Professional service with free consultation",
-            "priceRange": "$",
-            "openingHours": "Mo-Su 08:00-20:00",
-            "sameAs": service.social_links?.map(l => l.url) || []
-        };
-        let script = document.getElementById('lbSchema');
-        if (!script) { script = document.createElement('script'); script.id = 'lbSchema'; script.type = 'application/ld+json'; document.head.appendChild(script); }
-        script.textContent = JSON.stringify(lb);
-
-        const galleryHTML = service.photos?.length ? `
-            <div class="gallery-wrapper" id="galleryWrapper" aria-label="Business gallery">
-                <div class="gallery-slider" id="gallerySlider">
-                    ${service.photos.map(p => `<img src="${p}" alt="${service.name} gallery image" loading="lazy" decoding="async" width="960" height="620">`).join('')}
-                </div>
-                <button class="gallery-arrow prev" id="prevBtn" aria-label="Previous image"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-                <button class="gallery-arrow next" id="nextBtn" aria-label="Next image"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
-            </div>` : '<p style="opacity:0.8;">No gallery photos yet.</p>';
-
-        document.querySelector('.glass').innerHTML = `
-            <section class="profile-view-content" aria-labelledby="profile-title">
-                ${service.profile ? `<img src="${service.profile}" alt="${service.name} profile" loading="lazy" decoding="async" width="960" height="720">` : ''}
-
-                <p style="font-size:1.5rem;line-height:1.9;max-width:860px;margin:40px auto;opacity:0.95;">
-                    ${service.description || 'Professional, reliable, and trusted service tailored to your needs.'}
-                </p>
-
-                <div class="contact-box" aria-label="Contact information">
-                    ${service.phone ? `<div class="contact-item"><i class="fas fa-phone" aria-hidden="true"></i><div><a href="tel:${service.phone.replace(/[^0-9+]/g,'')}">${service.phone}</a></div></div>` : ''}
-                    ${service.gmail ? `<div class="contact-item"><i class="fas fa-envelope" aria-hidden="true"></i><div><a href="mailto:${service.gmail}">Send Email</a></div></div>` : ''}
-                </div>
-
-                <p style="font-size:2.8rem;color:var(--coral);font-weight:800;margin:60px 0;">Free Consultation Available</p>
-
-                <h2 style="font-size:2.8rem;margin:70px 0 50px;">Gallery</h2>
-                ${galleryHTML}
-
-                <a href="/" class="view-btn" style="display:inline-block;padding:18px 50px;font-size:1.5rem;" onclick="renderServices(allServices); history.replaceState({}, '', '/'); return false;" aria-label="Back to directory">
-                    ← Back to Directory
-                </a>
-            </section>`;
-
-        if (service.photos?.length > 1) {
-            const slider = document.getElementById('gallerySlider');
-            const prev = document.getElementById('prevBtn');
-            const next = document.getElementById('nextBtn');
-            let i = 0;
-            const move = () => slider.style.transform = `translateX(-${i * 100}%)`;
-            next.onclick = () => { i = (i + 1) % service.photos.length; move(); };
-            prev.onclick = () => { i = (i - 1 + service.photos.length) % service.photos.length; move(); };
-            let ts = 0;
-            slider.parentElement.addEventListener('touchstart', e => ts = e.touches[0].clientX, {passive:true});
-            slider.parentElement.addEventListener('touchend', e => {
-                const diff = ts - e.changedTouches[0].clientX;
-                if (Math.abs(diff) > 50) diff > 0 ? next.onclick() : prev.onclick();
-            });
-        }
-
-        history.replaceState({slug: slug}, '', `${BASE_PATH}/${slug}`);
-        window.scrollTo(0,0);
+        document.addEventListener('DOMContentLoaded', () => {
+            const slug = getCurrentSlug();
+            if (slug) {
+                history.replaceState({slug: slug}, '', location.pathname);
+            }
+            loadInitialServices();
+            document.getElementById('loadMoreBtn').addEventListener('click', loadMoreServices);
+        });
     }
-
-    function getCurrentSlug() {
-        const path = window.location.pathname;
-        if (!path.startsWith(BASE_PATH + '/')) return null;
-        return path.slice(BASE_PATH.length + 1).replace(/\/$/, '') || null;
-    }
-
-    function checkPathAndRender() {
-        const slug = getCurrentSlug();
-        if (slug) showSingleProfile(slug);
-        else renderServices(allServices);
-    }
-
-    document.getElementById('searchInput').addEventListener('input', e => {
-        const q = e.target.value.toLowerCase().trim();
-        const filtered = q ? allServices.filter(s => [s.name, s.city, s.description].some(t => t?.toLowerCase().includes(q))) : allServices;
-        renderServices(filtered);
-    }, {passive: true});
-
-    window.addEventListener('popstate', checkPathAndRender);
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const slug = getCurrentSlug();
-        if (slug) history.replaceState({slug: slug}, '', location.pathname);
-        loadInitialServices();
-        document.getElementById('loadMoreBtn').addEventListener('click', loadMoreServices);
-    });
-}
 </script>
 </body>
-</html>
+</html> 
