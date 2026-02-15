@@ -1236,10 +1236,12 @@
 
         document.getElementById('publishBtn').onclick = async () => {
             msg.innerHTML = '';
+            const btn = document.getElementById('publishBtn');
 
-            // Your original validation (unchanged)
+            // 1. Get values
             const name = document.getElementById('name').value.trim();
-            const city = document.getElementById('cityAdd').value;
+            const cityInput = document.getElementById('cityAddInput').value.trim();
+            let city = document.getElementById('cityAdd').value;
             const zip = document.getElementById('zipAdd').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const gmail = document.getElementById('gmail').value.trim();
@@ -1247,8 +1249,28 @@
             const profileFile = document.getElementById('profile').files[0];
             const photoFiles = document.getElementById('photos').files;
 
-            if (!name || !city || !phone || !gmail || !desc || !profileFile) {
-                msg.innerHTML = '<p style="color:red;">Required fields are missing!</p>';
+            // 2. City Fallback: If hidden field is empty but input has a value, try to use it
+            if (!city && cityInput) {
+                const found = usCities.find(c => c.toLowerCase() === cityInput.toLowerCase());
+                if (found) city = found;
+                else if (cityInput.includes(',')) city = cityInput; // Accept "City, ST" format directly
+            }
+
+            // 3. Granular Validation
+            const missing = [];
+            if (!name) missing.push("Business Name");
+            if (!city) missing.push("City/Location (please select from the list)");
+            if (!phone) missing.push("Phone Number");
+            if (!gmail) missing.push("Email");
+            if (!desc) missing.push("Description");
+            if (!profileFile) missing.push("Profile Photo / Logo");
+
+            if (missing.length > 0) {
+                msg.innerHTML = `<p style="color:red; background:rgba(255,0,0,0.1); padding:10px; border-radius:8px;">
+                    <strong>Required fields are missing:</strong><br>
+                    • ${missing.join('<br>• ')}
+                </p>`;
+                msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
 
@@ -1263,11 +1285,25 @@
                 socialLinks: currentSocialLinks.slice()
             };
 
-            // Publish immediately (Payment removed)
-            msg.innerHTML = '<p style="color:#0f0;">Processing... Publishing your service now.</p>';
-            await publishServiceAfterPayment();
-            msg.innerHTML = `<p style="color:#0f0;">Published successfully!<br>Your public page: <strong>https://truewebx.site/#${currentServiceData ? currentServiceData.slug : ''}</strong></p>`;
-            setTimeout(() => { show('home'); msg.innerHTML = ''; }, 6000);
+            // Publish immediately
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PUBLISHING...';
+                msg.innerHTML = '<p style="color:#0f0;">Processing... Publishing your service now.</p>';
+
+                await publishServiceAfterPayment();
+
+                msg.innerHTML = `<p style="color:#0f0; font-size:1.2rem; font-weight:bold;">
+                    🎉 Published successfully!<br>
+                    <span style="font-size:0.9rem; font-weight:normal;">Your public page: <strong>https://truewebx.site/#${currentServiceData ? currentServiceData.slug : ''}</strong></span>
+                </p>`;
+                setTimeout(() => { show('home'); msg.innerHTML = ''; }, 6000);
+            } catch (err) {
+                msg.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'PUBLISH NOW';
+            }
         };
 
 
