@@ -893,7 +893,12 @@
                 <div id="inboxList" class="inbox-list"></div>
 
                 <div id="chatWindow" class="glass chat-window">
-                    <div class="chat-header" id="chatHeader">Select a conversation</div>
+                    <div class="chat-header">
+                        <button onclick="closeChat()"
+                            style="float:left; background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;"><i
+                                class="fas fa-arrow-left"></i></button>
+                        <span id="chatHeader">Select a conversation</span>
+                    </div>
                     <div class="chat-body" id="chatBody"></div>
                     <div class="chat-input">
                         <input type="text" id="replyInput" placeholder="Type your reply...">
@@ -1002,7 +1007,7 @@
         const auth = firebase.auth();
 
         const SUPABASE_URL = 'https://vrpyomevjlsacourdmki.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_CyhH7Cwymoqf2fxdNj6D1Q_NHl6TmTV';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // PAYMENT CONFIG REMOVED
@@ -1501,15 +1506,19 @@
             }
 
             const { data: messages } = await supabaseClient.from('messages')
-                .select('service_id, text, created_at, is_from_owner')
+                .select('service_id, customer_name, customer_contact, text, created_at, is_from_owner')
                 .in('service_id', services.map(s => s.id))
                 .order('created_at', { ascending: false });
 
             const chats = {};
             messages.forEach(m => {
-                if (!chats[m.service_id]) {
-                    chats[m.service_id] = {
-                        name: services.find(s => s.id === m.service_id)?.name || 'Unknown',
+                const chatKey = `${m.service_id}-${m.customer_name}`;
+                if (!chats[chatKey]) {
+                    chats[chatKey] = {
+                        serviceId: m.service_id,
+                        serviceName: services.find(s => s.id === m.service_id)?.name || 'Unknown',
+                        customerName: m.customer_name,
+                        customerContact: m.customer_contact,
                         lastMessage: m.text,
                         time: m.created_at,
                         unread: !m.is_from_owner
@@ -1519,25 +1528,41 @@
 
             document.getElementById('inboxList').innerHTML = Object.keys(chats).length ?
                 Object.values(chats).map(chat => `
-            <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openChat('${services.find(s => s.name === chat.name)?.id}', '${chat.name.replace(/'/g, "\\'")}')">
-                <strong>${chat.name}</strong>
+            <div class="inbox-item ${chat.unread ? 'unread' : ''}" onclick="openChat('${chat.serviceId}', '${chat.customerName.replace(/'/g, "\\'")}', '${chat.serviceName.replace(/'/g, "\\'")}')">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <strong>${chat.customerName}</strong>
+                    <small style="opacity:0.7;">${chat.serviceName}</small>
+                </div>
                 <div style="opacity:0.9;font-size:0.95rem;margin-top:6px;">${chat.lastMessage}</div>
-                <small>${new Date(chat.time).toLocaleString()}</small>
+                <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.8rem; opacity:0.6;">
+                    <span>${chat.customerContact || ''}</span>
+                    <span>${new Date(chat.time).toLocaleString()}</span>
+                </div>
             </div>
         `).join('') : '<p style="text-align:center; opacity:0.8;">No messages yet</p>';
         }
 
-        async function openChat(serviceId, name) {
+        let currentChatCustomerName = '';
+        async function openChat(serviceId, customerName, serviceName) {
             currentChatServiceId = serviceId;
-            document.getElementById('chatHeader').textContent = `Chat – ${name}`;
+            currentChatCustomerName = customerName;
+            document.getElementById('chatHeader').textContent = `Inquiry: ${customerName} (${serviceName})`;
             document.getElementById('chatWindow').style.display = 'flex';
+            document.getElementById('inboxList').style.display = 'none';
             loadChatMessages();
+        }
+
+        function closeChat() {
+            document.getElementById('chatWindow').style.display = 'none';
+            document.getElementById('inboxList').style.display = 'grid';
+            loadInbox();
         }
 
         async function loadChatMessages() {
             const { data } = await supabaseClient.from('messages')
                 .select('*')
                 .eq('service_id', currentChatServiceId)
+                .eq('customer_name', currentChatCustomerName)
                 .order('created_at', { ascending: true });
 
             const body = document.getElementById('chatBody');
@@ -1553,13 +1578,19 @@
         async function sendReply() {
             const input = document.getElementById('replyInput');
             const text = input.value.trim();
-            if (!text || !currentChatServiceId) return;
+            if (!text || !currentChatServiceId || !currentChatCustomerName) return;
 
-            await supabaseClient.from('messages').insert({
+            const { error } = await supabaseClient.from('messages').insert({
                 service_id: currentChatServiceId,
+                customer_name: currentChatCustomerName,
                 text,
                 is_from_owner: true
             });
+
+            if (error) {
+                alert('Error sending reply: ' + error.message);
+                return;
+            }
 
             input.value = '';
             loadChatMessages();
