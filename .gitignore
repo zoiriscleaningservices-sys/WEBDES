@@ -1,0 +1,11 @@
+# PowerShell script data
+supabase_data.json
+
+# IDEs and Editors
+.vscode/
+.idea/
+.DS_Store
+
+# Temporary files
+tmp/
+temp/

@@ -1,0 +1,264 @@
+
+# Static Generation Script for TrueWebX Extreme SEO
+$data = Get-Content -Path "supabase_data.json" -Encoding utf8 | ConvertFrom-Json
+$businesses = $data.value
+$templatePath = "service.html" # Use this as the base structure
+$sitemapPath = "sitemap.xml"
+$today = Get-Date -Format "yyyy-MM-dd"
+
+# Initialize Sitemap XML
+$sitemapXml = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Home -->
+  <url>
+    <loc>https://truewebx.site/</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Dashboard -->
+  <url>
+    <loc>https://truewebx.site/dashboard.html</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+"@
+
+foreach ($b in $businesses) {
+    if (-not $b.slug) { continue }
+    
+    $profileDir = "profile/$($b.slug)"
+    if (-not (Test-Path $profileDir)) {
+        New-Item -ItemType Directory -Path $profileDir -Force
+    }
+
+    # Prepare SEO Content
+    $cityName = ($b.city -split ",")[0].Trim()
+    $stateInfo = ($b.city -split ",")[1].Trim()
+    $zipCode = ($stateInfo -split " ")[-1]
+    
+    # Add to Sitemap XML
+    $sitemapXml += @"
+
+  <url>
+    <loc>https://truewebx.site/profile/$($b.slug)/</loc>
+    <lastmod>$today</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>$($b.profile)</image:loc>
+      <image:title>$($b.name)</image:title>
+    </image:image>
+  </url>
+"@
+
+    # Advanced SEO Metadata
+    $pageTitle = "#1 $($b.name) in $($b.city) | Trusted Local Experts"
+    $pageDesc = "Looking for the best $($b.name) in $($b.city)? Professional services available now. Verified business in $($zipCode). Near local landmarks."
+    
+    # Social Links HTML
+    $socialHtml = ""
+    if ($b.social_links) {
+        $socialHtml = "<div class='social-links'>"
+        foreach ($link in $b.social_links) {
+            $type = $link.type.ToLower()
+            $icon = switch ($type) {
+                "instagram" { "instagram" }
+                "tiktok" { "tiktok" }
+                "facebook" { "facebook-f" }
+                "twitter" { "twitter" }
+                "linkedin" { "linkedin-in" }
+                "youtube" { "youtube" }
+                default { "globe" }
+            }
+            $socialHtml += "<a href='$($link.url)' target='_blank' rel='noopener' aria-label='$($link.type)'><i class='fab fa-$icon'></i></a>"
+        }
+        $socialHtml += "</div>"
+    }
+
+    # Gallery HTML (Interactive Slider)
+    $galleryHtml = ""
+    if ($b.photos -and $b.photos.Count -gt 0) {
+        $galleryHtml = @"
+    <h2 style="font-size: 2.8rem; margin: 70px 0 30px;">Gallery</h2>
+    <div class="gallery-wrapper" id="galleryWrapper">
+        <div class="gallery-slider" id="gallerySlider">
+"@
+        foreach ($photo in $b.photos) {
+            $galleryHtml += "<img src='$photo' alt='$($b.name) service photo' loading='lazy' decoding='async'>"
+        }
+        $galleryHtml += @"
+        </div>
+        <button class="gallery-arrow prev" id="prevBtn" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
+        <button class="gallery-arrow next" id="nextBtn" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
+    </div>
+"@
+    }
+
+    # Build the HTML content
+    $htmlContent = @"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$pageTitle</title>
+  <meta name="description" content="$pageDesc">
+  <link rel="canonical" href="https://truewebx.site/profile/$($b.slug)/">
+  <meta property="og:type" content="business.business">
+  <meta property="og:title" content="$pageTitle">
+  <meta property="og:description" content="$pageDesc">
+  <meta property="og:image" content="$($b.profile)">
+  <meta property="og:url" content="https://truewebx.site/profile/$($b.slug)/">
+  <meta property="og:site_name" content="TrueWebX">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    :root { --coral: #ff6b6b; --turquoise: #0d9488; --text: #ffffff; --glass: rgba(255, 255, 255, 0.15); --bg-gradient: linear-gradient(135deg, var(--turquoise), var(--coral)); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    
+    /* Premium Header Styles from Index */
+    .header-wrapper { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; z-index: 1000; background: rgba(0, 0, 0, 0.38); border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: background 0.35s ease; will-change: background; transform: translateZ(0); }
+    .header-wrapper.scrolled { background: rgba(0, 0, 0, 0.58); }
+    .logo-link { display: block; max-width: clamp(160px, 35vw, 280px); max-height: 64px; height: auto; line-height: 0; }
+    .logo-link img { width: 100%; height: auto; max-height: 64px; object-fit: contain; display: block; vertical-align: middle; }
+    .login-btn { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.32); color: white; font-weight: 600; padding: 12px 24px; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: all 0.3s; text-decoration: none; }
+    .login-btn:hover { background: rgba(255, 255, 255, 0.32); transform: translateY(-3px); }
+
+    .container { max-width: 1000px; margin: 120px auto 40px; background: var(--glass); backdrop-filter: blur(20px); border-radius: 32px; padding: 40px; text-align: center; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.2); position: relative; }
+    .profile-img { width: 220px; height: 220px; object-fit: cover; border-radius: 50%; border: 6px solid var(--coral); margin: 20px auto; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); display: block; }
+    h1 { font-size: 3.2rem; margin: 20px 0; line-height: 1.2; font-weight: 800; }
+    .location { font-size: 1.6rem; opacity: 0.95; margin: 20px 0; color: #ffeb3b; font-weight: 600; }
+    .description { font-size: 1.3rem; line-height: 1.8; margin: 40px auto; max-width: 860px; text-align: center; opacity: 0.95; }
+    .contact-info { margin: 50px 0; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+    .contact-info p { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .contact-info i { color: var(--coral); }
+    .contact-info a { color: white; text-decoration: none; font-weight: 600; }
+    .contact-info a:hover { text-decoration: underline; }
+    
+    /* Gallery Slider Styles */
+    .gallery-wrapper { position: relative; max-width: 960px; margin: 40px auto; overflow: hidden; border-radius: 32px; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.5); background: #000; }
+    .gallery-slider { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    .gallery-slider img { width: 100%; height: auto; max-height: 600px; object-fit: contain; flex-shrink: 0; }
+    .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 60px; height: 60px; background: rgba(0, 0, 0, 0.5); border: none; border-radius: 50%; color: white; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 5; display: grid; place-items: center; }
+    .gallery-arrow:hover { background: rgba(0, 0, 0, 0.8); transform: translateY(-50%) scale(1.1); }
+    .gallery-arrow.prev { left: 20px; }
+    .gallery-arrow.next { right: 20px; }
+    
+    .social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin: 40px 0; }
+    .social-links a { background: rgba(255, 255, 255, 0.2); width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 1.8rem; color: white; text-decoration: none; transition: all 0.3s; }
+    .social-links a:hover { background: var(--coral); transform: translateY(-5px); }
+    .cta-button { background: var(--coral); color: white; padding: 20px 45px; font-size: 1.6rem; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; margin: 15px; box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4); transition: 0.3s; text-decoration: none; display: inline-block; }
+    .cta-button:hover { background: #ff5252; transform: translateY(-5px); }
+    
+    .back-btn { background: rgba(255, 255, 255, 0.15); color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s; border: 1px solid rgba(255, 255, 255, 0.2); display: inline-flex; align-items: center; gap: 10px; margin: 20px 0; }
+    .back-btn:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-3px); }
+
+    .seo-extra { text-align: left; margin: 60px auto; max-width: 860px; background: rgba(0,0,0,0.2); padding: 30px; border-radius: 24px; }
+    .seo-extra h2 { margin-bottom: 20px; color: #ffeb3b; }
+    footer { text-align: center; margin-top: 60px; opacity: 0.7; font-size: 1rem; padding-bottom: 40px; }
+    @media (max-width: 768px) { h1 { font-size: 2.5rem; } .profile-img { width: 160px; height: 160px; } .cta-button { font-size: 1.3rem; padding: 16px 30px; } .gallery-arrow { display: none; } }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "$($b.name)",
+    "image": "$($b.profile)",
+    "url": "https://truewebx.site/profile/$($b.slug)/",
+    "telephone": "$($b.phone)",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "$cityName",
+      "postalCode": "$zipCode",
+      "addressCountry": "US"
+    },
+    "description": "$($b.description.Replace('"', '\"'))"
+  }
+  </script>
+</head>
+<body>
+  <header class="header-wrapper" id="header">
+    <a href="https://truewebx.site/" class="logo-link" aria-label="TrueWebX Home">
+        <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo" width="240" height="64" loading="eager">
+    </a>
+    <a href="https://truewebx.site/dashboard.html" class="login-btn" aria-label="Login or Sign Up">
+        <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
+    </a>
+  </header>
+
+  <div class="container">
+    <img src="$($b.profile)" alt="$($b.name) profile" class="profile-img">
+    <h1>$($b.name)</h1>
+    <div class="location"><i class="fas fa-map-marker-alt"></i> $($b.city)</div>
+    <div class="description">$($b.description.Replace("`n", "<br>"))</div>
+    <div class="contact-info">
+      <p><i class="fas fa-phone"></i> <a href="tel:$($b.phone)">$($b.phone)</a></p>
+      <p><i class="fas fa-envelope"></i> <a href="mailto:$($b.gmail)">Send Email</a></p>
+    </div>
+    $galleryHtml
+    $socialHtml
+    <div style="margin:60px 0;">
+      <a href="mailto:$($b.gmail)?subject=Inquiry from TrueWebX" class="cta-button">Get Free Consultation</a>
+      <button class="cta-button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')">Share Profile</button>
+    </div>
+    <a href="https://truewebx.site/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Directory</a>
+    <section class="seo-extra">
+        <h2>Expert Service in $cityName</h2>
+        <p>Providing top-rated solutions across the $($zipCode) area. Local landmarks and neighborhoods are within our service reach.</p>
+    </section>
+    <footer>Powered by <strong>TrueWebX</strong> &bull; Trusted Global Business Directory</footer>
+  </div>
+  <script>
+    // Header scroll logic
+    let ticking = false;
+    function updateHeader() {
+        const header = document.getElementById('header');
+        header.classList.toggle('scrolled', window.scrollY > 50);
+        ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateHeader);
+            ticking = true;
+        }
+    }, { passive: true });
+
+    // Gallery Slider logic
+    const slider = document.getElementById('gallerySlider');
+    const prev = document.getElementById('prevBtn');
+    const next = document.getElementById('nextBtn');
+    if (slider && prev && next) {
+      let i = 0;
+      const photosCount = slider.children.length;
+      const move = () => { slider.style.transform = "translateX(-" + (i * 100) + "%)"; };
+      next.onclick = () => { i = (i + 1) % photosCount; move(); };
+      prev.onclick = () => { i = (i - 1 + photosCount) % photosCount; move(); };
+      
+      // Touch support
+      let ts = 0;
+      slider.addEventListener('touchstart', e => ts = e.touches[0].clientX, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const diff = ts - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) diff > 0 ? next.onclick() : prev.onclick();
+      });
+    }
+  </script>
+</body>
+</html>
+"@
+    # Use .NET method to ensure consistent UTF-8 without BOM issues
+    [System.IO.File]::WriteAllText("$profileDir/index.html", $htmlContent, [System.Text.Encoding]::UTF8)
+    Write-Host "Generated static page (Header Parity) for: $($b.name)"
+}
+
+# Finalize Sitemap XML
+$sitemapXml += "`n</urlset>"
+[System.IO.File]::WriteAllText($sitemapPath, $sitemapXml, [System.Text.Encoding]::UTF8)
+Write-Host "Sitemap updated successfully with $($businesses.Count) records."
