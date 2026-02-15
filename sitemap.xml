@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Home -->
+  <url>
+    <loc>https://truewebx.site/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Dashboard -->
+  <url>
+    <loc>https://truewebx.site/dashboard.html</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/rey-s-lawn-cutting-jacksonville/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_727886c3-e7bf-4058-89de-4efef8c57850.png</image:loc>
+      <image:title>Rey’s Lawn Cutting</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/golden-grove-cleaning-midland-tx/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_bf01b005-5347-4aeb-8b4c-5a45bbd22002.png</image:loc>
+      <image:title>Golden Grove Cleaning</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/icx-facility-solutions-harrisburg-pa/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_dfc0de49-5001-4419-9867-c52f45dd9f5a.png</image:loc>
+      <image:title>ICX Facility Solutions</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/tropishine-cleaning-deerfield-beach-fl/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_fc68fa74-649b-4707-a302-3cb507c2d196.png</image:loc>
+      <image:title>Tropishine Cleaning</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/zoiris-cleaning-services-mobile/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_a93b4c62-bed1-4b32-ab5e-6783233cb5ae.png</image:loc>
+      <image:title>Zoiris Cleaning Services</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/fargo-fresh-maids-fargo-nd/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_376fe124-5183-4e6d-ac0a-3f8cd40d8cbb.jpeg</image:loc>
+      <image:title>Fargo Fresh Maids</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/time-to-shine-cleaning-co-ontario-ca/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_8f348569-ef68-44f3-869e-c3e8e5267ddd.jpeg</image:loc>
+      <image:title>Time To Shine Cleaning Co</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/sweet-maid-cleaning-service-bradenton-fl/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_778bb9ed-3be9-4916-a632-15725ab40a64.png</image:loc>
+      <image:title>Sweet Maid Cleaning Service</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://truewebx.site/profile/pichy-barber-spanish-fort-al-mobile-al/</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_2bfbb94c-707a-431e-81c0-e53187b1b3a4.jpeg</image:loc>
+      <image:title>Pichy Barber 💈🇨🇺 Spanish Fort AL</image:title>
+    </image:image>
+  </url>
+</urlset>
