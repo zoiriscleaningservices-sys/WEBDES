@@ -4,10 +4,10 @@
 if (Test-Path ".env") {
     Get-Content ".env" | ForEach-Object {
         if ($_ -match "^([^#=]+)=(.*)$") {
-            $name = $matches[1].Trim()
-            $value = $matches[2].Trim()
-            if (-not $env:$name) {
-                $env:$name = $value
+            $varName = $matches[1].Trim()
+            $varValue = $matches[2].Trim()
+            if (-not [System.Environment]::GetEnvironmentVariable($varName)) {
+                [System.Environment]::SetEnvironmentVariable($varName, $varValue)
             }
         }
     }
