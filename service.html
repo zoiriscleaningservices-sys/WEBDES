@@ -424,7 +424,8 @@
       appId: "1:410437614466:web:8abec9eb1189a2369bad9b"
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM');
+
     auth.onAuthStateChanged(user => {
       const guestFields = document.getElementById('guestFields');
       const authPrompt = document.getElementById('authPrompt');
@@ -452,7 +453,7 @@
       let filter = `text.ilike.%[GuestID: ${persistentClientId}]%`;
       if (user) filter += `,text.ilike.%[User: ${user.uid}]%`;
 
-      const { data, error } = await supabase.from('messages')
+      const { data, error } = await supabaseClient.from('messages')
         .select('*')
         .eq('service_id', serviceId)
         .or(filter)
