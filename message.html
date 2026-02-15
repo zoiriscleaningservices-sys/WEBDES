@@ -710,12 +710,20 @@
             </div>
         `).join('');
         }
+        if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
+            localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
+        }
+        const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
 
         async function loadInbox() {
-            if (!currentUser) return;
+            let filter = `text.ilike.%[GuestID: ${persistentClientId}]%`;
+            if (currentUser) {
+                filter += `,text.ilike.%[User: ${currentUser.uid}]%`;
+            }
+
             const { data: messages, error } = await supabaseClient.from('messages')
                 .select('service_id, text, created_at, is_from_owner')
-                .ilike('text', `[User: ${currentUser.uid}]%`)
+                .or(filter)
                 .order('created_at', { ascending: false });
 
             if (error || !messages || messages.length === 0) {
@@ -764,11 +772,15 @@
         }
 
         async function loadChatMessages() {
-            if (!currentUser) return;
+            let filter = `text.ilike.%[GuestID: ${persistentClientId}]%`;
+            if (currentUser) {
+                filter += `,text.ilike.%[User: ${currentUser.uid}]%`;
+            }
+
             const { data } = await supabaseClient.from('messages')
                 .select('*')
                 .eq('service_id', currentChatServiceId)
-                .ilike('text', `[User: ${currentUser.uid}]%`)
+                .or(filter)
                 .order('created_at', { ascending: true });
 
             const body = document.getElementById('chatBody');
@@ -791,11 +803,13 @@
             const message = input.value.trim();
             if (!message || !currentChatServiceId) return;
 
+            const prefix = currentUser ? `[User: ${currentUser.uid}]` : `[GuestID: ${persistentClientId}]`;
+
             const { error } = await supabaseClient.from('messages').insert([
                 {
                     service_id: currentChatServiceId,
                     customer_id: null,
-                    text: `[User: ${currentUser.uid}] - ${message}`,
+                    text: `${prefix} - ${message}`,
                     is_from_owner: false,
                     created_at: new Date().toISOString()
                 }

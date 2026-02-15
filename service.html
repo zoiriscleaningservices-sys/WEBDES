@@ -429,48 +429,53 @@
       } else if (authPrompt) {
         authPrompt.style.display = 'block';
       }
-    });
+      // Persistent Client ID for history without account
+      if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
+        localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
+      }
+      const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
 
-    async function sendMessage(serviceId) {
-      const btn = document.getElementById('sendBtn');
-      const form = document.getElementById('contactForm');
-      const success = document.getElementById('successMsg');
+      async function sendMessage(serviceId) {
+        Linda
+        const btn = document.getElementById('sendBtn');
+        const form = document.getElementById('contactForm');
+        const success = document.getElementById('successMsg');
 
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-      const name = document.getElementById('custName').value;
-      const contact = document.getElementById('custContact').value;
-      const message = document.getElementById('custMsg').value;
-      const user = auth.currentUser;
+        const name = document.getElementById('custName').value;
+        const contact = document.getElementById('custContact').value;
+        const message = document.getElementById('custMsg').value;
+        const user = auth.currentUser;
 
-      const { error } = await supabase.from('messages').insert([{
-        service_id: serviceId,
-        customer_id: null,
-        text: user ? `[User: ${user.uid}] - ${message}` : `[Guest: ${name} | Contact: ${contact}] - ${message}`,
-        is_from_owner: false
-      }]);
+        const { error } = await supabase.from('messages').insert([{
+          service_id: serviceId,
+          customer_id: null,
+          text: user ? `[User: ${user.uid}] - ${message}` : `[GuestID: ${persistentClientId}] [Guest: ${name} | Contact: ${contact}] - ${message}`,
+          is_from_owner: false
+        }]);
 
-      if (error) {
-        alert('Error sending message: ' + error.message);
-        btn.disabled = false;
-        btn.innerHTML = 'Send Message';
-      } else {
-        form.style.display = 'none';
-        success.style.display = 'block';
-        setTimeout(() => {
-          document.getElementById('msgModal').style.display = 'none';
-          form.style.display = 'block';
-          success.style.display = 'none';
-          form.reset();
+        if (error) {
+          alert('Error sending message: ' + error.message);
           btn.disabled = false;
           btn.innerHTML = 'Send Message';
-        }, 4000);
+        } else {
+          form.style.display = 'none';
+          success.style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('msgModal').style.display = 'none';
+            form.style.display = 'block';
+            success.style.display = 'none';
+            form.reset();
+            btn.disabled = false;
+            btn.innerHTML = 'Send Message';
+          }, 4000);
+        }
       }
-    }
 
-    // Start loading immediately
-    loadServicePage();
+      // Start loading immediately
+      loadServicePage();
   </script>
 </body>
 
