@@ -120,6 +120,29 @@ foreach ($b in $businesses) {
 "@
     }
 
+    # Related Profiles Logic
+    $relatedProfilesHtml = ""
+    $related = $businesses | Where-Object { $_.id -ne $b.id } | Sort-Object { $_.city -eq $b.city } -Descending | Select-Object -First 3
+    if ($related) {
+        $relatedProfilesHtml = @"
+    <h2 style="font-size: 2.4rem; margin: 80px 0 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 40px;">Related Businesses in Your Area</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px;">
+"@
+        foreach ($r in $related) {
+            $rCity = ($r.city -split ",")[0].Trim()
+            $relatedProfilesHtml += @"
+        <a href="https://truewebx.site/profile/$($r.slug)/" style="text-decoration: none; color: white;">
+            <div style="background: rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.transform='translateY(-5px)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.transform='none'">
+                <img src="$($r.profile)" alt="$($r.name)" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 15px;">
+                <h3 style="font-size: 1.4rem; margin-bottom: 10px;">$($r.name)</h3>
+                <p style="opacity: 0.8; font-size: 0.95rem;"><i class="fas fa-map-marker-alt" style="color: var(--coral); margin-right: 5px;"></i> $rCity</p>
+            </div>
+        </a>
+"@
+        }
+        $relatedProfilesHtml += "</div>"
+    }
+
     # Build the HTML content
     $htmlContent = @"
 <!DOCTYPE html>
@@ -188,21 +211,35 @@ foreach ($b in $businesses) {
     @media (max-width: 768px) { h1 { font-size: 2.5rem; } .profile-img { width: 160px; height: 160px; } .cta-button { font-size: 1.3rem; padding: 16px 30px; } .gallery-arrow { display: none; } }
   </style>
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "$($b.name)",
-    "image": "$($b.profile)",
-    "url": "https://truewebx.site/profile/$($b.slug)/",
-    "telephone": "$($b.phone)",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "$cityName",
-      "postalCode": "$zipCode",
-      "addressCountry": "US"
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "TrueWebX", "item": "https://truewebx.site/" },
+        { "@type": "ListItem", "position": 2, "name": "Profiles", "item": "https://truewebx.site/profile/" },
+        { "@type": "ListItem", "position": 3, "name": "$($b.name)", "item": "https://truewebx.site/profile/$($b.slug)/" }
+      ]
     },
-    "description": "$($b.description.Replace('"', '\"'))"
-  }
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "$($b.name)",
+      "image": "$($b.profile)",
+      "url": "https://truewebx.site/profile/$($b.slug)/",
+      "telephone": "$($b.phone)",
+      "email": "$($b.gmail)",
+      "priceRange": "$$",
+      "openingHours": "Mo-Su 08:00-18:00",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "$cityName",
+        "postalCode": "$zipCode",
+        "addressCountry": "US"
+      },
+      "description": "$($b.description.Replace('"', '\"'))"
+    }
+  ]
   </script>
 </head>
 <body>
@@ -218,7 +255,7 @@ foreach ($b in $businesses) {
   <div class="container">
     <img src="$($b.profile)" alt="$($b.name) profile" class="profile-img">
     <h1>$($b.name)</h1>
-    <div class="location"><i class="fas fa-map-marker-alt"></i> $($b.city)</div>
+    <div class="location"><i class="fas fa-map-marker-alt"></i> <address style="display:inline; font-style:normal;">$($b.city)</address></div>
     <div class="description">$($b.description.Replace("`n", "<br>"))</div>
     <div class="contact-info">
       <p><i class="fas fa-phone"></i> <a href="tel:$($b.phone)">$($b.phone)</a></p>
@@ -230,6 +267,7 @@ foreach ($b in $businesses) {
       <a href="mailto:$($b.gmail)?subject=Inquiry from TrueWebX" class="cta-button">Get Free Consultation</a>
       <button class="cta-button" onclick="const btn=this; const originalText=btn.innerText; navigator.clipboard.writeText(window.location.href); btn.innerText='\u2713 Copied!'; btn.style.background='#0d9488'; setTimeout(()=>{btn.innerText=originalText; btn.style.background='';}, 2500)">Share Profile</button>
     </div>
+    $relatedProfilesHtml
     <a href="https://truewebx.site/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Directory</a>
     <section class="seo-extra">
         <h2>Expert Service in $cityName</h2>

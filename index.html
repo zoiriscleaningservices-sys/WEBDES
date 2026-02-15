@@ -870,6 +870,28 @@
                     list.innerHTML = services.length ? html : '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
                 }
 
+                // Inject ItemList Schema for the whole directory
+                if (services.length) {
+                    const itemListSchema = {
+                        "@context": "https://schema.org",
+                        "@type": "ItemList",
+                        "itemListElement": services.map((s, i) => ({
+                            "@type": "ListItem",
+                            "position": i + 1,
+                            "url": `${location.origin}${BASE_PATH}/${s.slug}/`,
+                            "name": s.name
+                        }))
+                    };
+                    let script = document.getElementById('directorySchema');
+                    if (!script) {
+                        script = document.createElement('script');
+                        script.id = 'directorySchema';
+                        script.type = 'application/ld+json';
+                        document.head.appendChild(script);
+                    }
+                    script.textContent = JSON.stringify(itemListSchema);
+                }
+
                 setTimeout(() => {
                     document.querySelectorAll('.card:not(.loaded)').forEach(card => card.classList.add('loaded'));
                 }, 100);
