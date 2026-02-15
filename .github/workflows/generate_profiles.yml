@@ -1,0 +1,38 @@
+name: TrueWebX Automated Profile Generation
+
+on:
+  push:
+    branches: [ main ]
+  repository_dispatch:
+    types: [supabase_update]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # Every hour as a fallback
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Profile Generation Script
+        shell: pwsh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: ./generate_static.ps1
+
+      - name: Inject Supabase Key to Homepage
+        run: |
+          sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages

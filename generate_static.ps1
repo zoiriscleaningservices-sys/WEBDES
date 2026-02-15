@@ -1,7 +1,27 @@
-
 # Static Generation Script for TrueWebX Extreme SEO
-$data = Get-Content -Path "supabase_data.json" -Encoding utf8 | ConvertFrom-Json
-$businesses = $data.value
+# Config - Use environment variables for security in GitHub Actions
+$supabaseUrl = $env:SUPABASE_URL
+$supabaseKey = $env:SUPABASE_ANON_KEY
+
+if (-not $supabaseUrl -or -not $supabaseKey) {
+    Write-Error "Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables."
+    exit 1
+}
+
+$headers = @{
+    "apikey" = $supabaseKey
+    "Authorization" = "Bearer $supabaseKey"
+}
+
+Write-Host "Fetching data from Supabase..."
+try {
+    $response = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/services?select=*" -Headers $headers -Method Get
+    $businesses = $response
+} catch {
+    Write-Error "Failed to fetch data from Supabase: $_"
+    exit 1
+}
+
 $templatePath = "service.html" # Use this as the base structure
 $sitemapPath = "sitemap.xml"
 $today = Get-Date -Format "yyyy-MM-dd"
