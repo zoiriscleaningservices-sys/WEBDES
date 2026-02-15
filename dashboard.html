@@ -1279,9 +1279,13 @@
                 return;
             }
 
+            const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            const slug = `${baseSlug}-${citySlug}`.slice(0, 100);
+
             // Store form data temporarily
             currentServiceData = {
-                name, city, zip, phone, gmail, desc, profileFile, photoFiles,
+                name, city, zip, phone, gmail, desc, profileFile, photoFiles, slug,
                 socialLinks: currentSocialLinks.slice()
             };
 
@@ -1295,7 +1299,7 @@
 
                 msg.innerHTML = `<p style="color:#0f0; font-size:1.2rem; font-weight:bold;">
                     🎉 Published successfully!<br>
-                    <span style="font-size:0.9rem; font-weight:normal;">Your public page: <strong>https://truewebx.site/#${currentServiceData ? currentServiceData.slug : ''}</strong></span>
+                    <span style="font-size:0.9rem; font-weight:normal;">Your public page: <strong>https://truewebx.site/profile/${currentServiceData ? currentServiceData.slug : ''}/</strong></span>
                 </p>`;
                 setTimeout(() => { show('home'); msg.innerHTML = ''; }, 6000);
             } catch (err) {
@@ -1310,14 +1314,10 @@
         async function publishServiceAfterPayment() {
             if (!currentServiceData) return;
 
-            const { name, city, zip, phone, gmail, desc, profileFile, photoFiles, socialLinks } = currentServiceData;
+            const { name, city, zip, phone, gmail, desc, profileFile, photoFiles, socialLinks, slug } = currentServiceData;
 
             let location = city;
             if (zip) location += ` ${zip}`;
-
-            const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-            const citySlug = city.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-            const slug = `${baseSlug}-${citySlug}`.slice(0, 100);
 
             const user = auth.currentUser;
             if (!user) return;
