@@ -38,6 +38,8 @@
         media="print" onload="this.media='all'">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <meta name="supabase-anon-key"
         content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM">
@@ -1071,6 +1073,10 @@
                                 <textarea id="custMsg" placeholder="How can we help you?" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:120px; outline:none; resize:none;"></textarea>
                                 <button type="submit" id="sendBtn" style="width:100%; padding:18px; border-radius:15px; border:none; background:var(--coral); color:white; font-weight:bold; font-size:1.1rem; cursor:pointer; transition:0.3s;">Send Message</button>
                             </form>
+                            <div id="authPrompt" style="display:none; text-align:center; margin-top:20px; font-size:0.9rem; opacity:0.8;">
+                                <p>Logging in allows you to receive private replies directly in your dashboard.</p>
+                                <a href="/dashboard.html" style="color:white; text-decoration:underline; font-weight:bold;">Login / Sign Up</a>
+                            </div>
                             <div id="successMsg" style="display:none; text-align:center; margin-top:20px; color:#0f0; font-weight:bold;">
                                 <i class="fas fa-check-circle" style="font-size:3rem; display:block; margin-bottom:10px;"></i>
                                 Sent! The owner will reach out shortly.
@@ -1104,6 +1110,30 @@
                     });
                 }
 
+                const firebaseConfig = {
+                    apiKey: "AIzaSyBam-ZJXtbgHnhI7IeGLgKS-HeRdSBQNS0",
+                    authDomain: "limpieza-digital.firebaseapp.com",
+                    projectId: "limpieza-digital",
+                    storageBucket: "limpieza-digital.firebasestorage.app",
+                    messagingSenderId: "410437614466",
+                    appId: "1:410437614466:web:8abec9eb1189a2369bad9b"
+                };
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                const auth = firebase.auth();
+
+                auth.onAuthStateChanged(user => {
+                    const nameInput = document.getElementById('custName');
+                    const contactInput = document.getElementById('custContact');
+                    const authPrompt = document.getElementById('authPrompt');
+                    if (user && nameInput && contactInput) {
+                        nameInput.value = user.displayName || user.email.split('@')[0];
+                        contactInput.value = user.email;
+                        if (authPrompt) authPrompt.style.display = 'none';
+                    } else if (authPrompt) {
+                        authPrompt.style.display = 'block';
+                    }
+                });
+
                 history.replaceState({ slug: slug }, '', `${BASE_PATH}/${slug}`);
                 window.scrollTo(0, 0);
             }
@@ -1119,11 +1149,12 @@
                 const name = document.getElementById('custName').value;
                 const contact = document.getElementById('custContact').value;
                 const message = document.getElementById('custMsg').value;
+                const user = firebase.auth().currentUser;
 
-                // Use the global supabase client initialized in loadInitialServices or here
                 const { error } = await supabase.from('messages').insert([{
                     service_id: serviceId,
-                    text: `[Guest: ${name} | Contact: ${contact}] - ${message}`,
+                    customer_id: user ? user.uid : null,
+                    text: user ? message : `[Guest: ${name} | Contact: ${contact}] - ${message}`,
                     is_from_owner: false
                 }]);
 
