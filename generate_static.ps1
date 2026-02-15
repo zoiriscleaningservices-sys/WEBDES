@@ -322,7 +322,11 @@ foreach ($b in $businesses) {
         } else {
             document.getElementById('authPrompt').style.display = 'block';
         }
-    });
+    // Persistent Client ID for history without account
+    if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
+        localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
+    }
+    const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
 
     async function sendMessage(serviceId) {
       const btn = document.getElementById('sendBtn');
@@ -340,10 +344,9 @@ foreach ($b in $businesses) {
       const { error } = await supabaseClient.from('messages').insert([{
         service_id: serviceId,
         customer_id: null,
-        text: user ? `[User: `${user.uid}] - `${message}` : `[Guest: `${name} | Contact: `${contact}] - `${message}`,
+        text: user ? `[User: `${user.uid}] - `${message}` : `[GuestID: `${persistentClientId}] [Guest: `${name} | Contact: `${contact}] - `${message}`,
         is_from_owner: false
       }]);
- Linda
 
       if (error) {
         alert('Error sending message: ' + error.message);

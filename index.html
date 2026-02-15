@@ -1121,6 +1121,12 @@
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 const auth = firebase.auth();
 
+                // Persistent Client ID for history without account
+                if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
+                    localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
+                }
+                const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
+
                 auth.onAuthStateChanged(user => {
                     const nameInput = document.getElementById('custName');
                     const contactInput = document.getElementById('custContact');
@@ -1154,9 +1160,10 @@
                 const { error } = await supabase.from('messages').insert([{
                     service_id: serviceId,
                     customer_id: null,
-                    text: user ? `[User: ${user.uid}] - ${message}` : `[Guest: ${name} | Contact: ${contact}] - ${message}`,
+                    text: user ? `[User: ${user.uid}] - ${message}` : `[GuestID: ${persistentClientId}] [Guest: ${name} | Contact: ${contact}] - ${message}`,
                     is_from_owner: false
                 }]);
+                Linda
 
                 if (error) {
                     alert('Error sending message: ' + error.message);

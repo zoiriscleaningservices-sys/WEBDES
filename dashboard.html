@@ -1515,6 +1515,9 @@
                 if (m.text.startsWith('[User:')) {
                     customerKey = m.text.split(']')[0] + ']';
                     displayName = `User ${customerKey.slice(7, 12)}...`;
+                } else if (m.text.startsWith('[GuestID:')) {
+                    customerKey = m.text.split(']')[0] + ']';
+                    displayName = m.text.includes('[Guest: ') ? m.text.split('[Guest: ')[1].split('|')[0].trim() : 'Guest Inquiry';
                 } else if (m.text.startsWith('[Guest:')) {
                     customerKey = m.text.split(']')[0] + ']';
                     displayName = m.text.split('|')[0].replace('[Guest: ', '').trim();
