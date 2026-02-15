@@ -9,6 +9,3 @@ supabase_data.json
 # Temporary files
 tmp/
 temp/
-
-# Environment variables
-.env

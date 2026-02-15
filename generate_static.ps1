@@ -1,39 +1,16 @@
 # Static Generation Script for TrueWebX Extreme SEO
-
-# Helper to load .env file for local development
-if (Test-Path ".env") {
-    Get-Content ".env" | ForEach-Object {
-        if ($_ -match "^([^#=]+)=(.*)$") {
-            $varName = $matches[1].Trim()
-            $varValue = $matches[2].Trim()
-            if (-not [System.Environment]::GetEnvironmentVariable($varName)) {
-                [System.Environment]::SetEnvironmentVariable($varName, $varValue)
-            }
-        }
-    }
-}
-
 # Config - Use environment variables for security in GitHub Actions
-$supabaseUrl = $env:SUPABASE_URL
-$supabaseKey = $env:SUPABASE_ANON_KEY
+$supabaseUrl = if ($env:SUPABASE_URL) { $env:SUPABASE_URL } else { 'https://vrpyomevjlsacourdmki.supabase.co' }
+$supabaseKey = if ($env:SUPABASE_ANON_KEY) { $env:SUPABASE_ANON_KEY } else { 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM' }
 
-if (-not $supabaseUrl -or -not $supabaseKey -or $supabaseKey -eq "YOUR_SUPABASE_ANON_KEY_HERE") {
-    Write-Error "Missing or placeholder SUPABASE_URL or SUPABASE_ANON_KEY environment variables."
-    Write-Host "Please ensure these are set in your environment or a .env file."
+if (-not $supabaseUrl -or -not $supabaseKey) {
+    Write-Error "Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables."
     exit 1
 }
 
 $headers = @{
     "apikey" = $supabaseKey
     "Authorization" = "Bearer $supabaseKey"
-}
-
-# Inject key into Homepage (index.html) so it works locally and on GH
-if (Test-Path "index.html") {
-    Write-Host "Injecting Supabase Key into index.html..."
-    $indexContent = Get-Content "index.html" -Raw
-    $indexContent = $indexContent -replace "YOUR_SUPABASE_ANON_KEY_HERE", $supabaseKey
-    [System.IO.File]::WriteAllText("index.html", $indexContent, [System.Text.Encoding]::UTF8)
 }
 
 Write-Host "Fetching data from Supabase..."
@@ -287,28 +264,9 @@ foreach ($b in $businesses) {
     $galleryHtml
     $socialHtml
     <div style="margin:60px 0;">
-      <button class="cta-button" onclick="document.getElementById('msgModal').style.display='flex'">Get Free Consultation</button>
+      <a href="mailto:$($b.gmail)?subject=Inquiry from TrueWebX" class="cta-button">Get Free Consultation</a>
       <button class="cta-button" onclick="const btn=this; const originalText=btn.innerText; navigator.clipboard.writeText(window.location.href); btn.innerText='\u2713 Copied!'; btn.style.background='#0d9488'; setTimeout(()=>{btn.innerText=originalText; btn.style.background='';}, 2500)">Share Profile</button>
     </div>
-
-    <!-- Messaging Modal -->
-    <div id="msgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(10px); padding:20px;">
-        <div style="background:var(--bg-gradient); width:100%; max-width:500px; padding:40px; border-radius:32px; position:relative; border:1px solid rgba(255,255,255,0.2); box-shadow:0 25px 50px rgba(0,0,0,0.5);">
-            <button onclick="document.getElementById('msgModal').style.display='none'" style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer;">&times;</button>
-            <h2 style="margin-bottom:20px; font-size:2rem;">Contact $($b.name)</h2>
-            <form id="contactForm" onsubmit="event.preventDefault(); sendMessage();">
-                <input type="text" id="custName" placeholder="Your Name" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; outline:none;">
-                <input type="text" id="custContact" placeholder="Email or Phone" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; outline:none;">
-                <textarea id="custMsg" placeholder="How can we help you?" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:120px; outline:none; resize:none;"></textarea>
-                <button type="submit" id="sendBtn" style="width:100%; padding:18px; border-radius:15px; border:none; background:var(--coral); color:white; font-weight:bold; font-size:1.1rem; cursor:pointer; transition:0.3s;">Send Message</button>
-            </form>
-            <div id="successMsg" style="display:none; text-align:center; margin-top:20px; color:#0f0; font-weight:bold;">
-                <i class="fas fa-check-circle" style="font-size:3rem; display:block; margin-bottom:10px;"></i>
-                Sent! The owner will reach out shortly.
-            </div>
-        </div>
-    </div>
-
     $relatedProfilesHtml
     <a href="https://truewebx.site/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Directory</a>
     <section class="seo-extra">
@@ -317,43 +275,7 @@ foreach ($b in $businesses) {
     </section>
     <footer>Powered by <strong>TrueWebX</strong> &bull; Trusted Global Business Directory</footer>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabaseClient = supabase.createClient('$supabaseUrl', '$supabaseKey');
-
-    async function sendMessage() {
-        const btn = document.getElementById('sendBtn');
-        const form = document.getElementById('contactForm');
-        const success = document.getElementById('successMsg');
-        
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-        const { error } = await supabaseClient.from('messages').insert([{
-            service_id: '$($b.id)',
-            customer_name: document.getElementById('custName').value,
-            customer_contact: document.getElementById('custContact').value,
-            text: document.getElementById('custMsg').value,
-            is_from_owner: false
-        }]);
-
-        if (error) {
-            alert('Error sending message: ' + error.message);
-            btn.disabled = false;
-            btn.innerHTML = 'Send Message';
-        } else {
-            form.style.display = 'none';
-            success.style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('msgModal').style.display = 'none';
-                form.style.display = 'block';
-                success.style.display = 'none';
-                form.reset();
-                btn.disabled = false;
-                btn.innerHTML = 'Send Message';
-            }, 4000);
-        }
-    }
     // Header scroll logic
     let ticking = false;
     function updateHeader() {
