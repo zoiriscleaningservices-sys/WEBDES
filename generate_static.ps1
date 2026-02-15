@@ -280,6 +280,16 @@ foreach ($b in $businesses) {
     Write-Host "Generated static page (Header Parity) for: $($b.name)"
 }
 
+# Cleanup: Delete directories in 'profile/' that are no longer in Supabase
+$allValidSlugs = $businesses.slug
+$existingProfiles = Get-ChildItem -Path profile -Directory
+foreach ($dir in $existingProfiles) {
+    if ($allValidSlugs -notcontains $dir.Name) {
+        Write-Host "Deleting stale profile: $($dir.Name)"
+        Remove-Item -Path $dir.FullName -Recurse -Force
+    }
+}
+
 # Finalize Sitemap XML
 $sitemapXml += "`n</urlset>"
 [System.IO.File]::WriteAllText($sitemapPath, $sitemapXml, [System.Text.Encoding]::UTF8)
