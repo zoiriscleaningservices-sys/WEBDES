@@ -64,6 +64,7 @@
       font-weight: 900;
       background: linear-gradient(45deg, #fff, #ff8fa3);
       -webkit-background-clip: text;
+      background-clip: text;
       color: transparent;
       margin-bottom: 30px;
       cursor: pointer;
@@ -386,7 +387,7 @@
                     <input type="text" id="custContact" placeholder="Email or Phone" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; outline:none;">
                     <textarea id="custMsg" placeholder="How can we help you?" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:120px; outline:none; resize:none;"></textarea>
                     <button type="submit" id="sendBtn" style="width:100%; padding:18px; border-radius:15px; border:none; background:var(--coral); color:white; font-weight:bold; font-size:1.1rem; cursor:pointer; transition:0.3s;">Send Message</button>
-            </form>
+                </form>
             <div id="authPrompt" style="display:none; text-align:center; margin-top:20px; font-size:0.9rem; opacity:0.8;">
                 <p>Logging in allows you to receive private replies directly in your dashboard.</p>
                 <a href="https://truewebx.site/dashboard.html" style="color:white; text-decoration:underline; font-weight:bold;">Login / Sign Up</a>
@@ -417,7 +418,6 @@
     };
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
     auth.onAuthStateChanged(user => {
       const nameInput = document.getElementById('custName');
       const contactInput = document.getElementById('custContact');
@@ -433,49 +433,50 @@
       if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
         localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
       }
-      const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
+    });
 
-      async function sendMessage(serviceId) {
-        Linda
-        const btn = document.getElementById('sendBtn');
-        const form = document.getElementById('contactForm');
-        const success = document.getElementById('successMsg');
+    const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID') || ('G-' + Math.random().toString(36).substring(2, 15));
 
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    async function sendMessage(serviceId) {
+      const btn = document.getElementById('sendBtn');
+      const form = document.getElementById('contactForm');
+      const success = document.getElementById('successMsg');
 
-        const name = document.getElementById('custName').value;
-        const contact = document.getElementById('custContact').value;
-        const message = document.getElementById('custMsg').value;
-        const user = auth.currentUser;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-        const { error } = await supabase.from('messages').insert([{
-          service_id: serviceId,
-          customer_id: null,
-          text: user ? `[User: ${user.uid}] - ${message}` : `[GuestID: ${persistentClientId}] [Guest: ${name} | Contact: ${contact}] - ${message}`,
-          is_from_owner: false
-        }]);
+      const name = document.getElementById('custName').value;
+      const contact = document.getElementById('custContact').value;
+      const message = document.getElementById('custMsg').value;
+      const user = auth.currentUser;
 
-        if (error) {
-          alert('Error sending message: ' + error.message);
+      const { error } = await supabase.from('messages').insert([{
+        service_id: serviceId,
+        customer_id: null,
+        text: user ? `[User: ${user.uid}] - ${message}` : `[GuestID: ${persistentClientId}] [Guest: ${name} | Contact: ${contact}] - ${message}`,
+        is_from_owner: false
+      }]);
+
+      if (error) {
+        alert('Error sending message: ' + error.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Send Message';
+      } else {
+        form.style.display = 'none';
+        success.style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('msgModal').style.display = 'none';
+          form.style.display = 'block';
+          success.style.display = 'none';
+          form.reset();
           btn.disabled = false;
           btn.innerHTML = 'Send Message';
-        } else {
-          form.style.display = 'none';
-          success.style.display = 'block';
-          setTimeout(() => {
-            document.getElementById('msgModal').style.display = 'none';
-            form.style.display = 'block';
-            success.style.display = 'none';
-            form.reset();
-            btn.disabled = false;
-            btn.innerHTML = 'Send Message';
-          }, 4000);
-        }
+        }, 4000);
       }
+    }
 
-      // Start loading immediately
-      loadServicePage();
+    // Start loading immediately
+    loadServicePage();
   </script>
 </body>
 

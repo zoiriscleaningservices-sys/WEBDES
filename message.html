@@ -221,6 +221,7 @@
             font-weight: 900;
             background: linear-gradient(45deg, #fff, #ff8fa3);
             -webkit-background-clip: text;
+            background-clip: text;
             color: transparent;
             text-align: center;
             margin: 20px 0;
@@ -786,7 +787,13 @@
             const body = document.getElementById('chatBody');
             body.innerHTML = data?.length
                 ? data.map(m => {
-                    const cleanText = m.text.includes('] - ') ? m.text.split('] - ')[1] : m.text;
+                    let cleanText = m.text;
+                    if (cleanText.includes('] - ')) {
+                        const parts = cleanText.split('] - ');
+                        cleanText = parts[parts.length - 1]; // Get actual message content
+                    }
+                    cleanText = cleanText.replace('[Owner]: ', '');
+
                     return `
                         <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
                             ${cleanText}

@@ -1,7 +1,7 @@
 # Static Generation Script for TrueWebX Extreme SEO
 # Config - Use environment variables for security in GitHub Actions
 $supabaseUrl = if ($env:SUPABASE_URL) { $env:SUPABASE_URL } else { 'https://vrpyomevjlsacourdmki.supabase.co' }
-$supabaseKey = if ($env:SUPABASE_ANON_KEY) { $env:SUPABASE_ANON_KEY } else { 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM' }
+$supabaseKey = if ($env:SUPABASE_SERVICE_ROLE_KEY) { $env:SUPABASE_SERVICE_ROLE_KEY } else { 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE3MDg4NSwiZXhwIjoyMDgxNzQ2ODg1fQ.cPaMJJF6IqPV-KeT8_qux8dRXcyD7yFFds_ifRs3-yI' }
 
 if (-not $supabaseUrl -or -not $supabaseKey) {
     Write-Error "Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables."
