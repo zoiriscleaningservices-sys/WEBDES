@@ -712,9 +712,10 @@
         }
 
         async function loadInbox() {
+            if (!currentUser) return;
             const { data: messages, error } = await supabaseClient.from('messages')
                 .select('service_id, text, created_at, is_from_owner')
-                .eq('customer_id', currentUser.uid)
+                .ilike('text', `[User: ${currentUser.uid}]%`)
                 .order('created_at', { ascending: false });
 
             if (error || !messages || messages.length === 0) {
@@ -729,12 +730,12 @@
 
             const chats = {};
             messages.forEach(m => {
-                const service = services.find(s => s.id === m.service_id);
+                const service = services?.find(s => s.id === m.service_id);
                 if (service && !chats[m.service_id]) {
                     chats[m.service_id] = {
                         name: service.name || 'Business',
                         profile: service.profile || 'https://via.placeholder.com/60',
-                        lastMessage: m.text,
+                        lastMessage: m.text.includes('] - ') ? m.text.split('] - ')[1] : m.text,
                         time: m.created_at,
                         unread: m.is_from_owner
                     };
@@ -746,7 +747,7 @@
                 <img src="${chat.profile}" alt="${chat.name}">
                 <div class="info">
                     <strong>${chat.name}</strong>
-                    <div>${chat.lastMessage}</div>
+                    <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${chat.lastMessage}</div>
                 </div>
                 <small>${new Date(chat.time).toLocaleDateString()}</small>
             </div>
@@ -767,32 +768,34 @@
             const { data } = await supabaseClient.from('messages')
                 .select('*')
                 .eq('service_id', currentChatServiceId)
-                .eq('customer_id', currentUser.uid)
+                .ilike('text', `[User: ${currentUser.uid}]%`)
                 .order('created_at', { ascending: true });
-
 
             const body = document.getElementById('chatBody');
             body.innerHTML = data?.length
-                ? data.map(m => `
-                <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
-                    ${m.text}
-                    <small>${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
-                </div>
-            `).join('')
+                ? data.map(m => {
+                    const cleanText = m.text.includes('] - ') ? m.text.split('] - ')[1] : m.text;
+                    return `
+                        <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
+                            ${cleanText}
+                            <small>${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                        </div>
+                    `;
+                }).join('')
                 : '<p style="text-align:center; opacity:0.7; margin-top:20px;">Start the conversation!</p>';
             body.scrollTop = body.scrollHeight;
         }
 
         async function sendMessage() {
             const input = document.getElementById('replyInput');
-            const text = input.value.trim();
-            if (!text || !currentChatServiceId) return;
+            const message = input.value.trim();
+            if (!message || !currentChatServiceId) return;
 
             const { error } = await supabaseClient.from('messages').insert([
                 {
                     service_id: currentChatServiceId,
-                    customer_id: currentUser.uid,
-                    text,
+                    customer_id: null,
+                    text: `[User: ${currentUser.uid}] - ${message}`,
                     is_from_owner: false,
                     created_at: new Date().toISOString()
                 }
