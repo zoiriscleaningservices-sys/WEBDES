@@ -228,7 +228,7 @@ foreach ($b in $businesses) {
     $socialHtml
     <div style="margin:60px 0;">
       <a href="mailto:$($b.gmail)?subject=Inquiry from TrueWebX" class="cta-button">Get Free Consultation</a>
-      <button class="cta-button" onclick="navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard!')">Share Profile</button>
+      <button class="cta-button" onclick="const btn=this; const originalText=btn.innerText; navigator.clipboard.writeText(window.location.href); btn.innerText='✓ Copied!'; btn.style.background='#0d9488'; setTimeout(()=>{btn.innerText=originalText; btn.style.background='';}, 2500)">Share Profile</button>
     </div>
     <a href="https://truewebx.site/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Directory</a>
     <section class="seo-extra">
