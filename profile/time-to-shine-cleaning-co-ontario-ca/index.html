@@ -197,7 +197,16 @@
             document.getElementById('authPrompt').style.display = 'none';
         } else {
             document.getElementById('authPrompt').style.display = 'block';
-            document.getElementById('guestFields').style.display = 'block';
+            // Only show guestFields if we don't have saved info
+            const savedName = localStorage.getItem('TRUEWEBX_GUEST_NAME');
+            const savedContact = localStorage.getItem('TRUEWEBX_GUEST_CONTACT');
+            if (savedName && savedContact) {
+                document.getElementById('custName').value = savedName;
+                document.getElementById('custContact').value = savedContact;
+                document.getElementById('guestFields').style.display = 'none';
+            } else {
+                document.getElementById('guestFields').style.display = 'block';
+            }
         }
     });
     // Persistent Client ID for history without account
@@ -277,6 +286,12 @@
         if (error) {
           alert('Error sending: ' + error.message);
         } else {
+          // Save guest info to localStorage if not logged in
+          if (!user) {
+              localStorage.setItem('TRUEWEBX_GUEST_NAME', name);
+              localStorage.setItem('TRUEWEBX_GUEST_CONTACT', contact);
+              document.getElementById('guestFields').style.display = 'none';
+          }
           msgInput.value = '';
           loadChatHistory(serviceId);
         }
