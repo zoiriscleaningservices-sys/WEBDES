@@ -330,11 +330,13 @@ foreach ($b in $businesses) {
         localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
     }
     const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
+    let chatTimer = null;
 
       async function loadChatHistory(serviceId) {
         window.currentBusinessId = serviceId;
         const user = auth.currentUser;
         const historyDiv = document.getElementById('chatHistory');
+        if (!historyDiv) return;
         
         let filter = ``text.ilike.%[GuestID: `${persistentClientId}]%``;
         if (user) filter += ``,text.ilike.%[User: `${user.uid}]%``;
@@ -349,6 +351,8 @@ foreach ($b in $businesses) {
           console.error('History error:', error);
           return;
         }
+
+        const isScrolledToBottom = historyDiv.scrollHeight - historyDiv.clientHeight <= historyDiv.scrollTop + 1;
 
         historyDiv.innerHTML = data.length ? data.map(m => {
           let cleanText = m.text;
@@ -369,7 +373,9 @@ foreach ($b in $businesses) {
           ``;
         }).join('') : '<p style="text-align:center; opacity:0.6; margin:auto;">Start the conversation!</p>';
         
-        historyDiv.scrollTop = historyDiv.scrollHeight;
+        if (isScrolledToBottom) {
+          historyDiv.scrollTop = historyDiv.scrollHeight;
+        }
       }
 
       async function sendMessage(serviceId) {
@@ -405,10 +411,24 @@ foreach ($b in $businesses) {
         btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
       }
 
+      window.closeModal = () => {
+        document.getElementById('msgModal').style.display = 'none';
+        if (chatTimer) clearInterval(chatTimer);
+      };
+
       window.openContactChat = (id) => {
         document.getElementById('msgModal').style.display = 'flex';
         loadChatHistory(id);
+        if (chatTimer) clearInterval(chatTimer);
+        chatTimer = setInterval(() => loadChatHistory(id), 4000);
       };
+
+      // Close modal on outside click
+      window.addEventListener('click', (e) => {
+        if (e.target.id === 'msgModal') {
+          window.closeModal();
+        }
+      });
 
     // Header scroll logic
     let ticking = false;
