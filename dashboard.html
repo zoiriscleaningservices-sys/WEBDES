@@ -1515,8 +1515,10 @@
                     displayName = `User ${customerKey.slice(7, 12)}...`;
                 } else if (m.text.startsWith('[GuestID:')) {
                     customerKey = m.text.split(']')[0] + ']';
-                    // Extract name if available, otherwise "Guest"
+                    // Extract name and contact if available
                     displayName = m.text.includes('[Guest: ') ? m.text.split('[Guest: ')[1].split('|')[0].trim() : 'Guest Inquiry';
+                    const contactInfo = m.text.includes('| Contact: ') ? m.text.split('| Contact: ')[1].split(']')[0].trim() : '';
+                    if (contactInfo) displayName += ' (' + contactInfo + ')';
                 } else if (m.text.startsWith('[Guest:')) {
                     customerKey = m.text.split(']')[0] + ']';
                     displayName = m.text.split('|')[0].replace('[Guest: ', '').trim();
