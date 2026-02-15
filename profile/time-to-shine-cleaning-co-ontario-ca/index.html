@@ -184,7 +184,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM');
+    const supabaseClient = supabase.createClient('https://vrpyomevjlsacourdmki.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE3MDg4NSwiZXhwIjoyMDgxNzQ2ODg1fQ.cPaMJJF6IqPV-KeT8_qux8dRXcyD7yFFds_ifRs3-yI');
 
     auth.onAuthStateChanged(user => {
         if (user) {

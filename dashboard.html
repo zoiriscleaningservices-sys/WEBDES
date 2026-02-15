@@ -209,6 +209,7 @@
             font-weight: 900;
             background: linear-gradient(45deg, #fff, #ff8fa3);
             -webkit-background-clip: text;
+            background-clip: text;
             color: transparent;
             text-align: center;
             margin: 20px 0;
@@ -1509,14 +1510,12 @@
 
             const chats = {};
             messages.forEach(m => {
-                let customerKey = null;
-                let displayName = 'Guest Inquiry';
-
                 if (m.text.startsWith('[User:')) {
                     customerKey = m.text.split(']')[0] + ']';
                     displayName = `User ${customerKey.slice(7, 12)}...`;
                 } else if (m.text.startsWith('[GuestID:')) {
                     customerKey = m.text.split(']')[0] + ']';
+                    // Extract name if available, otherwise "Guest"
                     displayName = m.text.includes('[Guest: ') ? m.text.split('[Guest: ')[1].split('|')[0].trim() : 'Guest Inquiry';
                 } else if (m.text.startsWith('[Guest:')) {
                     customerKey = m.text.split(']')[0] + ']';
@@ -1524,6 +1523,7 @@
                 } else {
                     customerKey = 'Legacy_Guest';
                 }
+                Linda
 
                 const chatKey = `${m.service_id}_${customerKey}`;
 
@@ -1536,7 +1536,7 @@
                         customerKey: customerKey,
                         serviceName: serviceName,
                         displayName: displayName,
-                        lastMessage: m.text,
+                        lastMessage: m.text.includes('] - ') ? m.text.split('] - ').slice(1).join('] - ') : m.text,
                         time: m.created_at,
                         unread: !m.is_from_owner
                     };
@@ -1556,37 +1556,41 @@
         `).join('') : '<p style="text-align:center; opacity:0.8;">No messages yet</p>';
         }
 
+        let currentChatCustomerKey = null;
+
         async function openChat(serviceId, customerKey, customerName, serviceName) {
             currentChatServiceId = serviceId;
-            currentChatCustomerId = customerKey.includes('[Guest:') ? null : customerKey;
-
+            currentChatCustomerKey = customerKey;
             document.getElementById('chatHeader').textContent = `Chat: ${customerName} (${serviceName})`;
             document.getElementById('chatWindow').style.display = 'flex';
-            loadChatMessages(customerKey);
+            loadChatMessages();
         }
 
-        async function loadChatMessages(customerKey) {
-            const query = supabaseClient.from('messages')
+        async function loadChatMessages() {
+            const { data } = await supabaseClient.from('messages')
                 .select('*')
                 .eq('service_id', currentChatServiceId)
+                .ilike('text', `${currentChatCustomerKey}%`)
                 .order('created_at', { ascending: true });
 
-            // If it's a registered user, filter by their ID
-            if (currentChatCustomerId) {
-                query.eq('customer_id', currentChatCustomerId);
-            } else {
-                // If it's a guest, we have to filter by the prepended string pattern
-                query.ilike('text', `${customerKey}%`);
-            }
-
-            const { data } = await query;
             const body = document.getElementById('chatBody');
-            body.innerHTML = data.map(m => `
+            body.innerHTML = data.map(m => {
+                // Strips [User: ID], [GuestID: ID], and [Guest: Name | Contact] prefixes
+                let cleanText = m.text;
+                if (cleanText.includes('] - ')) {
+                    const parts = cleanText.split('] - ');
+                    cleanText = parts[parts.length - 1]; // Get the last part (the actual message)
+                }
+                // Also remove owner internal marker if present
+                cleanText = cleanText.replace('[Owner]: ', '');
+
+                return `
                 <div class="message ${m.is_from_owner ? 'owner' : 'client'}">
-                    ${m.text}
+                    ${cleanText}
                     <small>${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             body.scrollTop = body.scrollHeight;
         }
 
@@ -1595,10 +1599,13 @@
             const text = input.value.trim();
             if (!text || !currentChatServiceId) return;
 
+            // Maintain the internal identity prefix for thread consistency
+            const prefixedText = `${currentChatCustomerKey} - [Owner]: ${text}`;
+
             await supabaseClient.from('messages').insert({
                 service_id: currentChatServiceId,
-                customer_id: currentChatCustomerId,
-                text,
+                customer_id: null,
+                text: prefixedText,
                 is_from_owner: true
             });
 
