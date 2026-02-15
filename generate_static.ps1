@@ -326,6 +326,7 @@ foreach ($b in $businesses) {
         } else {
             document.getElementById('authPrompt').style.display = 'block';
         }
+    });
     // Persistent Client ID for history without account
     if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
         localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
@@ -339,8 +340,8 @@ foreach ($b in $businesses) {
         const historyDiv = document.getElementById('chatHistory');
         if (!historyDiv) return;
         
-        let filter = ``text.ilike.%[GuestID: `${persistentClientId}]%``;
-        if (user) filter += ``,text.ilike.%[User: `${user.uid}]%``;
+        let filter = "text.ilike.%[GuestID: " + persistentClientId + "]%";
+        if (user) filter += ",text.ilike.%[User: " + user.uid + "]%";
 
         const { data, error } = await supabaseClient.from('messages')
           .select('*')
