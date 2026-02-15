@@ -1557,15 +1557,22 @@
 
         let currentChatCustomerKey = null;
 
+        let inboxTimer = null;
+        let chatTimer = null;
+
         async function openChat(serviceId, customerKey, customerName, serviceName) {
             currentChatServiceId = serviceId;
             currentChatCustomerKey = customerKey;
             document.getElementById('chatHeader').textContent = `Chat: ${customerName} (${serviceName})`;
             document.getElementById('chatWindow').style.display = 'flex';
             loadChatMessages();
+
+            if (chatTimer) clearInterval(chatTimer);
+            chatTimer = setInterval(loadChatMessages, 3000);
         }
 
         async function loadChatMessages() {
+            if (!currentChatServiceId || !currentChatCustomerKey) return;
             const { data } = await supabaseClient.from('messages')
                 .select('*')
                 .eq('service_id', currentChatServiceId)
@@ -1573,14 +1580,13 @@
                 .order('created_at', { ascending: true });
 
             const body = document.getElementById('chatBody');
+            const isScrolledToBottom = body.scrollHeight - body.clientHeight <= body.scrollTop + 1;
+
             body.innerHTML = data.map(m => {
-                // Strips [User: ID], [GuestID: ID], and [Guest: Name | Contact] prefixes
                 let cleanText = m.text;
                 if (cleanText.includes('] - ')) {
-                    const parts = cleanText.split('] - ');
-                    cleanText = parts[parts.length - 1]; // Get the last part (the actual message)
+                    cleanText = cleanText.split('] - ').pop();
                 }
-                // Also remove owner internal marker if present
                 cleanText = cleanText.replace('[Owner]: ', '');
 
                 return `
@@ -1590,7 +1596,10 @@
                 </div>
             `;
             }).join('');
-            body.scrollTop = body.scrollHeight;
+
+            if (isScrolledToBottom) {
+                body.scrollTop = body.scrollHeight;
+            }
         }
 
         async function sendReply() {
@@ -1598,19 +1607,26 @@
             const text = input.value.trim();
             if (!text || !currentChatServiceId) return;
 
-            // Maintain the internal identity prefix for thread consistency
             const prefixedText = `${currentChatCustomerKey} - [Owner]: ${text}`;
 
-            await supabaseClient.from('messages').insert({
+            const { error } = await supabaseClient.from('messages').insert({
                 service_id: currentChatServiceId,
                 customer_id: null,
                 text: prefixedText,
                 is_from_owner: true
             });
 
-            input.value = '';
-            loadChatMessages();
+            if (error) {
+                alert('Send error: ' + error.message);
+            } else {
+                input.value = '';
+                loadChatMessages();
+            }
         }
+
+        // Start inbox polling
+        clearInterval(inboxTimer);
+        inboxTimer = setInterval(loadInbox, 5000);
 
         document.getElementById('replyInput')?.addEventListener('keypress', e => {
             if (e.key === 'Enter') sendReply();

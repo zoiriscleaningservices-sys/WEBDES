@@ -716,6 +716,9 @@
         }
         const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
 
+        let inboxTimer = null;
+        let chatTimer = null;
+
         async function loadInbox() {
             let filter = `text.ilike.%[GuestID: ${persistentClientId}]%`;
             if (currentUser) {
@@ -744,7 +747,7 @@
                     chats[m.service_id] = {
                         name: service.name || 'Business',
                         profile: service.profile || 'https://via.placeholder.com/60',
-                        lastMessage: m.text.includes('] - ') ? m.text.split('] - ')[1] : m.text,
+                        lastMessage: m.text.includes('] - ') ? m.text.split('] - ').pop().replace('[Owner]: ', '') : m.text,
                         time: m.created_at,
                         unread: m.is_from_owner
                     };
@@ -770,9 +773,13 @@
             document.getElementById('chatWindow').style.display = 'flex';
             loadChatMessages();
             document.getElementById('replyInput').focus();
+
+            if (chatTimer) clearInterval(chatTimer);
+            chatTimer = setInterval(loadChatMessages, 4000);
         }
 
         async function loadChatMessages() {
+            if (!currentChatServiceId) return;
             let filter = `text.ilike.%[GuestID: ${persistentClientId}]%`;
             if (currentUser) {
                 filter += `,text.ilike.%[User: ${currentUser.uid}]%`;
@@ -785,12 +792,13 @@
                 .order('created_at', { ascending: true });
 
             const body = document.getElementById('chatBody');
+            const isScrolledToBottom = body.scrollHeight - body.clientHeight <= body.scrollTop + 1;
+
             body.innerHTML = data?.length
                 ? data.map(m => {
                     let cleanText = m.text;
                     if (cleanText.includes('] - ')) {
-                        const parts = cleanText.split('] - ');
-                        cleanText = parts[parts.length - 1]; // Get actual message content
+                        cleanText = cleanText.split('] - ').pop();
                     }
                     cleanText = cleanText.replace('[Owner]: ', '');
 
@@ -802,7 +810,10 @@
                     `;
                 }).join('')
                 : '<p style="text-align:center; opacity:0.7; margin-top:20px;">Start the conversation!</p>';
-            body.scrollTop = body.scrollHeight;
+
+            if (isScrolledToBottom) {
+                body.scrollTop = body.scrollHeight;
+            }
         }
 
         async function sendMessage() {
@@ -831,6 +842,10 @@
                 loadInbox();
             }
         }
+
+        // Start inbox polling
+        clearInterval(inboxTimer);
+        inboxTimer = setInterval(loadInbox, 6000);
 
         document.getElementById('sendBtn').addEventListener('click', sendMessage);
         document.getElementById('replyInput').addEventListener('keypress', e => {
