@@ -137,8 +137,8 @@
             </div>
             <form id="contactForm" onsubmit="event.preventDefault(); sendMessage('eb0c2202-ea36-4cae-8293-dfa814786cf3');">
                 <div id="guestFields" style="display:none;">
-                    <input type="text" id="custName" placeholder="Your Name" style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
-                    <input type="text" id="custContact" placeholder="Email or Phone" style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
+                    <input type="text" id="custName" placeholder="Your Name" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
+                    <input type="text" id="custContact" placeholder="Email or Phone" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
                 </div>
                 <div style="display:flex; gap:10px;">
                     <textarea id="custMsg" placeholder="Type your message..." required style="flex:1; padding:12px; border-radius:10px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:45px; height:45px; outline:none; resize:none;"></textarea>
@@ -202,6 +202,7 @@
             document.getElementById('authPrompt').style.display = 'none';
         } else {
             document.getElementById('authPrompt').style.display = 'block';
+            document.getElementById('guestFields').style.display = 'block';
         }
     });
     // Persistent Client ID for history without account
