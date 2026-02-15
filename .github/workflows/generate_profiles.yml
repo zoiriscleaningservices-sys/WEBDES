@@ -26,10 +26,6 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: ./generate_static.ps1
 
-      - name: Inject Supabase Key to Homepage
-        run: |
-          sed -i "s|YOUR_SUPABASE_ANON_KEY_HERE|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:

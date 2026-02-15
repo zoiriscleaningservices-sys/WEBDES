@@ -28,6 +28,14 @@ $headers = @{
     "Authorization" = "Bearer $supabaseKey"
 }
 
+# Inject key into Homepage (index.html) so it works locally and on GH
+if (Test-Path "index.html") {
+    Write-Host "Injecting Supabase Key into index.html..."
+    $indexContent = Get-Content "index.html" -Raw
+    $indexContent = $indexContent -replace "YOUR_SUPABASE_ANON_KEY_HERE", $supabaseKey
+    [System.IO.File]::WriteAllText("index.html", $indexContent, [System.Text.Encoding]::UTF8)
+}
+
 Write-Host "Fetching data from Supabase..."
 try {
     $response = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/services?select=*" -Headers $headers -Method Get
