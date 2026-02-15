@@ -130,6 +130,8 @@ foreach ($b in $businesses) {
   <title>$pageTitle</title>
   <meta name="description" content="$pageDesc">
   <link rel="canonical" href="https://truewebx.site/profile/$($b.slug)/">
+  <link rel="icon" type="image/png" href="$($b.profile)">
+  <link rel="apple-touch-icon" href="$($b.profile)">
   <meta property="og:type" content="business.business">
   <meta property="og:title" content="$pageTitle">
   <meta property="og:description" content="$pageDesc">
