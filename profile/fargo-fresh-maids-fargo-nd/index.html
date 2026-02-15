@@ -221,10 +221,11 @@ As a locally owned and operated cleaning company, we take pride in serving our c
 
       const { error } = await supabaseClient.from('messages').insert([{
         service_id: serviceId,
-        customer_id: user ? user.uid : null,
-        text: user ? message : `[Guest: ${name} | Contact: ${contact}] - ${message}`,
+        customer_id: null,
+        text: user ? [User: ${user.uid}] - ${message} : [Guest: ${name} | Contact: ${contact}] - ${message},
         is_from_owner: false
       }]);
+ Linda
 
       if (error) {
         alert('Error sending message: ' + error.message);

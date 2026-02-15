@@ -1509,17 +1509,23 @@
 
             const chats = {};
             messages.forEach(m => {
-                // If customer_id is missing, it's a guest from the concatenated [Guest: Name | Contact: Info] format
-                const customerKey = m.customer_id || (m.text.startsWith('[Guest:') ? m.text.split(']')[0] : 'Guest');
+                let customerKey = null;
+                let displayName = 'Guest Inquiry';
+
+                if (m.text.startsWith('[User:')) {
+                    customerKey = m.text.split(']')[0] + ']';
+                    displayName = `User ${customerKey.slice(7, 12)}...`;
+                } else if (m.text.startsWith('[Guest:')) {
+                    customerKey = m.text.split(']')[0] + ']';
+                    displayName = m.text.split('|')[0].replace('[Guest: ', '').trim();
+                } else {
+                    customerKey = 'Legacy_Guest';
+                }
+
                 const chatKey = `${m.service_id}_${customerKey}`;
 
                 if (!chats[chatKey]) {
                     const serviceName = services.find(s => s.id === m.service_id)?.name || 'Unknown';
-                    let displayName = m.customer_id ? `User ${m.customer_id.slice(0, 5)}...` : 'Guest Inquiry';
-
-                    if (!m.customer_id && m.text.startsWith('[Guest:')) {
-                        displayName = m.text.split('|')[0].replace('[Guest: ', '').trim();
-                    }
 
                     chats[chatKey] = {
                         serviceId: m.service_id,
