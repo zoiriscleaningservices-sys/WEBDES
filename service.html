@@ -380,13 +380,20 @@
         <!-- Messaging Modal -->
         <div id="msgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(10px); padding:20px;">
             <div style="background:var(--bg-gradient); width:100%; max-width:500px; padding:40px; border-radius:32px; position:relative; border:1px solid rgba(255,255,255,0.2); box-shadow:0 25px 50px rgba(0,0,0,0.5);">
-                <button onclick="document.getElementById('msgModal').style.display='none'" style="position:absolute; top:20px; right:20px; background:none; border:none; color:white; font-size:24px; cursor:pointer;">&times;</button>
-                <h2 style="margin-bottom:20px; font-size:2rem;">Contact ${business.name}</h2>
+                <h2 style="margin-bottom:15px; font-size:1.8rem; text-align:center;">Chat with ${business.name}</h2>
+                <div id="chatHistory" style="height:300px; overflow-y:auto; margin-bottom:20px; padding:15px; background:rgba(0,0,0,0.2); border-radius:15px; display:flex; flex-direction:column; gap:10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                    <!-- Messages will load here -->
+                    <p style="text-align:center; opacity:0.6; margin:auto;">Loading history...</p>
+                </div>
                 <form id="contactForm" onsubmit="event.preventDefault(); sendMessage('${business.id}');">
-                    <input type="text" id="custName" placeholder="Your Name" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; outline:none;">
-                    <input type="text" id="custContact" placeholder="Email or Phone" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; outline:none;">
-                    <textarea id="custMsg" placeholder="How can we help you?" required style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:120px; outline:none; resize:none;"></textarea>
-                    <button type="submit" id="sendBtn" style="width:100%; padding:18px; border-radius:15px; border:none; background:var(--coral); color:white; font-weight:bold; font-size:1.1rem; cursor:pointer; transition:0.3s;">Send Message</button>
+                    <div id="guestFields" style="display:none;">
+                        <input type="text" id="custName" placeholder="Your Name" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
+                        <input type="text" id="custContact" placeholder="Email or Phone" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <textarea id="custMsg" placeholder="Type your message..." required style="flex:1; padding:12px; border-radius:10px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:50px; height:50px; outline:none; resize:none;"></textarea>
+                        <button type="submit" id="sendBtn" style="padding:0 20px; border-radius:10px; border:none; background:var(--coral); color:white; font-weight:bold; cursor:pointer; transition:0.3s;"><i class="fas fa-paper-plane"></i></button>
+                    </div>
                 </form>
             <div id="authPrompt" style="display:none; text-align:center; margin-top:20px; font-size:0.9rem; opacity:0.8;">
                 <p>Logging in allows you to receive private replies directly in your dashboard.</p>
@@ -419,61 +426,103 @@
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     auth.onAuthStateChanged(user => {
-      const nameInput = document.getElementById('custName');
-      const contactInput = document.getElementById('custContact');
+      const guestFields = document.getElementById('guestFields');
       const authPrompt = document.getElementById('authPrompt');
-      if (user && nameInput && contactInput) {
-        nameInput.value = user.displayName || user.email.split('@')[0];
-        contactInput.value = user.email;
+      if (user) {
+        if (guestFields) guestFields.style.display = 'none';
         if (authPrompt) authPrompt.style.display = 'none';
-      } else if (authPrompt) {
-        authPrompt.style.display = 'block';
+      } else {
+        if (guestFields) guestFields.style.display = 'block';
+        if (authPrompt) authPrompt.style.display = 'block';
       }
       // Persistent Client ID for history without account
       if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
         localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
       }
+      if (window.currentBusinessId) loadChatHistory(window.currentBusinessId);
     });
 
     const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID') || ('G-' + Math.random().toString(36).substring(2, 15));
 
+    async function loadChatHistory(serviceId) {
+      window.currentBusinessId = serviceId;
+      const user = auth.currentUser;
+      const historyDiv = document.getElementById('chatHistory');
+
+      let filter = `text.ilike.%[GuestID: ${persistentClientId}]%`;
+      if (user) filter += `,text.ilike.%[User: ${user.uid}]%`;
+
+      const { data, error } = await supabase.from('messages')
+        .select('*')
+        .eq('service_id', serviceId)
+        .or(filter)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('History error:', error);
+        return;
+      }
+
+      historyDiv.innerHTML = data.length ? data.map(m => {
+        let cleanText = m.text;
+        if (cleanText.includes('] - ')) {
+          cleanText = cleanText.split('] - ').pop();
+        }
+        cleanText = cleanText.replace('[Owner]: ', '');
+
+        return `
+          <div style="align-self: ${m.is_from_owner ? 'flex-start' : 'flex-end'}; 
+                      background: ${m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
+                      padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">
+            ${cleanText}
+            <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">
+              ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
+        `;
+      }).join('') : '<p style="text-align:center; opacity:0.6; margin:auto;">Start the conversation!</p>';
+
+      historyDiv.scrollTop = historyDiv.scrollHeight;
+    }
+
     async function sendMessage(serviceId) {
       const btn = document.getElementById('sendBtn');
-      const form = document.getElementById('contactForm');
-      const success = document.getElementById('successMsg');
+      const msgInput = document.getElementById('custMsg');
+      const message = msgInput.value.trim();
+      if (!message) return;
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-      const name = document.getElementById('custName').value;
-      const contact = document.getElementById('custContact').value;
-      const message = document.getElementById('custMsg').value;
       const user = auth.currentUser;
+      const name = user ? (user.displayName || user.email.split('@')[0]) : document.getElementById('custName').value;
+      const contact = user ? user.email : document.getElementById('custContact').value;
+
+      const prefix = user ? `[User: ${user.uid}]` : `[GuestID: ${persistentClientId}]`;
+      const fullText = user ? `${prefix} - ${message}` : `${prefix} [Guest: ${name} | Contact: ${contact}] - ${message}`;
 
       const { error } = await supabase.from('messages').insert([{
         service_id: serviceId,
         customer_id: null,
-        text: user ? `[User: ${user.uid}] - ${message}` : `[GuestID: ${persistentClientId}] [Guest: ${name} | Contact: ${contact}] - ${message}`,
+        text: fullText,
         is_from_owner: false
       }]);
 
       if (error) {
-        alert('Error sending message: ' + error.message);
-        btn.disabled = false;
-        btn.innerHTML = 'Send Message';
+        alert('Error sending: ' + error.message);
       } else {
-        form.style.display = 'none';
-        success.style.display = 'block';
-        setTimeout(() => {
-          document.getElementById('msgModal').style.display = 'none';
-          form.style.display = 'block';
-          success.style.display = 'none';
-          form.reset();
-          btn.disabled = false;
-          btn.innerHTML = 'Send Message';
-        }, 4000);
+        msgInput.value = '';
+        loadChatHistory(serviceId);
       }
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
     }
+
+    // Export for modal trigger
+    window.openContactChat = (id) => {
+      document.getElementById('msgModal').style.display = 'flex';
+      loadChatHistory(id);
+    };
 
     // Start loading immediately
     loadServicePage();

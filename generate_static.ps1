@@ -328,43 +328,84 @@ foreach ($b in $businesses) {
     }
     const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
 
-    async function sendMessage(serviceId) {
-      const btn = document.getElementById('sendBtn');
-      const form = document.getElementById('contactForm');
-      const success = document.getElementById('successMsg');
+      async function loadChatHistory(serviceId) {
+        window.currentBusinessId = serviceId;
+        const user = auth.currentUser;
+        const historyDiv = document.getElementById('chatHistory');
+        
+        let filter = ``text.ilike.%[GuestID: `${persistentClientId}]%``;
+        if (user) filter += ``,text.ilike.%[User: `${user.uid}]%``;
 
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        const { data, error } = await supabaseClient.from('messages')
+          .select('*')
+          .eq('service_id', serviceId)
+          .or(filter)
+          .order('created_at', { ascending: true });
 
-      const name = document.getElementById('custName').value;
-      const contact = document.getElementById('custContact').value;
-      const message = document.getElementById('custMsg').value;
-      const user = auth.currentUser;
+        if (error) {
+          console.error('History error:', error);
+          return;
+        }
 
-      const { error } = await supabaseClient.from('messages').insert([{
-        service_id: serviceId,
-        customer_id: null,
-        text: user ? `[User: `${user.uid}] - `${message}` : `[GuestID: `${persistentClientId}] [Guest: `${name} | Contact: `${contact}] - `${message}`,
-        is_from_owner: false
-      }]);
-
-      if (error) {
-        alert('Error sending message: ' + error.message);
-        btn.disabled = false;
-        btn.innerHTML = 'Send Message';
-      } else {
-        form.style.display = 'none';
-        success.style.display = 'block';
-        setTimeout(() => {
-          document.getElementById('msgModal').style.display = 'none';
-          form.style.display = 'block';
-          success.style.display = 'none';
-          form.reset();
-          btn.disabled = false;
-          btn.innerHTML = 'Send Message';
-        }, 4000);
+        historyDiv.innerHTML = data.length ? data.map(m => {
+          let cleanText = m.text;
+          if (cleanText.includes('] - ')) {
+            cleanText = cleanText.split('] - ').pop();
+          }
+          cleanText = cleanText.replace('[Owner]: ', '');
+          
+          return ``
+            <div style="align-self: ${m.is_from_owner ? 'flex-start' : 'flex-end'}; 
+                        background: ${m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
+                        padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">
+              ${cleanText}
+              <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">
+                ${new Date(m.created_at).toLocaleTimeString([], `{ hour: '2-digit', minute: '2-digit' `})}
+              </div>
+            </div>
+          ``;
+        }).join('') : '<p style="text-align:center; opacity:0.6; margin:auto;">Start the conversation!</p>';
+        
+        historyDiv.scrollTop = historyDiv.scrollHeight;
       }
-    }
+
+      async function sendMessage(serviceId) {
+        const btn = document.getElementById('sendBtn');
+        const msgInput = document.getElementById('custMsg');
+        const message = msgInput.value.trim();
+        if (!message) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        const user = auth.currentUser;
+        const name = user ? (user.displayName || user.email.split('@')[0]) : document.getElementById('custName').value;
+        const contact = user ? user.email : document.getElementById('custContact').value;
+
+        const prefix = user ? ``[User: `${user.uid}]`` : ``[GuestID: `${persistentClientId}]``;
+        const fullText = user ? `${prefix} - ${message}` : `${prefix} [Guest: `${name} | Contact: `${contact}] - ${message}`;
+
+        const { error } = await supabaseClient.from('messages').insert([{
+          service_id: serviceId,
+          customer_id: null,
+          text: fullText,
+          is_from_owner: false
+        }]);
+
+        if (error) {
+          alert('Error sending: ' + error.message);
+        } else {
+          msgInput.value = '';
+          loadChatHistory(serviceId);
+        }
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+      }
+
+      window.openContactChat = (id) => {
+        document.getElementById('msgModal').style.display = 'flex';
+        loadChatHistory(id);
+      };
 
     // Header scroll logic
     let ticking = false;
