@@ -260,11 +260,12 @@ foreach ($b in $businesses) {
     <div class="contact-info">
       <p><i class="fas fa-phone"></i> <a href="tel:$($b.phone)">$($b.phone)</a></p>
       <p><i class="fas fa-envelope"></i> <a href="mailto:$($b.gmail)">Send Email</a></p>
+      <p><i class="fas fa-comment-dots"></i> <a href="javascript:void(0)" onclick="openContactChat('$($b.id)')">Message Owner</a></p>
     </div>
     $galleryHtml
     $socialHtml
     <div style="margin:60px 0;">
-      <button class="cta-button" onclick="openContactChat('$($b.id)')">Get Free Consultation</button>
+      <button class="cta-button" onclick="openContactChat('$($b.id)')"><i class="fas fa-comments"></i> Message Owner</button>
       <button class="cta-button" onclick="const btn=this; const originalText=btn.innerText; navigator.clipboard.writeText(window.location.href); btn.innerText='\u2713 Copied!'; btn.style.background='#0d9488'; setTimeout(()=>{btn.innerText=originalText; btn.style.background='';}, 2500)">Share Profile</button>
     </div>
 
@@ -361,16 +362,14 @@ foreach ($b in $businesses) {
           }
           cleanText = cleanText.replace('[Owner]: ', '');
           
-          return ``
-            <div style="align-self: ${m.is_from_owner ? 'flex-start' : 'flex-end'}; 
-                        background: ${m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
-                        padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">
-              ${cleanText}
-              <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">
-                ${new Date(m.created_at).toLocaleTimeString([], `{ hour: '2-digit', minute: '2-digit' `})}
-              </div>
-            </div>
-          ``;
+          return '<div style="align-self: ' + (m.is_from_owner ? 'flex-start' : 'flex-end') + '; ' +
+                        'background: ' + (m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)') + '; ' +
+                        'padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">' +
+              cleanText +
+              '<div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">' +
+                new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
+              '</div>' +
+            '</div>';
         }).join('') : '<p style="text-align:center; opacity:0.6; margin:auto;">Start the conversation!</p>';
         
         if (isScrolledToBottom) {
@@ -391,8 +390,8 @@ foreach ($b in $businesses) {
         const name = user ? (user.displayName || user.email.split('@')[0]) : document.getElementById('custName').value;
         const contact = user ? user.email : document.getElementById('custContact').value;
 
-        const prefix = user ? ``[User: `${user.uid}]`` : ``[GuestID: `${persistentClientId}]``;
-        const fullText = user ? `${prefix} - ${message}` : `${prefix} [Guest: `${name} | Contact: `${contact}] - ${message}`;
+        const prefix = user ? "[User: " + user.uid + "]" : "[GuestID: " + persistentClientId + "]";
+        const fullText = user ? prefix + " - " + message : prefix + " [Guest: " + name + " | Contact: " + contact + "] - " + message;
 
         const { error } = await supabaseClient.from('messages').insert([{
           service_id: serviceId,
