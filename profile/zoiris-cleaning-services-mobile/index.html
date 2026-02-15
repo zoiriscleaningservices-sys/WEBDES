@@ -117,6 +117,7 @@ Our experienced cleaning professionals use eco-friendly, non-toxic products and 
     <div class="contact-info">
       <p><i class="fas fa-phone"></i> <a href="tel:2519308621">2519308621</a></p>
       <p><i class="fas fa-envelope"></i> <a href="mailto:Zoiriscleaningservices@gmail.com">Send Email</a></p>
+      <p><i class="fas fa-comment-dots"></i> <a href="javascript:void(0)" onclick="openContactChat('2ac51586-f8e1-481c-afb4-73406e3e8626')">Message Owner</a></p>
     </div>
         <h2 style="font-size: 2.8rem; margin: 70px 0 30px;">Gallery</h2>
     <div class="gallery-wrapper" id="galleryWrapper">
@@ -126,7 +127,7 @@ Our experienced cleaning professionals use eco-friendly, non-toxic products and 
     </div>
     <div class='social-links'><a href='https://www.instagram.com/zoiriscleaningservices/' target='_blank' rel='noopener' aria-label='instagram'><i class='fab fa-instagram'></i></a><a href='https://www.zoiriscleaningservices.com/' target='_blank' rel='noopener' aria-label='other'><i class='fab fa-globe'></i></a></div>
     <div style="margin:60px 0;">
-      <button class="cta-button" onclick="openContactChat('2ac51586-f8e1-481c-afb4-73406e3e8626')">Get Free Consultation</button>
+      <button class="cta-button" onclick="openContactChat('2ac51586-f8e1-481c-afb4-73406e3e8626')"><i class="fas fa-comments"></i> Message Owner</button>
       <button class="cta-button" onclick="const btn=this; const originalText=btn.innerText; navigator.clipboard.writeText(window.location.href); btn.innerText='\u2713 Copied!'; btn.style.background='#0d9488'; setTimeout(()=>{btn.innerText=originalText; btn.style.background='';}, 2500)">Share Profile</button>
     </div>
 
@@ -242,16 +243,14 @@ Our experienced cleaning professionals use eco-friendly, non-toxic products and 
           }
           cleanText = cleanText.replace('[Owner]: ', '');
           
-          return `
-            <div style="align-self: ; 
-                        background: ; 
-                        padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">
-              
-              <div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">
-                
-              </div>
-            </div>
-          `;
+          return '<div style="align-self: ' + (m.is_from_owner ? 'flex-start' : 'flex-end') + '; ' +
+                        'background: ' + (m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)') + '; ' +
+                        'padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">' +
+              cleanText +
+              '<div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">' +
+                new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
+              '</div>' +
+            '</div>';
         }).join('') : '<p style="text-align:center; opacity:0.6; margin:auto;">Start the conversation!</p>';
         
         if (isScrolledToBottom) {
@@ -272,8 +271,8 @@ Our experienced cleaning professionals use eco-friendly, non-toxic products and 
         const name = user ? (user.displayName || user.email.split('@')[0]) : document.getElementById('custName').value;
         const contact = user ? user.email : document.getElementById('custContact').value;
 
-        const prefix = user ? `[User: ${user.uid}]` : `[GuestID: ${persistentClientId}]`;
-        const fullText = user ? ${prefix} -  : ${prefix} [Guest: ${name} | Contact: ${contact}] - ;
+        const prefix = user ? "[User: " + user.uid + "]" : "[GuestID: " + persistentClientId + "]";
+        const fullText = user ? prefix + " - " + message : prefix + " [Guest: " + name + " | Contact: " + contact + "] - " + message;
 
         const { error } = await supabaseClient.from('messages').insert([{
           service_id: serviceId,
