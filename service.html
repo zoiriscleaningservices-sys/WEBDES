@@ -408,11 +408,13 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
+      const name = document.getElementById('custName').value;
+      const contact = document.getElementById('custContact').value;
+      const message = document.getElementById('custMsg').value;
+
       const { error } = await supabase.from('messages').insert([{
         service_id: serviceId,
-        customer_name: document.getElementById('custName').value,
-        customer_contact: document.getElementById('custContact').value,
-        text: document.getElementById('custMsg').value,
+        text: `[Guest: ${name} | Contact: ${contact}] - ${message}`,
         is_from_owner: false
       }]);
 
