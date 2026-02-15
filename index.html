@@ -760,7 +760,7 @@
         const supabaseUrl = 'https://vrpyomevjlsacourdmki.supabase.co';
         const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
 
-        if (!anonKey || anonKey === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycHlvbWV2amxzYWNvdXJkbWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNzA4ODUsImV4cCI6MjA4MTc0Njg4NX0.BsugjF75UO4TArkH5CeOIvJnMZAj8g6Ccf6hu1NsrUM') {
+        if (!anonKey || anonKey === 'YOUR_SUPABASE_ANON_KEY_HERE') {
             document.getElementById('list').innerHTML = '<p class="no-services">Service temporarily unavailable – please try again later.</p>';
             console.error('Supabase anon key missing.');
         } else {
@@ -868,6 +868,28 @@
                     list.insertAdjacentHTML('beforeend', html);
                 } else {
                     list.innerHTML = services.length ? html : '<p class="no-services">No services published yet. Be the first to join TrueWebX!</p>';
+                }
+
+                // Inject ItemList Schema for the whole directory
+                if (services.length) {
+                    const itemListSchema = {
+                        "@context": "https://schema.org",
+                        "@type": "ItemList",
+                        "itemListElement": services.map((s, i) => ({
+                            "@type": "ListItem",
+                            "position": i + 1,
+                            "url": `${location.origin}${BASE_PATH}/${s.slug}/`,
+                            "name": s.name
+                        }))
+                    };
+                    let script = document.getElementById('directorySchema');
+                    if (!script) {
+                        script = document.createElement('script');
+                        script.id = 'directorySchema';
+                        script.type = 'application/ld+json';
+                        document.head.appendChild(script);
+                    }
+                    script.textContent = JSON.stringify(itemListSchema);
                 }
 
                 setTimeout(() => {
