@@ -74,6 +74,15 @@
             transform: translateY(0);
         }
 
+        /* Emergency Mobile Fallback: ensure elements show up eventually */
+        @media (max-width: 768px) {
+            .reveal {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: opacity 0.5s ease-in !important;
+            }
+        }
+
         /* Nav Dock Reveal Fix (preserves translateX(-50%)) */
         .nav-dock.reveal {
             opacity: 0;
@@ -896,7 +905,7 @@
             }
         });
         // Scroll Reveal Engine
-        const observerOptions = { threshold: 0.1 };
+        const observerOptions = { threshold: 0.01 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
