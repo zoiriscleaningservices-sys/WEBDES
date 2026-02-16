@@ -74,6 +74,21 @@
             transform: translateY(0);
         }
 
+        /* Nav Dock Reveal Fix (preserves translateX(-50%)) */
+        .nav-dock.reveal {
+            opacity: 0;
+            transform: translate(-50%, 30px);
+        }
+
+        .nav-dock.reveal.active {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .nav-dock {
+            transition: transform 0.3s ease-out, bottom 0.3s ease-out, opacity 0.3s ease-out !important;
+        }
+
         .login-container {
             display: flex;
             justify-content: center;
