@@ -235,6 +235,15 @@ foreach ($b in $businesses) {
     .nav-dock.reveal { opacity: 0; transform: translate(-50%, 30px); }
     .nav-dock.reveal.active { opacity: 1; transform: translate(-50%, 0); }
 
+    /* Emergency Mobile Fallback: ensure elements show up eventually */
+    @media (max-width: 768px) {
+        .reveal { 
+            opacity: 1 !important; 
+            transform: none !important; 
+            transition: opacity 0.5s ease-in !important;
+        }
+    }
+
     .stagger-1 { transition-delay: 0.1s; }
     .stagger-2 { transition-delay: 0.2s; }
     .stagger-3 { transition-delay: 0.3s; }
@@ -528,7 +537,7 @@ foreach ($b in $businesses) {
     <div class="blob blob-3"></div>
   </div>
 
-  <header class="header-wrapper reveal" id="header" style="transition-delay: 0.4s;">
+  <header class="header-wrapper" id="header">
     <a href="https://truewebx.site/" class="logo" aria-label="TrueWebX Home">
         <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo">
     </a>
@@ -537,7 +546,7 @@ foreach ($b in $businesses) {
     </a>
   </header>
 
-  <nav class="nav-dock reveal">
+  <nav class="nav-dock">
     <a href="https://truewebx.site/" class="nav-item"><i class="fas fa-home"></i> Home</a>
     <a href="https://truewebx.site/#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
     <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
@@ -756,7 +765,7 @@ foreach ($b in $businesses) {
     }
 
     // Scroll Reveal Engine
-    const observerOptions = { threshold: 0.1 };
+    const observerOptions = { threshold: 0.01 };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {

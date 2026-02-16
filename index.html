@@ -108,6 +108,15 @@
             transform: translate(-50%, 0);
         }
 
+        /* Emergency Mobile Fallback: ensure elements show up eventually */
+        @media (max-width: 768px) {
+            .reveal {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: opacity 0.5s ease-in !important;
+            }
+        }
+
         /* Modern Background Blobs */
         .bg-blobs {
             position: fixed;
@@ -903,7 +912,7 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <nav class="nav-dock reveal">
+    <nav class="nav-dock">
         <a href="https://truewebx.site/" class="nav-item active"><i class="fas fa-home"></i> Home</a>
         <a href="#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
         <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
@@ -1490,7 +1499,7 @@
                 document.getElementById('loadMoreBtn').addEventListener('click', loadMoreServices);
 
                 // Scroll Reveal Engine
-                const observerOptions = { threshold: 0.1 };
+                const observerOptions = { threshold: 0.01 }; // Extremely low threshold for mobile reliability
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
