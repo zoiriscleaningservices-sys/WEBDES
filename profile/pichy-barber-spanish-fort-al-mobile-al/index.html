@@ -41,7 +41,16 @@
       min-height: 100vh; 
       overflow-x: hidden;
       line-height: 1.5;
+      scroll-behavior: smooth;
     }
+
+    /* Reveal Animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    .stagger-1 { transition-delay: 0.1s; }
+    .stagger-2 { transition-delay: 0.2s; }
+    .stagger-3 { transition-delay: 0.3s; }
 
     /* Modern Background Blobs */
     .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; filter: blur(100px); opacity: 0.6; pointer-events: none; }
@@ -104,7 +113,9 @@
         transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         position: relative;
         overflow: hidden;
+        cursor: pointer;
     }
+    .bento-card:active { transform: scale(0.96); }
     .bento-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
 
     /* Card Specifics */
@@ -195,11 +206,25 @@
 
     .card-social { grid-column: span 4; grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-    /* Mobile Responsive */
+    /* Mobile Responsive Upgrade */
     @media (max-width: 1024px) {
-        .card-hero, .card-profile, .card-gallery, .card-contact { grid-column: span 12; }
-        .bento-container { margin-top: 20px; }
-        h1 { font-size: 2.5rem; }
+        .card-hero, .card-profile, .card-gallery, .card-contact, .card-related, .card-expertise, .card-social { grid-column: span 12 !important; }
+        .bento-container { margin-top: 10px; padding: 0 16px; gap: 16px; }
+        .bento-card { padding: 24px; border-radius: 28px; }
+        h1 { font-size: 2.2rem; line-height: 1.2; }
+        .nav-dock { bottom: 20px; width: 90%; max-width: 400px; justify-content: space-around; backdrop-filter: blur(30px) saturate(200%); }
+        .nav-item { padding: 12px 14px; font-size: 0.85rem; }
+        
+        /* Bottom Sheet Modal */
+        #msgModal { align-items: flex-end; padding: 0; }
+        .chat-container { 
+            border-radius: 32px 32px 0 0; 
+            max-width: 100%; 
+            height: 85vh; 
+            transform: translateY(100%); 
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        #msgModal[style*="flex"] .chat-container { transform: translateY(0); }
     }
 
     /* Messaging UI Parity */
@@ -277,27 +302,27 @@
     <div class="blob blob-3"></div>
   </div>
 
-  <nav class="nav-dock">
+  <nav class="nav-dock reveal">
     <a href="https://truewebx.site/" class="nav-item"><i class="fas fa-home"></i> Home</a>
     <a href="https://truewebx.site/#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
     <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
   </nav>
 
   <div class="bento-container">
-    <div class="bento-card card-hero">
+    <div class="bento-card card-hero reveal stagger-1">
         <div class="badge">Verified Expert</div>
         <h1>Pichy Barber 💈🇨🇺 Spanish Fort AL</h1>
         <div class="description">Estoy a dispuestos a darte un gran d servicio, tengo 10 años de experiencia como barbero 💈</div>
     </div>
 
-    <div class="bento-card card-profile">
+    <div class="bento-card card-profile reveal stagger-2">
         <img src="https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_2bfbb94c-707a-431e-81c0-e53187b1b3a4.jpeg" alt="Pichy Barber 💈🇨🇺 Spanish Fort AL profile" class="profile-img">
         <div style="font-size:1.4rem; font-weight:800; margin-bottom:5px;">Mobile</div>
         <div style="opacity:0.6;"><i class="fas fa-map-marker-alt"></i> Mobile, AL 36527</div>
         <div class="status-ping"><span></span> Online Now</div>
     </div>
 
-    <div class="bento-card card-gallery">
+    <div class="bento-card card-gallery reveal">
             <h2 style="font-size: 2.8rem; margin: 70px 0 30px;">Gallery</h2>
     <div class="gallery-wrapper" id="galleryWrapper">
         <div class="gallery-slider" id="gallerySlider"><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_959a2ba8-6e92-4324-a463-35d853f1bdcc.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_f4487eeb-a983-41ea-b265-0a6ab04e6bcd.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_58ba1e1d-f34d-4bb0-bbd2-eae3d734c1b6.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_d501ad16-68b1-4b49-8c92-d220a9443620.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_2b49251c-be11-4322-9800-804c368dbe25.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_164586b8-52e9-4cf5-8bb1-6a2d733456c2.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_b474aa0b-9202-4c5c-94bf-a2919a81ac0e.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_f5800de4-b335-452b-93b6-92c65cab2b5b.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_253faa35-0a5c-4ad0-9641-735045708b0b.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_fbb0c937-28f7-45de-bac3-9309a89e9332.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_0f7890ad-3a7b-4f3b-b3b3-173b76d17197.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_76943939-0d90-4e09-b9da-a062da562d4e.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_a242ba0a-9251-46e0-a8ec-669347f511e6.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_1e49196a-98b1-4def-a260-5536cc9eb1c2.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_7f50f718-706f-4ba5-a496-38d82dc462a7.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_de3de560-5208-4bf7-88cc-e92f84339c43.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_711fa6ab-eef3-46b0-9664-fe18dee63e6d.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_5f19086c-9445-4f21-acfb-8c64bd8059af.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_a8b4e8eb-948f-4092-b256-7e3f25627a7f.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_2fb339b5-6ea1-44a8-8702-8f920a8935d8.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_a0b9b5e3-5c4c-4e89-9e66-715ee5e4adb0.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_77bad00c-0cbb-4010-8141-096d99bf3dbc.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_5aaa83ca-eba8-4786-bd6c-2bd3316bf21b.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_ec0974e1-18b8-44c2-b1e0-c5701b463986.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_605fd7d8-6636-4e1e-99a6-2d381f7b255e.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_0a484e85-b03e-4d5c-934d-d3fa386e146b.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_a36c9f3b-53e5-4697-a643-7ef660fd3173.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_b5208623-b2b0-4403-9bb4-7468ebd0ed4a.jpeg' alt='Professional Precision Barbering & Grooming provided by Pichy Barber 💈🇨🇺 Spanish Fort AL in Mobile, AL 36527' loading='lazy' decoding='async'>        </div>
@@ -306,7 +331,7 @@
     </div>
     </div>
 
-    <div class="bento-card card-expertise">
+    <div class="bento-card card-expertise reveal stagger-3">
         <div style="font-size:1.6rem; font-weight:800; margin-bottom:20px; color:var(--coral);">Expertise & Focus</div>
         <ul class="expertise-list">
             <li><i class="fas fa-check-circle"></i> Pre-Vetted Precision Barbering & Grooming</li>
@@ -320,14 +345,14 @@
         </div>
     </div>
 
-    <div class="bento-card card-social">
+    <div class="bento-card card-social reveal">
         <div style="font-size:1.5rem; font-weight:800; margin-bottom:20px; text-align:center;">Social Network</div>
         <div class="social-links-grid">
             <a href='https://www.instagram.com/armandopichygarciahurtado/' target='_blank' rel='noopener' class='social-btn instagram' aria-label='instagram'><i class='fa-brands fa-instagram'></i></a><a href='https://www.tiktok.com/@armandopichygarci?_r=1&_t=ZP-93Qczmn8QZi' target='_blank' rel='noopener' class='social-btn tiktok' aria-label='tiktok'><i class='fa-brands fa-tiktok'></i></a><a href='https://www.facebook.com/share/1XhcDNMtRn/?mibextid=wwXIfr' target='_blank' rel='noopener' class='social-btn facebook' aria-label='facebook'><i class='fa-brands fa-facebook-f'></i></a>
         </div>
     </div>
 
-    <div class="bento-card card-contact" style="flex-direction: row; flex-wrap: wrap;">
+    <div class="bento-card card-contact reveal" style="flex-direction: row; flex-wrap: wrap;">
         <div style="grid-column: span 2; font-size:1.8rem; font-weight:800; margin-bottom:10px;">Immediate Contact</div>
         <a href="tel:2515135014" class="contact-item" style="flex:1;">
             <i class="fas fa-phone"></i>
@@ -348,7 +373,7 @@
         </button>
     </div>
 
-    <div class="card-related" style="grid-column: span 12;">
+    <div class="card-related reveal" style="grid-column: span 12;">
             <h2 style="font-size: 2.8rem; margin: 100px 0 40px; text-align: center; width: 100%;">Related Businesses in Your Area</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px; width: 100%;">        <a href="https://truewebx.site/profile/rey-s-lawn-cutting-jacksonville/" style="text-decoration: none; color: white;">
             <div style="background: rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.transform='translateY(-5px)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.transform='none'">
@@ -453,7 +478,8 @@
             cleanText = cleanText.replace('[Owner]: ', '');
             return `<div style="align-self: ${m.is_from_owner ? 'flex-start' : 'flex-end'}; 
                          background: ${m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
-                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;">
+                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;
+                         animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
                         ${cleanText}
                     </div>`;
         }).join('');
@@ -517,6 +543,18 @@
             next.style.display = 'none';
         }
     }
+
+    // Scroll Reveal Engine
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>

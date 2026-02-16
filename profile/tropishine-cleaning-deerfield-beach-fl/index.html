@@ -41,7 +41,16 @@
       min-height: 100vh; 
       overflow-x: hidden;
       line-height: 1.5;
+      scroll-behavior: smooth;
     }
+
+    /* Reveal Animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    .stagger-1 { transition-delay: 0.1s; }
+    .stagger-2 { transition-delay: 0.2s; }
+    .stagger-3 { transition-delay: 0.3s; }
 
     /* Modern Background Blobs */
     .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; filter: blur(100px); opacity: 0.6; pointer-events: none; }
@@ -104,7 +113,9 @@
         transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         position: relative;
         overflow: hidden;
+        cursor: pointer;
     }
+    .bento-card:active { transform: scale(0.96); }
     .bento-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
 
     /* Card Specifics */
@@ -195,11 +206,25 @@
 
     .card-social { grid-column: span 4; grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-    /* Mobile Responsive */
+    /* Mobile Responsive Upgrade */
     @media (max-width: 1024px) {
-        .card-hero, .card-profile, .card-gallery, .card-contact { grid-column: span 12; }
-        .bento-container { margin-top: 20px; }
-        h1 { font-size: 2.5rem; }
+        .card-hero, .card-profile, .card-gallery, .card-contact, .card-related, .card-expertise, .card-social { grid-column: span 12 !important; }
+        .bento-container { margin-top: 10px; padding: 0 16px; gap: 16px; }
+        .bento-card { padding: 24px; border-radius: 28px; }
+        h1 { font-size: 2.2rem; line-height: 1.2; }
+        .nav-dock { bottom: 20px; width: 90%; max-width: 400px; justify-content: space-around; backdrop-filter: blur(30px) saturate(200%); }
+        .nav-item { padding: 12px 14px; font-size: 0.85rem; }
+        
+        /* Bottom Sheet Modal */
+        #msgModal { align-items: flex-end; padding: 0; }
+        .chat-container { 
+            border-radius: 32px 32px 0 0; 
+            max-width: 100%; 
+            height: 85vh; 
+            transform: translateY(100%); 
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        #msgModal[style*="flex"] .chat-container { transform: translateY(0); }
     }
 
     /* Messaging UI Parity */
@@ -277,27 +302,27 @@
     <div class="blob blob-3"></div>
   </div>
 
-  <nav class="nav-dock">
+  <nav class="nav-dock reveal">
     <a href="https://truewebx.site/" class="nav-item"><i class="fas fa-home"></i> Home</a>
     <a href="https://truewebx.site/#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
     <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
   </nav>
 
   <div class="bento-container">
-    <div class="bento-card card-hero">
+    <div class="bento-card card-hero reveal stagger-1">
         <div class="badge">Verified Expert</div>
         <h1>Tropishine Cleaning</h1>
         <div class="description">Tropishine Cleaning is a family-owned and operated cleaning company proudly serving Hillsboro Beach and all of Broward County, Florida. We provide reliable, high-quality residential and commercial cleaning services to homeowners, businesses, contractors, and property managers who value consistency, communication, and attention to detail.<br><br>Our professional cleaning services include post-construction cleaning, house cleaning, deep cleaning, office cleaning, and air duct cleaning services. Whether you need a one-time deep clean, ongoing home maintenance, or detailed cleanup after a renovation or construction project, Tropishine Cleaning delivers results you can see and trust.<br><br>We proudly service Hillsboro Beach, Deerfield Beach, Lighthouse Point, Fort Lauderdale, Boca Raton, Parkland, and surrounding areas throughout Broward County. Our experienced, background-checked team follows proven systems and detailed checklists to ensure every job is completed thoroughly and efficiently.<br><br>At Tropishine Cleaning, we focus on reliability, clear communication, and customer satisfaction on every visit. If you’re searching for a dependable cleaning company in Hillsboro Beach, Florida or anywhere in Broward County, Tropishine Cleaning is your trusted local partner for professional cleaning services.</div>
     </div>
 
-    <div class="bento-card card-profile">
+    <div class="bento-card card-profile reveal stagger-2">
         <img src="https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_fc68fa74-649b-4707-a302-3cb507c2d196.png" alt="Tropishine Cleaning profile" class="profile-img">
         <div style="font-size:1.4rem; font-weight:800; margin-bottom:5px;">Deerfield Beach</div>
         <div style="opacity:0.6;"><i class="fas fa-map-marker-alt"></i> Deerfield Beach, FL 33062</div>
         <div class="status-ping"><span></span> Online Now</div>
     </div>
 
-    <div class="bento-card card-gallery">
+    <div class="bento-card card-gallery reveal">
             <h2 style="font-size: 2.8rem; margin: 70px 0 30px;">Gallery</h2>
     <div class="gallery-wrapper" id="galleryWrapper">
         <div class="gallery-slider" id="gallerySlider"><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_7c7f9713-2782-4a98-b50a-c78bd69d2637.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_ab4ffe92-2a3c-467d-a277-53de88a89165.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_24c6a709-dfea-4c5d-8b17-df1703136a8a.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_40bc999f-a63d-4595-a778-4e85fab8087c.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_c74be08e-6a4f-4c39-8d2d-7f58bd94292c.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_28b136aa-c85e-492b-8575-c5f22fd2706c.heic' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_0cf39737-27ba-43c0-9c0d-b1d17f74f43c.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'><img src='https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_ebb9b823-6fdc-4cb7-bfe7-eac7df4c2b41.JPG' alt='Professional Commercial Cleaning & Janitorial provided by Tropishine Cleaning in Deerfield Beach, FL 33062' loading='lazy' decoding='async'>        </div>
@@ -306,7 +331,7 @@
     </div>
     </div>
 
-    <div class="bento-card card-expertise">
+    <div class="bento-card card-expertise reveal stagger-3">
         <div style="font-size:1.6rem; font-weight:800; margin-bottom:20px; color:var(--coral);">Expertise & Focus</div>
         <ul class="expertise-list">
             <li><i class="fas fa-check-circle"></i> Pre-Vetted Commercial Cleaning & Janitorial</li>
@@ -320,14 +345,14 @@
         </div>
     </div>
 
-    <div class="bento-card card-social">
+    <div class="bento-card card-social reveal">
         <div style="font-size:1.5rem; font-weight:800; margin-bottom:20px; text-align:center;">Social Network</div>
         <div class="social-links-grid">
             <a href='https://www.instagram.com/tropishinecleaning/' target='_blank' rel='noopener' class='social-btn instagram' aria-label='instagram'><i class='fa-brands fa-instagram'></i></a><a href='https://www.tiktok.com/@tropishinecleaning' target='_blank' rel='noopener' class='social-btn tiktok' aria-label='tiktok'><i class='fa-brands fa-tiktok'></i></a><a href='https://www.facebook.com/p/Tropishine-Cleaning-61555255394351/' target='_blank' rel='noopener' class='social-btn facebook' aria-label='facebook'><i class='fa-brands fa-facebook-f'></i></a><a href='https://www.youtube.com/channel/UC8IQtr4Wn2MvTa__UYALoig' target='_blank' rel='noopener' class='social-btn youtube' aria-label='youtube'><i class='fa-brands fa-youtube'></i></a><a href='https://tropishinecleaning.com/' target='_blank' rel='noopener' class='social-btn other' aria-label='other'><i class='fa-brands fa-globe'></i></a>
         </div>
     </div>
 
-    <div class="bento-card card-contact" style="flex-direction: row; flex-wrap: wrap;">
+    <div class="bento-card card-contact reveal" style="flex-direction: row; flex-wrap: wrap;">
         <div style="grid-column: span 2; font-size:1.8rem; font-weight:800; margin-bottom:10px;">Immediate Contact</div>
         <a href="tel:9544207218" class="contact-item" style="flex:1;">
             <i class="fas fa-phone"></i>
@@ -348,7 +373,7 @@
         </button>
     </div>
 
-    <div class="card-related" style="grid-column: span 12;">
+    <div class="card-related reveal" style="grid-column: span 12;">
             <h2 style="font-size: 2.8rem; margin: 100px 0 40px; text-align: center; width: 100%;">Related Businesses in Your Area</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px; width: 100%;">        <a href="https://truewebx.site/profile/rey-s-lawn-cutting-jacksonville/" style="text-decoration: none; color: white;">
             <div style="background: rgba(255,255,255,0.08); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'; this.style.transform='translateY(-5px)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'; this.style.transform='none'">
@@ -453,7 +478,8 @@
             cleanText = cleanText.replace('[Owner]: ', '');
             return `<div style="align-self: ${m.is_from_owner ? 'flex-start' : 'flex-end'}; 
                          background: ${m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
-                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;">
+                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;
+                         animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
                         ${cleanText}
                     </div>`;
         }).join('');
@@ -517,6 +543,18 @@
             next.style.display = 'none';
         }
     }
+
+    // Scroll Reveal Engine
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
