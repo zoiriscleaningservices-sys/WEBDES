@@ -21,47 +21,40 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden; }
     
-    /* Premium Header Styles from Index */
-    .header-wrapper { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; z-index: 1000; background: rgba(0, 0, 0, 0.38); border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: background 0.35s ease; will-change: background; transform: translateZ(0); }
-    .header-wrapper.scrolled { background: rgba(0, 0, 0, 0.58); }
-    .logo-link { display: block; max-width: clamp(160px, 35vw, 280px); max-height: 64px; height: auto; line-height: 0; }
-    .logo-link img { width: 100%; height: auto; max-height: 64px; object-fit: contain; display: block; vertical-align: middle; }
-    .login-btn { background: rgba(255, 255, 255, 0.18); border: 1px solid rgba(255, 255, 255, 0.32); color: white; font-weight: 600; padding: 12px 24px; border-radius: 50px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: all 0.3s; text-decoration: none; }
-    .login-btn:hover { background: rgba(255, 255, 255, 0.32); transform: translateY(-3px); }
+    /* Next-Gen Glassmorphism 2.0 Messaging */
+    #msgModal { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%); }
+    .chat-container { background: rgba(20, 20, 30, 0.75); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 30px 60px rgba(0,0,0,0.6); border-radius: 40px; }
+    .chat-header { background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent); padding: 25px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .bubble { 
+        padding: 14px 20px; 
+        border-radius: 24px; 
+        max-width: 85%; 
+        position: relative; 
+        font-size: 1rem; 
+        line-height: 1.5; 
+        animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .bubble:active { transform: scale(0.96); }
+    .bubble.owner { align-self: flex-start; background: rgba(255, 255, 255, 0.08); border-radius: 20px 20px 20px 4px; border: 1px solid rgba(255,255,255,0.05); }
+    .bubble.client { align-self: flex-end; background: linear-gradient(135deg, var(--coral), #ff4d4d); color: white; border-radius: 20px 20px 4px 20px; box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3); }
+    .bubble.deleted { opacity: 0.5; font-style: italic; background: rgba(0,0,0,0.2) !important; border: 1px dashed rgba(255,255,255,0.2) !important; }
+    
+    .reaction-bar { display: none; position: absolute; top: -50px; left: 50%; transform: translateX(-50%); background: rgba(30, 30, 45, 0.95); backdrop-filter: blur(15px); border-radius: 30px; padding: 5px 15px; gap: 10px; border: 1px solid rgba(255,255,255,0.2); z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.4); animation: barSlideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .reaction-bar span { font-size: 24px; cursor: pointer; transition: transform 0.2s; }
+    .reaction-bar span:hover { transform: scale(1.4); }
+    
+    .reactions-display { position: absolute; bottom: -12px; right: 10px; display: flex; gap: 4px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); padding: 2px 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 12px; }
 
-    .container { max-width: 1000px; margin: 120px auto 40px; background: var(--glass); backdrop-filter: blur(20px); border-radius: 32px; padding: 40px; text-align: center; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.2); position: relative; }
-    .profile-img { width: 220px; height: 220px; object-fit: cover; border-radius: 50%; border: 6px solid var(--coral); margin: 20px auto; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); display: block; }
-    h1 { font-size: 3.2rem; margin: 20px 0; line-height: 1.2; font-weight: 800; }
-    .location { font-size: 1.6rem; opacity: 0.95; margin: 20px 0; color: #ffeb3b; font-weight: 600; }
-    .description { font-size: 1.3rem; line-height: 1.8; margin: 40px auto; max-width: 860px; text-align: center; opacity: 0.95; }
-    .contact-info { margin: 50px 0; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
-    .contact-info p { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-    .contact-info i { color: var(--coral); }
-    .contact-info a { color: white; text-decoration: none; font-weight: 600; }
-    .contact-info a:hover { text-decoration: underline; }
-    
-    /* Gallery Slider Styles */
-    .gallery-wrapper { position: relative; max-width: 960px; margin: 40px auto; overflow: hidden; border-radius: 32px; box-shadow: 0 16px 50px rgba(0, 0, 0, 0.5); background: #000; }
-    .gallery-slider { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-    .gallery-slider img { width: 100%; height: auto; max-height: 600px; object-fit: contain; flex-shrink: 0; }
-    .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 60px; height: 60px; background: rgba(0, 0, 0, 0.5); border: none; border-radius: 50%; color: white; font-size: 1.5rem; cursor: pointer; transition: 0.3s; z-index: 5; display: grid; place-items: center; }
-    .gallery-arrow:hover { background: rgba(0, 0, 0, 0.8); transform: translateY(-50%) scale(1.1); }
-    .gallery-arrow.prev { left: 20px; }
-    .gallery-arrow.next { right: 20px; }
-    
-    .social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin: 40px 0; }
-    .social-links a { background: rgba(255, 255, 255, 0.2); width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 1.8rem; color: white; text-decoration: none; transition: all 0.3s; }
-    .social-links a:hover { background: var(--coral); transform: translateY(-5px); }
-    .cta-button { background: var(--coral); color: white; padding: 20px 45px; font-size: 1.6rem; font-weight: bold; border: none; border-radius: 50px; cursor: pointer; margin: 15px; box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4); transition: 0.3s; text-decoration: none; display: inline-block; }
-    .cta-button:hover { background: #ff5252; transform: translateY(-5px); }
-    
-    .back-btn { background: rgba(255, 255, 255, 0.15); color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s; border: 1px solid rgba(255, 255, 255, 0.2); display: inline-flex; align-items: center; gap: 10px; margin: 20px 0; }
-    .back-btn:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-3px); }
+    @keyframes bubblePop { from { transform: scale(0.8) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    @keyframes barSlideUp { from { transform: translateX(-50%) translateY(10px); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
 
-    .seo-extra { text-align: left; margin: 60px auto; max-width: 860px; background: rgba(0,0,0,0.2); padding: 30px; border-radius: 24px; }
-    .seo-extra h2 { margin-bottom: 20px; color: #ffeb3b; }
-    footer { text-align: center; margin-top: 60px; opacity: 0.7; font-size: 1rem; padding-bottom: 40px; }
-    @media (max-width: 768px) { h1 { font-size: 2.5rem; } .profile-img { width: 160px; height: 160px; } .cta-button { font-size: 1.3rem; padding: 16px 30px; } .gallery-arrow { display: none; } }
+    /* Custom Scrollbar */
+    #chatHistory::-webkit-scrollbar { width: 6px; }
+    #chatHistory::-webkit-scrollbar-track { background: transparent; }
+    #chatHistory::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    #chatHistory::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
   </style>
   <script type="application/ld+json">
   [
@@ -127,27 +120,85 @@
       <button class="cta-button" onclick="const btn=this; const originalText=btn.innerText; navigator.clipboard.writeText(window.location.href); btn.innerText='\u2713 Copied!'; btn.style.background='#0d9488'; setTimeout(()=>{btn.innerText=originalText; btn.style.background='';}, 2500)">Share Profile</button>
     </div>
 
-    <!-- Messaging Modal -->
-    <div id="msgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center; backdrop-filter:blur(10px); padding:20px;">
-        <div style="background:var(--bg-gradient); width:100%; max-width:500px; padding:30px; border-radius:32px; position:relative; border:1px solid rgba(255,255,255,0.2); box-shadow:0 25px 50px rgba(0,0,0,0.5);">
-            <button onclick="document.getElementById('msgModal').style.display='none'" style="position:absolute; top:15px; right:15px; background:none; border:none; color:white; font-size:24px; cursor:pointer; z-index:10;">&times;</button>
-            <h2 style="margin-bottom:15px; font-size:1.8rem; text-align:center;">Chat with Rey’s Lawn Cutting</h2>
-            <div id="chatHistory" style="height:280px; overflow-y:auto; margin-bottom:15px; padding:15px; background:rgba(0,0,0,0.2); border-radius:15px; display:flex; flex-direction:column; gap:10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
-                <p style="text-align:center; opacity:0.6; margin:auto;">Loading history...</p>
+    <!-- Next-Gen Messaging Modal -->
+    <div id="msgModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; justify-content:center; align-items:center; padding:15px;">
+        <div class="chat-container" style="width:100%; max-width:480px; height: 85vh; display:flex; flex-direction:column; position:relative; overflow:hidden;">
+            <div class="chat-header">
+                <button onclick="window.closeModal()" style="position:absolute; top:20px; right:25px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:24px; cursor:pointer; display:grid; place-items:center; transition:0.3s;">&times;</button>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="width:50px; height:50px; background:var(--bg-gradient); border-radius:50%; display:grid; place-items:center; font-size:24px;"><i class="fas fa-robot"></i></div>
+                    <div>
+                        <h2 style="font-size:1.3rem; margin:0;">Rey’s Lawn Cutting</h2>
+                        <div style="display:flex; align-items:center; gap:5px; font-size:0.8rem; opacity:0.6;">
+                            <div style="width:8px; height:8px; background:#4ade80; border-radius:50%;"></div> Online
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form id="contactForm" onsubmit="event.preventDefault(); sendMessage('eb0c2202-ea36-4cae-8293-dfa814786cf3');">
-                <div id="guestFields" style="display:none;">
-                    <input type="text" id="custName" placeholder="Your Name" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
-                    <input type="text" id="custContact" placeholder="Email or Phone" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:10px; border:none; background:rgba(255,255,255,0.1); color:white; outline:none;">
-                </div>
+            
+            <div id="chatHistory" style="flex:1; overflow-y:auto; padding:25px; display:flex; flex-direction:column; gap:15px; background: transparent;">
+                <p style="text-align:center; opacity:0.6; margin:auto;">Powering up the chat...</p>
+            </div>
+
+            <!-- Reaction Bar (Hidden by default) -->
+            <div id="reactionBar" class="reaction-bar">
+                <span onclick="reactToMessage('â¤ï¸')">â¤ï¸</span>
+                <span onclick="reactToMessage('ðŸ˜‚')">ðŸ˜‚</span>
+                <span onclick="reactToMessage('ðŸ‘')">ðŸ‘</span>
+                <span onclick="reactToMessage('ðŸ”¥')">ðŸ”¥</span>
+                <span onclick="reactToMessage('ðŸ˜®')">ðŸ˜®</span>
+                <button onclick="toggleDeleteMenu()" style="background:rgba(255,0,0,0.2); border:none; color:white; padding:5px 10px; border-radius:15px; cursor:pointer; font-size:12px; margin-left:10px;">Delete</button>
+            </div>
+
+            <!-- Delete Menu (Hidden) -->
+            <div id="deleteMenu" style="display:none; position:absolute; bottom:120px; left:50%; transform:translateX(-50%); background:rgba(30,30,40,0.95); backdrop-filter:blur(20px); border-radius:24px; padding:20px; border:1px solid rgba(255,0,0,0.3); z-index:101; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.5);">
+                <p style="margin-bottom:15px; font-weight:600;">Delete Message?</p>
                 <div style="display:flex; gap:10px;">
-                    <textarea id="custMsg" placeholder="Type your message..." required style="flex:1; padding:12px; border-radius:10px; border:none; background:rgba(255,255,255,0.15); color:white; min-height:45px; height:45px; outline:none; resize:none;"></textarea>
-                    <button type="submit" id="sendBtn" style="padding:0 20px; border-radius:10px; border:none; background:var(--coral); color:white; font-weight:bold; cursor:pointer; transition:0.3s;"><i class="fas fa-paper-plane"></i></button>
+                    <button onclick="deleteMessage('me')" style="background:rgba(255,255,255,0.1); border:none; color:white; padding:10px 15px; border-radius:12px; cursor:pointer;">For Me</button>
+                    <button onclick="deleteMessage('everyone')" style="background:var(--coral); border:none; color:white; padding:10px 15px; border-radius:12px; cursor:pointer; font-weight:bold;">For Everyone</button>
                 </div>
-            </form>
-            <div id="authPrompt" style="display:none; text-align:center; margin-top:20px; font-size:0.9rem; opacity:0.8;">
-                <p>Logging in allows you to receive private replies directly in your dashboard.</p>
-                <a href="https://truewebx.site/dashboard.html" style="color:white; text-decoration:underline; font-weight:bold;">Login / Sign Up</a>
+            </div>
+
+            <div style="padding:25px; background:rgba(255,255,255,0.03); border-top:1px solid rgba(255,255,255,0.08);">
+                <form id="contactForm" onsubmit="event.preventDefault(); sendMessage('eb0c2202-ea36-4cae-8293-dfa814786cf3');" style="position:relative;">
+                    <div id="guestFields" style="display:none; margin-bottom:15px; animation: bubblePop 0.3s ease;">
+                        <input type="text" id="custName" placeholder="Your Name" required style="width:100%; padding:14px 20px; margin-bottom:10px; border-radius:18px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; outline:none; transition:0.3s;" onfocus="this.style.borderColor='var(--coral)'">
+                        <input type="text" id="custContact" placeholder="Email or Phone" required style="width:100%; padding:14px 20px; border-radius:18px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2); color:white; outline:none; transition:0.3s;" onfocus="this.style.borderColor='var(--coral)'">
+                    </div>
+                    
+                    <div style="display:flex; gap:12px; align-items:flex-end; background:rgba(0,0,0,0.3); padding:8px; border-radius:28px; border:1px solid rgba(255,255,255,0.1);">
+                        <button type="button" onclick="toggleEmojiPicker()" style="background:none; border:none; color:#ffeb3b; font-size:22px; padding:10px; cursor:pointer; transition:0.3s;" class="hover-scale"><i class="far fa-smile"></i></button>
+                        <textarea id="custMsg" placeholder="Type message..." required style="flex:1; padding:12px; border:none; background:transparent; color:white; min-height:45px; height:45px; outline:none; resize:none; font-size:1rem;"></textarea>
+                        <button type="submit" id="sendBtn" style="width:45px; height:45px; border-radius:50%; border:none; background:var(--coral); color:white; cursor:pointer; transition:0.3s; display:grid; place-items:center; box-shadow:0 4px 15px rgba(255,107,107,0.4);"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+
+                    <!-- Emoji Picker Quick Bar -->
+                    <div id="emojiPicker" style="display:none; position:absolute; bottom:75px; left:0; width:100%; background:rgba(30,30,45,0.98); backdrop-filter:blur(20px); border-radius:24px; padding:15px; border:1px solid rgba(255,255,255,0.1); z-index:102; box-shadow:0 15px 40px rgba(0,0,0,0.6);">
+                        <div style="display:grid; grid-template-columns: repeat(8, 1fr); gap:10px; text-align:center;">
+                            <span onclick="addEmoji('ðŸ˜Š')" style="cursor:pointer; font-size:24px;">ðŸ˜Š</span>
+                            <span onclick="addEmoji('ðŸ˜‚')" style="cursor:pointer; font-size:24px;">ðŸ˜‚</span>
+                            <span onclick="addEmoji('â¤ï¸')" style="cursor:pointer; font-size:24px;">â¤ï¸</span>
+                            <span onclick="addEmoji('ðŸ‘')" style="cursor:pointer; font-size:24px;">ðŸ‘</span>
+                            <span onclick="addEmoji('ðŸ”¥')" style="cursor:pointer; font-size:24px;">ðŸ”¥</span>
+                            <span onclick="addEmoji('ðŸ™Œ')" style="cursor:pointer; font-size:24px;">ðŸ™Œ</span>
+                            <span onclick="addEmoji('âœ¨')" style="cursor:pointer; font-size:24px;">âœ¨</span>
+                            <span onclick="addEmoji('âœ…')" style="cursor:pointer; font-size:24px;">âœ…</span>
+                            <span onclick="addEmoji('ðŸ‘‹')" style="cursor:pointer; font-size:24px;">ðŸ‘‹</span>
+                            <span onclick="addEmoji('ðŸ™')" style="cursor:pointer; font-size:24px;">ðŸ™</span>
+                            <span onclick="addEmoji('ðŸ˜Ž')" style="cursor:pointer; font-size:24px;">ðŸ˜Ž</span>
+                            <span onclick="addEmoji('ðŸ’¯')" style="cursor:pointer; font-size:24px;">ðŸ’¯</span>
+                            <span onclick="addEmoji('ðŸŽ‰')" style="cursor:pointer; font-size:24px;">ðŸŽ‰</span>
+                            <span onclick="addEmoji('ðŸ¤©')" style="cursor:pointer; font-size:24px;">ðŸ¤©</span>
+                            <span onclick="addEmoji('ðŸ’ª')" style="cursor:pointer; font-size:24px;">ðŸ’ª</span>
+                            <span onclick="addEmoji('ðŸ“')" style="cursor:pointer; font-size:24px;">ðŸ“</span>
+                        </div>
+                    </div>
+                </form>
+                
+                <div id="authPrompt" style="display:none; text-align:center; margin-top:20px; font-size:0.8rem; opacity:0.6;">
+                    <p>Logging in saves your chat history across devices.</p>
+                    <a href="https://truewebx.site/dashboard.html" style="color:var(--coral); text-decoration:none; font-weight:bold;">Sign In</a>
+                </div>
             </div>
         </div>
     </div>
@@ -219,7 +270,65 @@
         localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
     }
     const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
-    let chatTimer = null;
+      let activeMsgId = null; 
+      let chatTimer = null;
+
+      window.toggleEmojiPicker = () => {
+        const p = document.getElementById('emojiPicker');
+        p.style.display = p.style.display === 'none' ? 'block' : 'none';
+      };
+
+      window.addEmoji = (emoji) => {
+        const input = document.getElementById('custMsg');
+        input.value += emoji;
+        window.toggleEmojiPicker();
+        input.focus();
+      };
+
+      window.showReactions = (msgId, event) => {
+        event.stopPropagation();
+        activeMsgId = msgId;
+        const bar = document.getElementById('reactionBar');
+        bar.style.display = 'flex';
+        // Position bar near the bubble
+        const rect = event.currentTarget.getBoundingClientRect();
+        bar.style.top = (rect.top - 60) + 'px';
+        bar.style.left = (rect.left + rect.width/2) + 'px';
+      };
+
+      window.reactToMessage = async (emoji) => {
+        if (!activeMsgId) return;
+        const { data: msg } = await supabaseClient.from('messages').select('text').eq('id', activeMsgId).single();
+        if (msg) {
+            let newText = msg.text;
+            if (newText.includes('!!REACTION:')) {
+                newText = newText.split('!!REACTION:')[0] + '!!REACTION:' + emoji + '!!';
+            } else {
+                newText += ' !!REACTION:' + emoji + '!!';
+            }
+            await supabaseClient.from('messages').update({ text: newText }).eq('id', activeMsgId);
+        }
+        document.getElementById('reactionBar').style.display = 'none';
+        loadChatHistory(window.currentBusinessId);
+      };
+
+      window.toggleDeleteMenu = () => {
+          document.getElementById('deleteMenu').style.display = 'block';
+      };
+
+      window.deleteMessage = async (mode) => {
+          if (!activeMsgId) return;
+          if (mode === 'me') {
+              const deleted = JSON.parse(localStorage.getItem('TRUEWEBX_DELETED_MSGS') || '[]');
+              deleted.push(activeMsgId);
+              localStorage.setItem('TRUEWEBX_DELETED_MSGS', JSON.stringify(deleted));
+          } else {
+              await supabaseClient.from('messages').update({ text: '!!DELETED!!' }).eq('id', activeMsgId);
+          }
+          document.getElementById('deleteMenu').style.display = 'none';
+          document.getElementById('reactionBar').style.display = 'none';
+          loadChatHistory(window.currentBusinessId);
+      };
 
       async function loadChatHistory(serviceId) {
         window.currentBusinessId = serviceId;
@@ -236,29 +345,42 @@
           .or(filter)
           .order('created_at', { ascending: true });
 
-        if (error) {
-          console.error('History error:', error);
-          return;
-        }
+        if (error) return;
 
+        const deletedLocal = JSON.parse(localStorage.getItem('TRUEWEBX_DELETED_MSGS') || '[]');
         const isScrolledToBottom = historyDiv.scrollHeight - historyDiv.clientHeight <= historyDiv.scrollTop + 1;
 
         historyDiv.innerHTML = data.length ? data.map(m => {
-          let cleanText = m.text;
-          if (cleanText.includes('] - ')) {
-            cleanText = cleanText.split('] - ').pop();
-          }
-          cleanText = cleanText.replace('[Owner]: ', '');
+          if (deletedLocal.includes(m.id)) return '';
           
-          return '<div style="align-self: ' + (m.is_from_owner ? 'flex-start' : 'flex-end') + '; ' +
-                        'background: ' + (m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)') + '; ' +
-                        'padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 0.95rem;">' +
+          let cleanText = m.text;
+          let reaction = '';
+          let isDeleted = false;
+
+          if (cleanText.includes('!!DELETED!!')) {
+              cleanText = 'Message unsent';
+              isDeleted = true;
+          } else {
+              if (cleanText.includes('!!REACTION:')) {
+                  reaction = cleanText.split('!!REACTION:')[1].split('!!')[0];
+                  cleanText = cleanText.split('!!REACTION:')[0];
+              }
+              if (cleanText.includes('] - ')) {
+                cleanText = cleanText.split('] - ').pop();
+              }
+              cleanText = cleanText.replace('[Owner]: ', '');
+          }
+          
+          const reactionHtml = reaction ? '<div class="reactions-display">' + reaction + '</div>' : '';
+
+          return '<div class="bubble ' + (m.is_from_owner ? 'owner' : 'client') + (isDeleted ? ' deleted' : '') + '" onclick="window.showReactions(' + m.id + ', event)">' +
               cleanText +
-              '<div style="font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right;">' +
+              reactionHtml +
+              '<div style="font-size: 0.65rem; opacity: 0.5; margin-top: 6px; text-align: right;">' +
                 new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
               '</div>' +
             '</div>';
-        }).join('') : '<p style="text-align:center; opacity:0.6; margin:auto;">Start the conversation!</p>';
+        }).join('') : '<p style="text-align:center; opacity:0.4; margin:auto;">Start your fresh conversation âœ¨</p>';
         
         if (isScrolledToBottom) {
           historyDiv.scrollTop = historyDiv.scrollHeight;
@@ -316,8 +438,15 @@
         chatTimer = setInterval(() => loadChatHistory(id), 4000);
       };
 
-      // Close modal on outside click
+      // Close menus on outside click
       window.addEventListener('click', (e) => {
+        if (!e.target.closest('.bubble') && !e.target.closest('.reaction-bar') && !e.target.closest('#deleteMenu')) {
+            document.getElementById('reactionBar').style.display = 'none';
+            document.getElementById('deleteMenu').style.display = 'none';
+        }
+        if (!e.target.closest('#emojiPicker') && !e.target.closest('button[onclick="toggleEmojiPicker()"]')) {
+            document.getElementById('emojiPicker').style.display = 'none';
+        }
         if (e.target.id === 'msgModal') {
           window.closeModal();
         }
