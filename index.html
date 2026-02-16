@@ -97,6 +97,17 @@
             transform: translateY(0);
         }
 
+        /* Nav Dock Reveal Fix (preserves translateX(-50%)) */
+        .nav-dock.reveal {
+            opacity: 0;
+            transform: translate(-50%, 30px);
+        }
+
+        .nav-dock.reveal.active {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
         /* Modern Background Blobs */
         .bg-blobs {
             position: fixed;
@@ -780,6 +791,29 @@
         }
 
         @media (max-width: 768px) {
+            .header-wrapper {
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                right: 15px;
+                padding: 0 !important;
+            }
+
+            .logo {
+                width: 120px !important;
+            }
+
+            .login-btn {
+                padding: 8px 16px !important;
+                font-size: 0.8rem !important;
+            }
+
+            .login-btn span {
+                display: none;
+            }
+
+            /* Hide text on mobile */
+
             .nav-dock {
                 bottom: 20px;
                 width: 90%;
@@ -881,7 +915,7 @@
                 <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo">
             </a>
             <a href="https://truewebx.site/dashboard.html" class="login-btn" aria-label="Login or Sign Up">
-                <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
+                <i class="fas fa-user-circle" aria-hidden="true"></i> <span>Login / Sign Up</span>
             </a>
         </header>
 

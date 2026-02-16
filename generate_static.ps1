@@ -231,6 +231,10 @@ foreach ($b in $businesses) {
     .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
     .reveal.active { opacity: 1; transform: translateY(0); }
 
+    /* Nav Dock Reveal Fix (preserves translateX(-50%)) */
+    .nav-dock.reveal { opacity: 0; transform: translate(-50%, 30px); }
+    .nav-dock.reveal.active { opacity: 1; transform: translate(-50%, 0); }
+
     .stagger-1 { transition-delay: 0.1s; }
     .stagger-2 { transition-delay: 0.2s; }
     .stagger-3 { transition-delay: 0.3s; }
@@ -308,7 +312,38 @@ foreach ($b in $businesses) {
     .card-expertise { grid-column: span 4; grid-row: span 4; display: flex; flex-direction: column; justify-content: flex-start; }
     .card-social { grid-column: span 4; grid-row: span 3; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .card-contact { grid-column: span 8; grid-row: span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .card-related { grid-column: span 12; margin-top: 40px; }
+    .logo { display: block; width: 180px; height: auto; transition: 0.3s; }
+    .logo img { width: 100%; height: auto; border-radius: 12px; }
+
+    .login-btn {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        color: white;
+        font-weight: 600;
+        padding: 10px 24px;
+        border-radius: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+    .login-btn:hover { background: white; color: black; transform: translateY(-3px); }
+
+    .header-wrapper {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        pointer-events: none;
+    }
+    .header-wrapper > * { pointer-events: auto; }
 
     .expertise-list { list-style: none; margin-top: 10px; padding: 0; }
     .expertise-list li { margin-bottom: 15px; display: flex; align-items: flex-start; gap: 12px; font-weight: 600; font-size: 1.05rem; }
@@ -395,7 +430,15 @@ foreach ($b in $businesses) {
         .bento-container { margin-top: 10px; padding: 0 16px; gap: 16px; }
         .bento-card { padding: 24px; border-radius: 28px; }
         h1 { font-size: 2.2rem; line-height: 1.2; }
+        /* Mobile Polish */
+        .header-wrapper { position: absolute; top: 15px; left: 15px; right: 15px; }
+        .logo { width: 120px; }
+        .login-btn { padding: 8px 16px; font-size: 0.8rem; }
+        .login-btn span { display: none; } /* Hide text on mobile */
+
         .nav-dock { bottom: 20px; width: 90%; max-width: 400px; justify-content: space-around; backdrop-filter: blur(30px) saturate(200%); }
+        .nav-dock.reveal { transform: translate(-50%, 30px); }
+        .nav-dock.reveal.active { transform: translate(-50%, 0); }
         .nav-item { padding: 12px 14px; font-size: 0.85rem; }
         
         /* Bottom Sheet Modal */
@@ -484,6 +527,15 @@ foreach ($b in $businesses) {
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
   </div>
+
+  <header class="header-wrapper reveal" id="header" style="transition-delay: 0.4s;">
+    <a href="https://truewebx.site/" class="logo" aria-label="TrueWebX Home">
+        <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo">
+    </a>
+    <a href="https://truewebx.site/dashboard.html" class="login-btn" aria-label="Login or Sign Up">
+        <i class="fas fa-user-circle" aria-hidden="true"></i> <span>Login / Sign Up</span>
+    </a>
+  </header>
 
   <nav class="nav-dock reveal">
     <a href="https://truewebx.site/" class="nav-item"><i class="fas fa-home"></i> Home</a>
