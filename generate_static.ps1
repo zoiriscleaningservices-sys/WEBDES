@@ -71,6 +71,19 @@ foreach ($b in $businesses) {
     $zipCode = ($stateInfo -split " ")[-1]
 
     # Add to Sitemap XML with Full Image Indexing
+    # Extreme Niche Extraction (identifying what they DO)
+    $niche = "Professional Services"
+    $desc = $b.description.ToLower()
+    if ($desc -match "airbnb|short-term|turnover") { $niche = "Airbnb & Vacation Rental Cleaning" }
+    elseif ($desc -match "commercial|office|janitorial") { $niche = "Commercial Cleaning & Janitorial" }
+    elseif ($desc -match "cleaning|maid|housekeeping") { $niche = "Residential Cleaning Services" }
+    elseif ($desc -match "lawn|grass|landscaping|mowing") { $niche = "Lawn Care & Professional Landscaping" }
+    elseif ($desc -match "barber|hair|salon|fade") { $niche = "Precision Barbering & Grooming" }
+    elseif ($desc -match "roofing|construction|renovation|remodel") { $niche = "Home Remodeling & Construction" }
+    elseif ($desc -match "moving|relocation|transport") { $niche = "Professional Moving & Logistics" }
+    elseif ($desc -match "pest|bug|exterminator") { $niche = "Expert Pest Control" }
+    elseif ($desc -match "plumbing|pipe|leak") { $niche = "Licensed Plumbing Services" }
+
     $sitemapXml += @"
 
   <url>
@@ -97,19 +110,6 @@ foreach ($b in $businesses) {
     $sitemapXml += @"
   </url>
 "@
-
-    # Extreme Niche Extraction (identifying what they DO)
-    $niche = "Professional Services"
-    $desc = $b.description.ToLower()
-    if ($desc -match "airbnb|short-term|turnover") { $niche = "Airbnb & Vacation Rental Cleaning" }
-    elseif ($desc -match "commercial|office|janitorial") { $niche = "Commercial Cleaning & Janitorial" }
-    elseif ($desc -match "cleaning|maid|housekeeping") { $niche = "Residential Cleaning Services" }
-    elseif ($desc -match "lawn|grass|landscaping|mowing") { $niche = "Lawn Care & Professional Landscaping" }
-    elseif ($desc -match "barber|hair|salon|fade") { $niche = "Precision Barbering & Grooming" }
-    elseif ($desc -match "roofing|construction|renovation|remodel") { $niche = "Home Remodeling & Construction" }
-    elseif ($desc -match "moving|relocation|transport") { $niche = "Professional Moving & Logistics" }
-    elseif ($desc -match "pest|bug|exterminator") { $niche = "Expert Pest Control" }
-    elseif ($desc -match "plumbing|pipe|leak") { $niche = "Licensed Plumbing Services" }
 
     # Advanced Dynamic SEO Metadata
     $pageTitle = "#1 $($b.name) - Best $niche in $cityName, $stateInfo"
