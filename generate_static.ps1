@@ -84,6 +84,10 @@ foreach ($b in $businesses) {
     elseif ($desc -match "pest|bug|exterminator") { $niche = "Expert Pest Control" }
     elseif ($desc -match "plumbing|pipe|leak") { $niche = "Licensed Plumbing Services" }
 
+    # XML Safe Variables (Escape & for Sitemap)
+    $xmlSafeName = $b.name -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;'
+    $xmlSafeNiche = $niche -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;'
+
     $sitemapXml += @"
 
   <url>
@@ -93,7 +97,7 @@ foreach ($b in $businesses) {
     <priority>0.9</priority>
     <image:image>
       <image:loc>$($b.profile)</image:loc>
-      <image:title>$($b.name) - Official Profile</image:title>
+      <image:title>$xmlSafeName - Official Profile</image:title>
     </image:image>
 "@
     # Add gallery images to sitemap for extreme image-search dominance
@@ -102,7 +106,7 @@ foreach ($b in $businesses) {
             $sitemapXml += @"
     <image:image>
       <image:loc>$photo</image:loc>
-      <image:title>$($b.name) - $niche Service Gallery</image:title>
+      <image:title>$xmlSafeName - $xmlSafeNiche Service Gallery</image:title>
     </image:image>
 "@
         }
