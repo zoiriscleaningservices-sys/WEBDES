@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /profile/
+Allow: /dashboard.html
+Allow: /message.html
+Allow: /index.html
+Disallow: /tmp/
+Disallow: /search?*
+
+Sitemap: https://truewebx.site/sitemap.xml
