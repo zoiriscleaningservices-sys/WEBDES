@@ -11,6 +11,10 @@
         content="business directory, local services, global business listings, find local companies, professional services, free consultation, business profiles">
     <meta name="robots" content="index, follow">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
     <!-- Open Graph / Social -->
     <meta property="og:title" content="TrueWebX – Global Business Directory">
     <meta property="og:description"
@@ -49,15 +53,17 @@
             --coral: #ff6b6b;
             --turquoise: #0d9488;
             --white: #ffffff;
-            --light-glass: rgba(255, 255, 255, 0.16);
-            --card-glass: rgba(255, 255, 255, 0.14);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --bg: #030712;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         *,
         *::before,
         *::after {
             box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
         }
 
         html,
@@ -70,82 +76,166 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--turquoise), var(--coral));
-            background-attachment: fixed;
+            background: var(--bg);
             color: var(--white);
             min-height: 100vh;
             overflow-x: hidden;
-            transform: translateZ(0);
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Modern Background Blobs */
+        .bg-blobs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            filter: blur(100px);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 20s infinite alternate;
+        }
+
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--turquoise);
+            top: -100px;
+            left: -100px;
+            opacity: 0.4;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--coral);
+            bottom: -100px;
+            right: -100px;
+            opacity: 0.3;
+        }
+
+        .blob-3 {
+            width: 400px;
+            height: 400px;
+            background: #6366f1;
+            top: 40%;
+            left: 30%;
+            opacity: 0.2;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(100px, 50px) scale(1.1);
+            }
         }
 
         .wrapper {
             width: 100%;
-            max-width: 100vw;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 0 24px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
+        /* Floating Dock Navigation */
+        .nav-dock {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 0.5px solid var(--glass-border);
+            padding: 8px 12px;
+            border-radius: 30px;
+            display: flex;
+            gap: 8px;
+            z-index: 10000;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .nav-item.active {
+            background: white;
+            color: black;
+        }
+
+        /* Legacy Header Wrapper (for login button at top right if needed, or hide) */
         .header-wrapper {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 20px;
+            left: 20px;
+            right: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.38);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            transition: background 0.35s ease;
-            will-change: background;
-            transform: translateZ(0);
+            pointer-events: none;
         }
 
-        .header-wrapper.scrolled {
-            background: rgba(0, 0, 0, 0.58);
+        .header-wrapper>* {
+            pointer-events: auto;
         }
 
         .logo {
             display: block;
-            max-width: clamp(160px, 35vw, 280px);
-            max-height: 64px;
+            width: 180px;
             height: auto;
-            line-height: 0;
         }
 
         .logo img {
             width: 100%;
             height: auto;
-            max-height: 64px;
-            object-fit: contain;
-            display: block;
+            border-radius: 12px;
         }
 
         .login-btn {
-            background: rgba(255, 255, 255, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
             color: white;
             font-weight: 600;
-            padding: 12px 24px;
+            padding: 10px 24px;
             border-radius: 50px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1rem;
-            transition: all 0.3s;
             text-decoration: none;
+            transition: 0.3s;
         }
 
         .login-btn:hover {
-            background: rgba(255, 255, 255, 0.32);
+            background: white;
+            color: black;
             transform: translateY(-3px);
         }
 
@@ -186,23 +276,28 @@
 
         .search-box {
             width: 100%;
-            padding: 18px 70px 18px 28px;
+            padding: 22px 70px 22px 32px;
             font-size: 1.25rem;
             border-radius: 50px;
-            border: none;
-            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             color: white;
-            box-shadow: var(--shadow);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .search-box::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .search-box:focus {
-            outline: 2px solid var(--coral);
-            outline-offset: 4px;
-            box-shadow: 0 0 0 5px rgba(255, 107, 107, 0.4);
+            outline: none;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
 
         .search-icon {
@@ -699,14 +794,24 @@
 </head>
 
 <body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <nav class="nav-dock">
+        <a href="https://truewebx.site/" class="nav-item active"><i class="fas fa-home"></i> Home</a>
+        <a href="#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
+        <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
+    </nav>
+
     <div class="wrapper">
         <header class="header-wrapper" id="header">
-            <a href="/" class="logo" aria-label="TrueWebX Home">
-                <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo" width="240" height="64"
-                    loading="eager">
+            <a href="https://truewebx.site/" class="logo" aria-label="TrueWebX Home">
+                <img src="https://truewebx.site/favicon/TrueWebX.jpeg" alt="TrueWebX Logo">
             </a>
-
-            <a href="dashboard.html" class="login-btn" aria-label="Login or Sign Up">
+            <a href="https://truewebx.site/dashboard.html" class="login-btn" aria-label="Login or Sign Up">
                 <i class="fas fa-user-circle" aria-hidden="true"></i> Login / Sign Up
             </a>
         </header>
