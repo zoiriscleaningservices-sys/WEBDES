@@ -253,11 +253,34 @@
     /* Mobile Responsive Upgrade */
     @media (max-width: 1024px) {
         .card-hero, .card-profile, .card-gallery, .card-contact, .card-related, .card-expertise, .card-social { grid-column: span 12 !important; }
-        .bento-container { margin-top: 10px; padding: 0 16px; gap: 16px; }
-        .bento-card { padding: 24px; border-radius: 28px; }
+        .bento-container { 
+            display: flex; 
+            flex-direction: column; 
+            margin-top: 10px; 
+            padding: 0 16px; 
+            gap: 16px; 
+        }
+        .card-profile { order: 1; }
+        .card-hero { order: 2; }
+        .card-gallery { order: 3; }
+        .card-expertise { order: 4; }
+        .card-contact { order: 5; }
+        .card-social { order: 6; }
+        .card-related { order: 7; }
+
         h1 { font-size: 2.2rem; line-height: 1.2; }
         /* Mobile Polish */
-        .header-wrapper { position: absolute; top: 15px; left: 15px; right: 15px; }
+        .header-wrapper { 
+            position: relative; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            padding: 15px 16px !important; 
+            z-index: 1001;
+            background: rgba(3, 7, 18, 0.5);
+            backdrop-filter: blur(10px);
+            margin-bottom: 10px;
+        }
         .logo { width: 120px; }
         .login-btn { padding: 8px 16px; font-size: 0.8rem; }
         .login-btn span { display: none; } /* Hide text on mobile */
