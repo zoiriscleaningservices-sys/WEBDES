@@ -25,6 +25,7 @@ try {
 $templatePath = "service.html" # Use this as the base structure
 $sitemapPath = "sitemap.xml"
 $today = Get-Date -Format "yyyy-MM-dd"
+$staticLinks = ""
 
 # Initialize Sitemap XML
 $sitemapXml = @"
@@ -64,6 +65,9 @@ foreach ($b in $businesses) {
     if (-not (Test-Path $profileDir)) {
         New-Item -ItemType Directory -Path $profileDir -Force
     }
+    
+    # Collect static link for SEO injection
+    $staticLinks += "<a href='https://truewebx.site/profile/$($b.slug)/'>$($b.name) - $($b.city)</a>`n"
 
     # preparing SEO content
     $cityName = ($b.city -split ",")[0].Trim()
@@ -825,3 +829,21 @@ foreach ($dir in $existingProfiles) {
 $sitemapXml += "`n</urlset>"
 [System.IO.File]::WriteAllText($sitemapPath, $sitemapXml, [System.Text.Encoding]::UTF8)
 Write-Host "Sitemap updated successfully with $($businesses.Count) records."
+
+# Inject Static Links into index.html
+if (Test-Path "index.html") {
+    $indexHtml = [System.IO.File]::ReadAllText("index.html", [System.Text.Encoding]::UTF8)
+    $startMarker = "<!-- STATIC_DIRECTORY_START -->"
+    $endMarker = "<!-- STATIC_DIRECTORY_END -->"
+    
+    if ($indexHtml -match "(?s)$startMarker(.*?)$endMarker") {
+        $newContent = "$startMarker`n$staticLinks$endMarker"
+        # Using regex replace to handle the multiline match properly
+        $regex = [regex]::Escape($startMarker) + "(?s:.*?)" + [regex]::Escape($endMarker)
+        if ($indexHtml -match $regex) {
+            $indexHtml = $indexHtml -replace $regex, $newContent
+        }
+        [System.IO.File]::WriteAllText("index.html", $indexHtml, [System.Text.Encoding]::UTF8)
+        Write-Host "Injected $($businesses.Count) static links into index.html directory section."
+    }
+}
