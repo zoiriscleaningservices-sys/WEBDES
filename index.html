@@ -82,6 +82,19 @@
             min-height: 100vh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            scroll-behavior: smooth;
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* Modern Background Blobs */
@@ -425,17 +438,15 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: transform 0.4s ease, opacity 0.5s ease;
-            opacity: 0;
-            transform: translateY(20px);
             display: flex;
             flex-direction: column;
             width: 100%;
             position: relative;
+            cursor: pointer;
         }
 
-        .card.loaded {
-            opacity: 1;
-            transform: translateY(0);
+        .card:active {
+            transform: scale(0.96);
         }
 
         .card:hover {
@@ -769,6 +780,63 @@
         }
 
         @media (max-width: 768px) {
+            .nav-dock {
+                bottom: 20px;
+                width: 90%;
+                max-width: 400px;
+                justify-content: space-around;
+                backdrop-filter: blur(30px) saturate(200%);
+            }
+
+            .nav-item {
+                padding: 12px 14px;
+                font-size: 0.85rem;
+            }
+
+            .header-wrapper {
+                padding: 10px 0;
+            }
+
+            .tagline {
+                font-size: 2.5rem;
+                margin-top: 40px;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .search-container {
+                margin-top: 30px;
+            }
+
+            .glass {
+                padding: 30px 16px;
+                border-radius: 28px;
+            }
+
+            .services {
+                gap: 20px;
+            }
+
+            /* Bottom Sheet for messaging */
+            #msgModal {
+                align-items: flex-end;
+                padding: 0;
+            }
+
+            .chat-container {
+                border-radius: 32px 32px 0 0;
+                max-width: 100%;
+                height: 85vh;
+                transform: translateY(100%);
+                transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1) !important;
+            }
+
+            #msgModal[style*="flex"] .chat-container {
+                transform: translateY(0);
+            }
+
             .gallery-arrow {
                 display: none;
             }
@@ -801,7 +869,7 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <nav class="nav-dock">
+    <nav class="nav-dock reveal">
         <a href="https://truewebx.site/" class="nav-item active"><i class="fas fa-home"></i> Home</a>
         <a href="#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
         <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
@@ -818,7 +886,7 @@
         </header>
 
         <main class="main-content">
-            <section class="hero" aria-labelledby="hero-heading">
+            <section class="hero reveal" aria-labelledby="hero-heading">
                 <h2 id="hero-heading" class="tagline">Promote Your Business Worldwide</h2>
                 <p class="subtitle">
                     TrueWebX connects customers with trusted local professionals everywhere.<br>
@@ -826,7 +894,7 @@
                 </p>
             </section>
 
-            <div class="search-container">
+            <div class="search-container reveal">
                 <label for="searchInput" class="visually-hidden">Search businesses</label>
                 <input type="text" id="searchInput" class="search-box"
                     placeholder="Search services, businesses, or cities..." aria-label="Search businesses">
@@ -838,7 +906,7 @@
                 <!-- dots div removed completely -->
             </section>
 
-            <section class="glass" aria-labelledby="services-heading">
+            <section class="glass reveal" aria-labelledby="services-heading">
                 <h2 id="services-heading">Available Services Worldwide</h2>
                 <div class="services" id="list" role="list"></div>
                 <button id="loadMoreBtn" class="load-more-btn" style="display:none;">Load More</button>
@@ -1386,6 +1454,18 @@
                 }
                 loadInitialServices();
                 document.getElementById('loadMoreBtn').addEventListener('click', loadMoreServices);
+
+                // Scroll Reveal Engine
+                const observerOptions = { threshold: 0.1 };
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
             });
         }
     </script>

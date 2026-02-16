@@ -17,6 +17,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
 
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --coral: #ff6b6b;
@@ -33,12 +34,25 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--turquoise), var(--coral));
+            font-family: 'Outfit', sans-serif;
+            background: #030712;
             color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        /* Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .login-container {
@@ -109,6 +123,10 @@
             transform: translateY(-2px);
         }
 
+        .button-submit:active {
+            transform: scale(0.96);
+        }
+
         .button-submit:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -131,6 +149,10 @@
 
         .btn.google:hover {
             border-color: #2d79f3;
+        }
+
+        .btn.google:active {
+            transform: scale(0.96);
         }
 
         .error {
@@ -1883,6 +1905,17 @@
         document.getElementById('chatMsg')?.addEventListener('keypress', e => {
             if (e.key === 'Enter') sendChatMessage();
         });
+        // Scroll Reveal Engine
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
 

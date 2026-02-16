@@ -224,7 +224,16 @@ foreach ($b in $businesses) {
       min-height: 100vh; 
       overflow-x: hidden;
       line-height: 1.5;
+      scroll-behavior: smooth;
     }
+
+    /* Reveal Animations */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+    .reveal.active { opacity: 1; transform: translateY(0); }
+
+    .stagger-1 { transition-delay: 0.1s; }
+    .stagger-2 { transition-delay: 0.2s; }
+    .stagger-3 { transition-delay: 0.3s; }
 
     /* Modern Background Blobs */
     .bg-blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; filter: blur(100px); opacity: 0.6; pointer-events: none; }
@@ -287,7 +296,9 @@ foreach ($b in $businesses) {
         transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         position: relative;
         overflow: hidden;
+        cursor: pointer;
     }
+    .bento-card:active { transform: scale(0.96); }
     .bento-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
 
     /* Card Specifics */
@@ -378,11 +389,25 @@ foreach ($b in $businesses) {
 
     .card-social { grid-column: span 4; grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-    /* Mobile Responsive */
+    /* Mobile Responsive Upgrade */
     @media (max-width: 1024px) {
-        .card-hero, .card-profile, .card-gallery, .card-contact { grid-column: span 12; }
-        .bento-container { margin-top: 20px; }
-        h1 { font-size: 2.5rem; }
+        .card-hero, .card-profile, .card-gallery, .card-contact, .card-related, .card-expertise, .card-social { grid-column: span 12 !important; }
+        .bento-container { margin-top: 10px; padding: 0 16px; gap: 16px; }
+        .bento-card { padding: 24px; border-radius: 28px; }
+        h1 { font-size: 2.2rem; line-height: 1.2; }
+        .nav-dock { bottom: 20px; width: 90%; max-width: 400px; justify-content: space-around; backdrop-filter: blur(30px) saturate(200%); }
+        .nav-item { padding: 12px 14px; font-size: 0.85rem; }
+        
+        /* Bottom Sheet Modal */
+        #msgModal { align-items: flex-end; padding: 0; }
+        .chat-container { 
+            border-radius: 32px 32px 0 0; 
+            max-width: 100%; 
+            height: 85vh; 
+            transform: translateY(100%); 
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        #msgModal[style*="flex"] .chat-container { transform: translateY(0); }
     }
 
     /* Messaging UI Parity */
@@ -460,31 +485,31 @@ foreach ($b in $businesses) {
     <div class="blob blob-3"></div>
   </div>
 
-  <nav class="nav-dock">
+  <nav class="nav-dock reveal">
     <a href="https://truewebx.site/" class="nav-item"><i class="fas fa-home"></i> Home</a>
     <a href="https://truewebx.site/#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
     <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
   </nav>
 
   <div class="bento-container">
-    <div class="bento-card card-hero">
+    <div class="bento-card card-hero reveal stagger-1">
         <div class="badge">Verified Expert</div>
         <h1>$($b.name)</h1>
         <div class="description">$($b.description.Replace("`n", "<br>"))</div>
     </div>
 
-    <div class="bento-card card-profile">
+    <div class="bento-card card-profile reveal stagger-2">
         <img src="$($b.profile)" alt="$($b.name) profile" class="profile-img">
         <div style="font-size:1.4rem; font-weight:800; margin-bottom:5px;">$cityName</div>
         <div style="opacity:0.6;"><i class="fas fa-map-marker-alt"></i> $($b.city)</div>
         <div class="status-ping"><span></span> Online Now</div>
     </div>
 
-    <div class="bento-card card-gallery">
+    <div class="bento-card card-gallery reveal">
         $galleryHtml
     </div>
 
-    <div class="bento-card card-expertise">
+    <div class="bento-card card-expertise reveal stagger-3">
         <div style="font-size:1.6rem; font-weight:800; margin-bottom:20px; color:var(--coral);">Expertise & Focus</div>
         <ul class="expertise-list">
             <li><i class="fas fa-check-circle"></i> Pre-Vetted $niche</li>
@@ -498,14 +523,14 @@ foreach ($b in $businesses) {
         </div>
     </div>
 
-    <div class="bento-card card-social">
+    <div class="bento-card card-social reveal">
         <div style="font-size:1.5rem; font-weight:800; margin-bottom:20px; text-align:center;">Social Network</div>
         <div class="social-links-grid">
             $socialHtml
         </div>
     </div>
 
-    <div class="bento-card card-contact" style="flex-direction: row; flex-wrap: wrap;">
+    <div class="bento-card card-contact reveal" style="flex-direction: row; flex-wrap: wrap;">
         <div style="grid-column: span 2; font-size:1.8rem; font-weight:800; margin-bottom:10px;">Immediate Contact</div>
         <a href="tel:$cleanPhone" class="contact-item" style="flex:1;">
             <i class="fas fa-phone"></i>
@@ -526,7 +551,7 @@ foreach ($b in $businesses) {
         </button>
     </div>
 
-    <div class="card-related" style="grid-column: span 12;">
+    <div class="card-related reveal" style="grid-column: span 12;">
         $relatedProfilesHtml
     </div>
 
@@ -612,7 +637,8 @@ foreach ($b in $businesses) {
             cleanText = cleanText.replace('[Owner]: ', '');
             return ``<div style="align-self: ${sig}{m.is_from_owner ? 'flex-start' : 'flex-end'}; 
                          background: ${sig}{m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
-                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;">
+                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;
+                         animation: bubblePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
                         ${sig}{cleanText}
                     </div>``;
         }).join('');
@@ -676,6 +702,18 @@ foreach ($b in $businesses) {
             next.style.display = 'none';
         }
     }
+
+    // Scroll Reveal Engine
+    const observerOptions = { threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
