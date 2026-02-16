@@ -131,7 +131,7 @@ foreach ($b in $businesses) {
                 "youtube" { "youtube" }
                 default { "globe" }
             }
-            $socialHtml += "<a href='$($link.url)' target='_blank' rel='noopener' class='social-btn $type' aria-label='$($link.type)'><i class='fab fa-$icon'></i></a>"
+            $socialHtml += "<a href='$($link.url)' target='_blank' rel='noopener' class='social-btn $type' aria-label='$($link.type)'><i class='fa-brands fa-$icon'></i></a>"
         }
     }
 
@@ -177,6 +177,8 @@ foreach ($b in $businesses) {
         $relatedProfilesHtml += "</div>"
     }
 
+    # Sign for JS template literals to avoid PS interpolation issues
+    $sig = '$'
     # Build the HTML content
     $htmlContent = @"
 <!DOCTYPE html>
@@ -213,7 +215,8 @@ foreach ($b in $businesses) {
       --accent: #f8fafc;
     }
     
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *:not(i) { font-family: 'Outfit', sans-serif; }
     
     body { 
       background: var(--bg); 
@@ -459,7 +462,7 @@ foreach ($b in $businesses) {
 
   <nav class="nav-dock">
     <a href="https://truewebx.site/" class="nav-item"><i class="fas fa-home"></i> Home</a>
-    <a href="https://truewebx.site/directory.html" class="nav-item active"><i class="fas fa-compass"></i> Discover</a>
+    <a href="https://truewebx.site/#list" class="nav-item"><i class="fas fa-compass"></i> Discover</a>
     <a href="https://truewebx.site/dashboard.html" class="nav-item"><i class="fas fa-user-circle"></i> Account</a>
   </nav>
 
@@ -583,7 +586,59 @@ foreach ($b in $businesses) {
             container.style.transform = 'scale(1)';
         }, 10);
         if (chatTimer) clearInterval(chatTimer);
-        // ... previous load history logic ...
+        window.loadChatMessages(id);
+        chatTimer = setInterval(() => window.loadChatMessages(id), 4000);
+    };
+
+    if (!localStorage.getItem('TRUEWEBX_CLIENT_ID')) {
+        localStorage.setItem('TRUEWEBX_CLIENT_ID', 'G-' + Math.random().toString(36).substring(2, 15));
+    }
+    const persistentClientId = localStorage.getItem('TRUEWEBX_CLIENT_ID');
+
+    window.loadChatMessages = async (serviceId) => {
+        const prefix = ``[GuestID: ${sig}{persistentClientId}]``;
+        const { data, error } = await supabaseClient.from('messages')
+            .select('*')
+            .eq('service_id', serviceId)
+            .or(``text.ilike.%${sig}{prefix}%``)
+            .order('created_at', { ascending: true });
+
+        if (error) return;
+        const body = document.getElementById('chatHistory');
+        const isScrolledToBottom = body.scrollHeight - body.clientHeight <= body.scrollTop + 10;
+
+        body.innerHTML = data.map(m => {
+            let cleanText = m.text.includes('] - ') ? m.text.split('] - ').pop() : m.text;
+            cleanText = cleanText.replace('[Owner]: ', '');
+            return ``<div style="align-self: ${sig}{m.is_from_owner ? 'flex-start' : 'flex-end'}; 
+                         background: ${sig}{m.is_from_owner ? 'rgba(255,255,255,0.1)' : 'var(--coral)'}; 
+                         padding: 12px 20px; border-radius: 20px; max-width: 85%; margin-bottom: 10px;">
+                        ${sig}{cleanText}
+                    </div>``;
+        }).join('');
+
+        if (isScrolledToBottom) body.scrollTop = body.scrollHeight;
+    };
+
+    window.sendMessage = async (serviceId) => {
+        const input = document.getElementById('custMsg');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        const prefix = ``[GuestID: ${sig}{persistentClientId}]``;
+        const { error } = await supabaseClient.from('messages').insert([{
+            service_id: serviceId,
+            text: ``${sig}{prefix} - ${sig}{msg}``,
+            is_from_owner: false,
+            created_at: new Date().toISOString()
+        }]);
+
+        if (error) {
+            alert('Error sending message');
+        } else {
+            input.value = '';
+            window.loadChatMessages(serviceId);
+        }
     };
 
     const slider = document.getElementById('gallerySlider');
