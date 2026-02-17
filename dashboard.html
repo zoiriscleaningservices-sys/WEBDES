@@ -28,6 +28,61 @@
             --text: #ffffff;
         }
 
+        /* Hyper-Drive Scroller */
+        .hyper-scroller {
+            width: 100%;
+            overflow: hidden;
+            background: #000;
+            border-bottom: 2px solid var(--coral);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10002;
+            white-space: nowrap;
+            padding: 14px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .hyper-scroller-content {
+            display: flex;
+            animation: hyperDrive 30s linear infinite;
+        }
+
+        @keyframes hyperDrive {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        .hyper-text {
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 1rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            padding-right: 50px;
+            flex-shrink: 0;
+        }
+
+        .hyper-text b {
+            color: var(--coral);
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
+        }
+
+        .hyper-text i {
+            color: var(--turquoise);
+            margin: 0 15px;
+            font-size: 1.2rem;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -848,6 +903,23 @@
 </head>
 
 <body>
+    <!-- Hyper-Drive Infinite Scroller (Global Rollout) -->
+    <div class="hyper-scroller" onclick="window.location.href='/rollout.html'">
+        <div class="hyper-scroller-content">
+            <span class="hyper-text">TRUEWEBX <b>GLOBAL ROLLOUT</b> <i>//</i> ZADAPT SYSTEMS <b>ADAPTIVE TECH</b>
+                <i>//</i> LIMPIEZA DIGITAL <b>PERFORMANCE ENGINE</b> <i>//</i> REAL-TIME <b>RANKING SUPREMACY</b>
+                <i>//</i> GOING <b>WORLDWIDE</b> <i>//</i> </span>
+            <span class="hyper-text">TRUEWEBX <b>GLOBAL ROLLOUT</b> <i>//</i> ZADAPT SYSTEMS <b>ADAPTIVE TECH</b>
+                <i>//</i> LIMPIEZA DIGITAL <b>PERFORMANCE ENGINE</b> <i>//</i> REAL-TIME <b>RANKING SUPREMACY</b>
+                <i>//</i> GOING <b>WORLDWIDE</b> <i>//</i> </span>
+            <span class="hyper-text">TRUEWEBX <b>GLOBAL ROLLOUT</b> <i>//</i> ZADAPT SYSTEMS <b>ADAPTIVE TECH</b>
+                <i>//</i> LIMPIEZA DIGITAL <b>PERFORMANCE ENGINE</b> <i>//</i> REAL-TIME <b>RANKING SUPREMACY</b>
+                <i>//</i> GOING <b>WORLDWIDE</b> <i>//</i> </span>
+            <span class="hyper-text">TRUEWEBX <b>GLOBAL ROLLOUT</b> <i>//</i> ZADAPT SYSTEMS <b>ADAPTIVE TECH</b>
+                <i>//</i> LIMPIEZA DIGITAL <b>PERFORMANCE ENGINE</b> <i>//</i> REAL-TIME <b>RANKING SUPREMACY</b>
+                <i>//</i> GOING <b>WORLDWIDE</b> <i>//</i> </span>
+        </div>
+    </div>
 
     <!-- LOGIN / SIGN UP (exactly the same) -->
     <div id="loginScreen" class="login-container">
