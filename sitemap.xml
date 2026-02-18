@@ -5,7 +5,7 @@
   <!-- Home -->
   <url>
     <loc>https://truewebx.site/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
@@ -13,7 +13,7 @@
   <!-- Dashboard -->
   <url>
     <loc>https://truewebx.site/dashboard.html</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
@@ -21,13 +21,13 @@
   <!-- Messaging -->
   <url>
     <loc>https://truewebx.site/message.html</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://truewebx.site/profile/rey-s-lawn-cutting-jacksonville/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -39,7 +39,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/golden-grove-cleaning-midland-tx/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -63,7 +63,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/icx-facility-solutions-harrisburg-pa/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -81,7 +81,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/tropishine-cleaning-deerfield-beach-fl/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -114,7 +114,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/zoiris-cleaning-services-mobile/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -141,7 +141,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/fargo-fresh-maids-fargo-nd/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -150,7 +150,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/time-to-shine-cleaning-co-ontario-ca/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -159,7 +159,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/sweet-maid-cleaning-service-bradenton-fl/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -171,7 +171,7 @@
     </image:image>  </url>
   <url>
     <loc>https://truewebx.site/profile/pichy-barber-spanish-fort-al-mobile-al/</loc>
-    <lastmod>2026-02-17</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -261,5 +261,14 @@
     </image:image>    <image:image>
       <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/photos/photo_b5208623-b2b0-4403-9bb4-7468ebd0ed4a.jpeg</image:loc>
       <image:title>Pichy Barber 💈🇨🇺 Spanish Fort AL - Precision Barbering &amp; Grooming Service Gallery</image:title>
+    </image:image>  </url>
+  <url>
+    <loc>https://truewebx.site/profile/gl-multiservice-dallas-tx/</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://vrpyomevjlsacourdmki.supabase.co/storage/v1/object/public/profiles/profile_5fa8f60e-8438-4a95-be88-87dbfca9e9c7.jpeg</image:loc>
+      <image:title>GL MULTISERVICE - Official Profile</image:title>
     </image:image>  </url>
 </urlset>
