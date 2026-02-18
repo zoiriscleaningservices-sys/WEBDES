@@ -79,8 +79,9 @@ foreach ($b in $businesses) {
     $niche = "Professional Services"
     $desc = $b.description.ToLower()
     if ($desc -match "airbnb|short-term|turnover") { $niche = "Airbnb & Vacation Rental Cleaning" }
-    elseif ($desc -match "commercial|office|janitorial") { $niche = "Commercial Cleaning & Janitorial" }
-    elseif ($desc -match "cleaning|maid|housekeeping") { $niche = "Residential Cleaning Services" }
+    elseif ($desc -match "commercial|office|janitorial|oficinas") { $niche = "Commercial Cleaning & Janitorial" }
+    elseif ($desc -match "cleaning|maid|housekeeping|limpieza|casas") { $niche = "Residential Cleaning Services" }
+
     elseif ($desc -match "lawn|grass|landscaping|mowing") { $niche = "Lawn Care & Professional Landscaping" }
     elseif ($desc -match "barber|hair|salon|fade") { $niche = "Precision Barbering & Grooming" }
     elseif ($desc -match "roofing|construction|renovation|remodel") { $niche = "Home Remodeling & Construction" }
