@@ -955,7 +955,7 @@
 
                 <div style="display:flex; align-items:center; gap:20px;">
                     <div style="text-align:right; font-family:'Rajdhani', sans-serif;">
-                        <div style="font-size:0.75rem; color:var(--text-muted);">CURRENT STATUS</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);" id="pageTitle">MISSION CONTROL</div>
                         <div style="font-size:1.1rem; font-weight:700; color:var(--neon-success);">MAXIMUM READINESS
                         </div>
                     </div>
@@ -1567,14 +1567,14 @@
         }
 
         auth.onAuthStateChanged(user => {
-            runBootSequence(() => {
-                if (user) {
-                    loadDashboard(user);
-                } else {
-                    document.getElementById('loginScreen').style.display = 'flex';
-                    document.getElementById('loginScreen').classList.add('slide-in-up');
-                }
-            });
+            if (user) {
+                runBootSequence(() => {
+                    show('home');
+                });
+            } else {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('loginScreen').classList.add('slide-in-up');
+            }
         });
 
         // Dashboard Logic
@@ -1584,9 +1584,6 @@
             const appContainer = document.getElementById('appContainer');
             appContainer.classList.add('loaded'); // Trigger animation
             appContainer.style.display = 'flex'; // Use flex for layout
-
-            // Ensure we are in the home view on load
-            show('home');
 
             // Set User Info
             document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
