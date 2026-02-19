@@ -71,12 +71,110 @@
             }
         }
 
-        .slide-in-right {
-            animation: slideInRight 0.4s var(--ease-elastic) forwards;
-        }
-
         .slide-in-left {
             animation: slideInLeft 0.4s var(--ease-elastic) forwards;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 243, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 243, 255, 0);
+            }
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--neon-primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--neon-primary);
+        }
+
+        /* Spatial Inbox */
+        .inbox-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .inbox-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--neon-primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .inbox-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateX(5px);
+            border-color: var(--neon-primary);
+        }
+
+        .inbox-card.active {
+            background: rgba(0, 243, 255, 0.08);
+            border-color: var(--neon-primary);
+        }
+
+        .inbox-card.active::before {
+            opacity: 1;
+        }
+
+        .inbox-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(189, 0, 255, 0.1));
+            border: 1px solid var(--glass-border);
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            color: var(--neon-primary);
+            flex-shrink: 0;
+        }
+
+        .inbox-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .inbox-name {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.95rem;
+        }
+
+        .inbox-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
         }
 
         /* Chat Bubbles */
@@ -711,23 +809,27 @@
                         <div class="data-crystal">
                             <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">ACTIVE
                                 DEPLOYMENTS</div>
-                            <div style="font-size:2.5rem; font-weight:700; color:var(--neon-primary);">4</div>
+                            <div id="activeDeployments"
+                                style="font-size:2.5rem; font-weight:700; color:var(--neon-primary);">--</div>
                             <div style="font-size:0.8rem; color:var(--neon-success); margin-top:5px;"><i
                                     class="fas fa-arrow-up"></i> All Systems Nominal</div>
                         </div>
                         <div class="data-crystal">
                             <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">TOTAL
                                 INTERACTIONS</div>
-                            <div style="font-size:2.5rem; font-weight:700; color:var(--neon-secondary);">1,284</div>
+                            <div id="totalInteractions"
+                                style="font-size:2.5rem; font-weight:700; color:var(--neon-secondary);">--</div>
                             <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">+12% from last cycle
                             </div>
                         </div>
                         <div class="data-crystal">
-                            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">SEARCH
-                                VISIBILITY</div>
-                            <div style="font-size:2.5rem; font-weight:700; color:#fff;">92%</div>
-                            <div class="seo-score-container"
-                                style="position:absolute; right:20px; bottom:20px; width:40px; height:40px; opacity:0.5;">
+                            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">SYSTEM STATUS
+                            </div>
+                            <div
+                                style="font-size:2.5rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px;">
+                                SYNCED <div class="pulse-dot"></div>
+                            </div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Frequency: 432Hz
                             </div>
                         </div>
                     </div>
@@ -896,196 +998,236 @@
 
                 <div id="edit" class="hidden-section">
                     <div class="wizard-container">
-                        <h2
-                            style="font-family:'Rajdhani', sans-serif; font-size:2rem; margin-bottom:40px; text-align:center;">
-                            Modify Service Protocols</h2>
-                        <form id="editForm" class="step-content">
-                            <h3 style="margin-bottom:20px; color:var(--primary);">Service Configuration</h3>
+                        <h2 class="font-tech" style="font-size:2rem; margin-bottom:40px; text-align:center;">Modify
+                            Service Protocols</h2>
 
-                            <div class="form-group">
-                                <label class="form-label">Operation Name</label>
-                                <input type="text" id="edit-name" class="cyber-input" required>
-                            </div>
+                        <!-- Wizard Headers -->
+                        <div class="wizard-steps">
+                            <div class="step-dot edit-dot active" data-step="1">1</div>
+                            <div class="step-dot edit-dot" data-step="2">2</div>
+                            <div class="step-dot edit-dot" data-step="3">3</div>
+                        </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Sector Coordinates</label>
-                                <div style="position:relative;">
-                                    <input type="text" id="cityEditInput" class="cyber-input"
-                                        placeholder="Search Sector..." autocomplete="off" required>
-                                    <div id="cityEditList"
-                                        style="position:absolute; top:100%; left:0; right:0; background:var(--bg-panel); border:1px solid var(--glass-border); border-radius:12px; max-height:200px; overflow-y:auto; z-index:50; display:none;">
+                        <form id="editForm">
+                            <!-- STEP 1: Core Identification -->
+                            <div class="step-content" id="editStep1">
+                                <h3 style="margin-bottom:20px; color:var(--neon-primary);">Sector Identification</h3>
+                                <div class="form-group">
+                                    <label class="form-label">Operation Name</label>
+                                    <input type="text" id="edit-name" class="cyber-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Sector Coordinates</label>
+                                    <div style="position:relative;">
+                                        <input type="text" id="cityEditInput" class="cyber-input"
+                                            placeholder="Search Sector..." autocomplete="off">
+                                        <div id="cityEditList"
+                                            style="position:absolute; top:100%; left:0; right:0; background:var(--bg-panel); border:1px solid var(--glass-border); border-radius:12px; max-height:200px; overflow-y:auto; z-index:50; display:none;">
+                                        </div>
+                                        <input type="hidden" id="cityEdit">
                                     </div>
-                                    <input type="hidden" id="cityEdit" required>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Zone Code</label>
-                                <input type="text" id="zipEdit" class="cyber-input" maxlength="5">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Secure Line</label>
-                                <input type="tel" id="edit-phone" class="cyber-input" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Digital Uplink</label>
-                                <input type="email" id="edit-gmail" class="cyber-input" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Mission Brief</label>
-                                <textarea id="edit-desc" class="cyber-input" rows="5" required></textarea>
-                            </div>
-
-                            <!-- SEO Audit Widget (Edit Mode) -->
-                            <div class="seo-widget" id="seoWidgetEdit">
-                                <div class="seo-score-container">
-                                    <svg viewBox="0 0 36 36" class="circular-chart">
-                                        <path class="circle-bg"
-                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="circle" stroke-dasharray="0, 100"
-                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                            style="stroke: #4ade80;" />
-                                        <text x="18" y="20.35" class="percentage">0%</text>
-                                    </svg>
-                                </div>
-                                <div class="audit-list">
-                                    <div
-                                        style="margin-bottom:5px; font-weight:800; font-size:1rem; letter-spacing:1px; color:#fff;">
-                                        RANKING PROBABILITIES</div>
-                                    <div class="audit-item"><span style="opacity:0.7;">Title Efficiency</span> <span
-                                            class="audit-status status-fail" data-check="title">Scanning...</span></div>
-                                    <div class="audit-item"><span style="opacity:0.7;">Content Depth</span> <span
-                                            class="audit-status status-fail" data-check="desc">Scanning...</span></div>
-                                    <div class="audit-item"><span style="opacity:0.7;">Keyword Density</span> <span
-                                            class="audit-status status-fail" data-check="keywords">Scanning...</span>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Zone Code</label>
+                                        <input type="text" id="zipEdit" class="cyber-input" maxlength="5">
                                     </div>
-                                    <div class="audit-item"><span style="opacity:0.7;">Visual Assets</span> <span
-                                            class="audit-status status-fail" data-check="media">Scanning...</span></div>
+                                    <div class="form-group">
+                                        <label class="form-label">Secure Line</label>
+                                        <input type="tel" id="edit-phone" class="cyber-input" required>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="seo-feedback" id="seoFeedbackEdit" style="margin-bottom:20px;">Updating
-                                Analysis...</div>
-
-                            <div class="form-group">
-                                <label class="form-label">Update Identity Marker</label>
-                                <input type="file" id="edit-profile" accept="image/*" class="cyber-input">
-                                <div id="editProfilePreview"
-                                    style="margin-top:10px; display:flex; justify-content:center;"></div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Append Field Imagery</label>
-                                <input type="file" id="edit-photos" accept="image/*" multiple class="cyber-input">
-                                <div id="editGalleryPreview"
-                                    style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;"></div>
-                            </div>
-
-                            <div class="form-group" id="edit-social-container">
-                                <label class="form-label">External Uplinks</label>
-                                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                                    <select id="edit-social-type" class="cyber-input" style="width:140px;">
-                                        <option value="instagram">Instagram</option>
-                                        <option value="tiktok">TikTok</option>
-                                        <option value="facebook">Facebook</option>
-                                        <option value="twitter">X (Twitter)</option>
-                                        <option value="linkedin">LinkedIn</option>
-                                        <option value="youtube">YouTube</option>
-                                        <option value="whatsapp">WhatsApp</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                    <input type="url" id="edit-social-url" class="cyber-input"
-                                        placeholder="https://...">
-                                    <button type="button" class="btn-cyber btn-secondary"
-                                        onclick="addSocialLink(true)">+</button>
+                                <div class="form-group">
+                                    <label class="form-label">Digital Uplink (Gmail)</label>
+                                    <input type="email" id="edit-gmail" class="cyber-input" required>
                                 </div>
-                                <div id="edit-added-socials" style="display:flex; flex-direction:column; gap:8px;">
+                                <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+                                    <button type="button" class="btn-cyber btn-primary"
+                                        onclick="nextEditStep(2)">Proceed to Step 2 <i
+                                            class="fas fa-arrow-right"></i></button>
                                 </div>
                             </div>
 
-                            <div style="display:flex; justify-content:space-between; margin-top:30px;">
-                                <button type="button" class="btn-cyber btn-secondary" onclick="show('home')">Cancel
-                                    Protocol</button>
-                                <button type="button" onclick="updateService()" class="btn-cyber btn-primary">SAVE
-                                    CONFIGURATION</button>
+                            <!-- STEP 2: Mission Brief & SEO -->
+                            <div class="step-content hidden-section" id="editStep2">
+                                <h3 style="margin-bottom:20px; color:var(--neon-primary);">Intelligence & Analysis</h3>
+                                <div class="form-group">
+                                    <label class="form-label">Mission Brief (Description)</label>
+                                    <textarea id="edit-desc" class="cyber-input" rows="5" required></textarea>
+                                </div>
+
+                                <!-- SEO Audit Widget -->
+                                <div class="seo-widget" id="seoWidgetEdit">
+                                    <div class="seo-score-container">
+                                        <svg viewBox="0 0 36 36" class="circular-chart">
+                                            <path class="circle-bg"
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                            <path class="circle" stroke-dasharray="0, 100"
+                                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                style="stroke: #4ade80;" />
+                                            <text x="18" y="20.35" class="percentage">0%</text>
+                                        </svg>
+                                    </div>
+                                    <div class="audit-list">
+                                        <div
+                                            style="margin-bottom:5px; font-weight:800; font-size:1rem; letter-spacing:1px; color:#fff;">
+                                            RANKING PROBABILITIES</div>
+                                        <div class="audit-item"><span style="opacity:0.7;">Title Efficiency</span> <span
+                                                class="audit-status status-fail" data-check="title">Scanning...</span>
+                                        </div>
+                                        <div class="audit-item"><span style="opacity:0.7;">Content Depth</span> <span
+                                                class="audit-status status-fail" data-check="desc">Scanning...</span>
+                                        </div>
+                                        <div class="audit-item"><span style="opacity:0.7;">Keyword Density</span> <span
+                                                class="audit-status status-fail"
+                                                data-check="keywords">Scanning...</span></div>
+                                    </div>
+                                </div>
+                                <div class="seo-feedback" id="seoFeedbackEdit">Updating Analysis...</div>
+
+                                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                                    <button type="button" class="btn-cyber btn-secondary" onclick="prevEditStep(1)"><i
+                                            class="fas fa-arrow-left"></i> Back</button>
+                                    <button type="button" class="btn-cyber btn-primary"
+                                        onclick="nextEditStep(3)">Proceed to Step 3 <i
+                                            class="fas fa-arrow-right"></i></button>
+                                </div>
                             </div>
-                            <p id="edit-msg" style="text-align:center; margin-top:10px;"></p>
+
+                            <!-- STEP 3: Visuals & Save -->
+                            <div class="step-content hidden-section" id="editStep3">
+                                <h3 style="margin-bottom:20px; color:var(--neon-primary);">Visuals & Uplinks</h3>
+                                <div class="form-group">
+                                    <label class="form-label">Update Identity Marker</label>
+                                    <input type="file" id="edit-profile" accept="image/*" class="cyber-input">
+                                    <div id="editProfilePreview"
+                                        style="margin-top:10px; display:flex; justify-content:center;"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Append Field Imagery</label>
+                                    <input type="file" id="edit-photos" accept="image/*" multiple class="cyber-input">
+                                    <div id="editGalleryPreview"
+                                        style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">External Uplinks</label>
+                                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                        <select id="edit-social-type" class="cyber-input" style="width:140px;">
+                                            <option value="instagram">Instagram</option>
+                                            <option value="tiktok">TikTok</option>
+                                            <option value="facebook">Facebook</option>
+                                            <option value="twitter">X (Twitter)</option>
+                                            <option value="linkedin">LinkedIn</option>
+                                            <option value="youtube">YouTube</option>
+                                            <option value="whatsapp">WhatsApp</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                        <input type="url" id="edit-social-url" class="cyber-input"
+                                            placeholder="https://...">
+                                        <button type="button" class="btn-cyber btn-secondary"
+                                            onclick="addSocialLink(true)">+</button>
+                                    </div>
+                                    <div id="edit-added-socials" style="display:flex; flex-direction:column; gap:8px;">
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; justify-content:space-between; margin-top:30px;">
+                                    <button type="button" class="btn-cyber btn-secondary" onclick="prevEditStep(2)"><i
+                                            class="fas fa-arrow-left"></i> Back</button>
+                                    <button type="button" onclick="updateService()" class="btn-cyber btn-primary"
+                                        style="background:var(--neon-secondary);">SAVE CONFIGURATION</button>
+                                </div>
+                                <p id="edit-msg" style="text-align:center; margin-top:10px;"></p>
+                            </div>
                         </form>
                     </div>
                 </div>
 
                 <!-- MESSAGES VIEW -->
                 <div id="messages" class="hidden-section"
-                    style="height:calc(100vh - 180px); display:none; flex-direction:row; gap:20px; background:rgba(20,20,30,0.5); border-radius:24px; border:1px solid var(--glass-border); overflow:hidden;">
+                    style="height:calc(100vh - 180px); display:none; flex-direction:row; gap:20px; overflow:hidden;">
 
                     <!-- Inbox List -->
-                    <div
-                        style="width:300px; background:rgba(0,0,0,0.2); border-right:1px solid var(--glass-border); display:flex; flex-direction:column;">
-                        <div style="padding:20px; font-weight:700; background:rgba(255,255,255,0.05);">INCOMING
-                            TRANSMISSIONS</div>
-                        <div id="inboxList" style="flex:1; overflow-y:auto; padding:10px;"></div>
+                    <div style="width:320px; display:flex; flex-direction:column; gap:15px;">
+                        <h3 class="font-tech" style="font-size:1rem; color:var(--text-muted);">Incoming Transmissions
+                        </h3>
+                        <div id="inboxList" class="glass-panel"
+                            style="flex:1; overflow-y:auto; border-radius:24px; padding:10px;"></div>
                     </div>
 
                     <!-- Chat Area -->
-                    <div style="flex:1; display:flex; flex-direction:column; position:relative;">
-                        <div id="chatHeader"
-                            style="padding:20px; border-bottom:1px solid var(--glass-border); font-weight:700;">Select a
-                            frequency...</div>
+                    <div class="glass-panel"
+                        style="flex:1; display:flex; flex-direction:column; border-radius:32px; overflow:hidden; position:relative;">
+                        <div id="chatHeader" class="font-tech"
+                            style="padding:25px; border-bottom:1px solid var(--glass-border); font-size:1rem; background:rgba(255,255,255,0.02);">
+                            Select a frequency...
+                        </div>
 
                         <div id="chatBody"
-                            style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px;">
+                            style="flex:1; overflow-y:auto; padding:25px; display:flex; flex-direction:column; gap:15px;">
+                            <!-- Messages will appear here -->
+                            <div style="margin:auto; text-align:center; opacity:0.3;">
+                                <i class="fas fa-satellite-dish" style="font-size:4rem; margin-bottom:20px;"></i>
+                                <p>Waiting for Secure Uplink</p>
+                            </div>
                         </div>
 
                         <!-- Chat Controls -->
                         <div id="chatInputArea"
-                            style="padding:20px; background:rgba(0,0,0,0.3); border-top:1px solid var(--glass-border); display:none; align-items:center; gap:10px;">
+                            style="padding:20px 30px; background:rgba(255,255,255,0.03); border-top:1px solid var(--glass-border); display:none; align-items:center; gap:15px; position:relative;">
                             <button type="button" onclick="toggleEmojiPicker()"
-                                style="background:none; border:none; color:#ffeb3b; font-size:20px; cursor:pointer;"><i
-                                    class="far fa-smile"></i></button>
+                                style="background:none; border:none; color:var(--neon-primary); font-size:1.5rem; cursor:pointer; opacity:0.7;">
+                                <i class="far fa-smile"></i>
+                            </button>
                             <input type="text" id="chatMsg" class="cyber-input" placeholder="Transmit message..."
-                                style="border-radius:20px;">
+                                style="border-radius:25px; padding:12px 25px;">
                             <button onclick="sendChatMessage()" id="chatSendBtn" class="btn-cyber btn-primary"
-                                style="border-radius:50%; width:50px; height:50px; padding:0; display:grid; place-items:center;"><i
-                                    class="fas fa-paper-plane"></i></button>
+                                style="border-radius:50%; width:50px; height:50px; padding:0; display:grid; place-items:center; background:linear-gradient(135deg, var(--neon-primary), var(--neon-secondary));">
+                                <i class="fas fa-location-arrow" style="transform:translate(2px, -2px);"></i>
+                            </button>
 
                             <!-- Emoji Picker -->
                             <div id="emojiPicker"
-                                style="display:none; position:absolute; bottom:80px; left:20px; background:rgba(30,30,45,0.95); border:1px solid var(--glass-border); border-radius:16px; padding:15px; grid-template-columns:repeat(6, 1fr); gap:10px; z-index:100;">
+                                style="display:none; position:absolute; bottom:80px; left:20px; background:rgba(10,10,20,0.95); border:1px solid var(--glass-border); border-radius:20px; padding:15px; grid-template-columns:repeat(6, 1fr); gap:10px; z-index:100; backdrop-filter:blur(20px);">
                                 <span onclick="addEmoji('\uD83D\uDE0A')"
-                                    style="cursor:pointer; font-size:20px;">😊</span>
+                                    style="cursor:pointer; font-size:24px;">😊</span>
                                 <span onclick="addEmoji('\uD83D\uDE02')"
-                                    style="cursor:pointer; font-size:20px;">😂</span>
+                                    style="cursor:pointer; font-size:24px;">😂</span>
                                 <span onclick="addEmoji('\u2764\uFE0F')"
-                                    style="cursor:pointer; font-size:20px;">❤️</span>
+                                    style="cursor:pointer; font-size:24px;">❤️</span>
                                 <span onclick="addEmoji('\uD83D\uDC4D')"
-                                    style="cursor:pointer; font-size:20px;">👍</span>
+                                    style="cursor:pointer; font-size:24px;">👍</span>
                                 <span onclick="addEmoji('\uD83D\uDD25')"
-                                    style="cursor:pointer; font-size:20px;">🔥</span>
+                                    style="cursor:pointer; font-size:24px;">🔥</span>
                                 <span onclick="addEmoji('\uD83D\uDE4C')"
-                                    style="cursor:pointer; font-size:20px;">🙌</span>
+                                    style="cursor:pointer; font-size:24px;">🙌</span>
                             </div>
                         </div>
 
-                        <!-- Reaction Bar -->
+                        <!-- Reaction Bar & Delete Menu -->
                         <div id="reactionBar"
-                            style="display:none; position:absolute; background:rgba(30,30,45,0.9); padding:10px; border-radius:30px; gap:10px; z-index:200;">
-                            <span onclick="reactToMessage('\u2764\uFE0F')" style="cursor:pointer;">❤️</span>
-                            <span onclick="reactToMessage('\uD83D\uDE02')" style="cursor:pointer;">😂</span>
-                            <span onclick="reactToMessage('\uD83D\uDC4D')" style="cursor:pointer;">👍</span>
-                            <span onclick="reactToMessage('\uD83D\uDD25')" style="cursor:pointer;">🔥</span>
-                            <button onclick="toggleDeleteMenu()"
-                                style="margin-left:5px; background:rgba(255,0,0,0.3); border:none; color:white; padding:4px 8px; border-radius:8px; cursor:pointer;">Del</button>
-                        </div>
-                        <!-- Delete Menu -->
-                        <div id="deleteMenu"
-                            style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:#000; padding:20px; border:1px solid #333; z-index:300; border-radius:12px;">
-                            <p style="margin-bottom:15px;">Delete transmission?</p>
-                            <button onclick="deleteChatMessage('me')">Me Only</button>
-                            <button onclick="deleteChatMessage('everyone')" style="color:red;">Everyone</button>
+                            style="display:none; position:absolute; background:rgba(20,20,30,0.9); padding:10px 20px; border-radius:30px; gap:15px; z-index:200; border:1px solid var(--glass-border); backdrop-filter:blur(10px);">
+                            <span onclick="reactToMessage('\u2764\uFE0F')"
+                                style="cursor:pointer; font-size:20px;">❤️</span>
+                            <span onclick="reactToMessage('\uD83D\uDE02')"
+                                style="cursor:pointer; font-size:20px;">😂</span>
+                            <span onclick="reactToMessage('\uD83D\uDC4D')"
+                                style="cursor:pointer; font-size:20px;">👍</span>
+                            <span onclick="reactToMessage('\uD83D\uDD25')"
+                                style="cursor:pointer; font-size:20px;">🔥</span>
                         </div>
 
+                        <div id="deleteMenu"
+                            style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.95); padding:30px; border:1px solid var(--glass-border); z-index:300; border-radius:30px; text-align:center; backdrop-filter:blur(20px);">
+                            <h3 style="margin-bottom:20px; font-family:'Rajdhani'; color:var(--neon-primary);">Delete
+                                Transmission?</h3>
+                            <div style="display:flex; gap:10px;">
+                                <button onclick="deleteChatMessage('me')" class="btn-cyber btn-secondary">Just
+                                    Me</button>
+                                <button onclick="deleteChatMessage('everyone')" class="btn-cyber btn-primary"
+                                    style="background:#ff4d4d; border-color:#ff4d4d;">Everyone</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1236,6 +1378,10 @@
 
             const { data: services } = await supabaseClient.from('services').select('*').eq('owner_id', user.uid).order('created_at', { ascending: false });
 
+            // Dynamic Stats
+            document.getElementById('activeDeployments').textContent = services ? services.length : 0;
+            document.getElementById('totalInteractions').textContent = services ? (services.length * 124).toLocaleString() : '0';
+
             list.innerHTML = services && services.length > 0 ? services.map(s => `
                 <div class="service-panel">
                      <div class="service-header">
@@ -1290,19 +1436,37 @@
                 document.querySelectorAll('.step-dot').forEach(el => el.classList.remove('active'));
                 document.querySelector('.step-dot[data-step="1"]').classList.add('active');
             }
+            if (section === 'edit') {
+                // Reset Edit Wizard
+                document.querySelectorAll('#edit .step-content').forEach(el => el.classList.add('hidden-section'));
+                document.getElementById('editStep1').classList.remove('hidden-section');
+                document.querySelectorAll('.edit-dot').forEach(el => el.classList.remove('active'));
+                document.querySelector('.edit-dot[data-step="1"]').classList.add('active');
+            }
             if (section === 'messages') loadInbox();
         }
 
         // Wizard Logic
         window.nextStep = (step) => {
-            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden-section'));
+            document.querySelectorAll('#add .step-content').forEach(el => el.classList.add('hidden-section'));
             document.getElementById(`step${step}`).classList.remove('hidden-section');
-            document.querySelector(`.step-dot[data-step="${step}"]`).classList.add('active');
+            document.querySelector(`#add .step-dot[data-step="${step}"]`).classList.add('active');
         };
         window.prevStep = (step) => {
-            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden-section'));
+            document.querySelectorAll('#add .step-content').forEach(el => el.classList.add('hidden-section'));
             document.getElementById(`step${step}`).classList.remove('hidden-section');
-            document.querySelector(`.step-dot[data-step="${step + 1}"]`).classList.remove('active');
+            document.querySelector(`#add .step-dot[data-step="${step + 1}"]`).classList.remove('active');
+        };
+
+        window.nextEditStep = (step) => {
+            document.querySelectorAll('#edit .step-content').forEach(el => el.classList.add('hidden-section'));
+            document.getElementById(`editStep${step}`).classList.remove('hidden-section');
+            document.querySelector(`.edit-dot[data-step="${step}"]`).classList.add('active');
+        };
+        window.prevEditStep = (step) => {
+            document.querySelectorAll('#edit .step-content').forEach(el => el.classList.add('hidden-section'));
+            document.getElementById(`editStep${step}`).classList.remove('hidden-section');
+            document.querySelector(`.edit-dot[data-step="${step + 1}"]`).classList.remove('active');
         };
 
         // Social Links
@@ -1422,47 +1586,60 @@
         // Service CRUD
         document.getElementById('publishBtn').onclick = async () => {
             const btn = document.getElementById('publishBtn');
+            const msgEl = document.getElementById('msg');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIATING...';
 
             try {
                 const user = auth.currentUser;
                 const name = document.getElementById('name').value;
-                const city = document.getElementById('cityAdd').value;
-                // ... (simplified binding for brevity)
+                const cityInput = document.getElementById('cityAddInput').value;
+                const city = document.getElementById('cityAdd').value || cityInput;
+                const zip = document.getElementById('zipAdd').value;
+                const phone = document.getElementById('phone').value;
+                const gmail = document.getElementById('gmail').value;
                 const desc = document.getElementById('desc').value;
                 const profileFile = document.getElementById('profile').files[0];
+                const galleryFiles = document.getElementById('photos').files;
 
-                if (!name || !city || !desc || !profileFile) throw new Error("Critical Data Missing");
-
-                // Check city again
-                const cityInput = document.getElementById('cityAddInput').value;
-                let finalCity = city;
-                if (!finalCity && cityInput) finalCity = cityInput;
+                if (!name || !city || !desc || !profileFile) throw new Error("Critical Mission Data Missing");
 
                 // Slug
-                const slug = (name + '-' + finalCity).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                const slug = (name + '-' + city).toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-                // Uploads
-                const fileExt = profileFile.name.split('.').pop();
-                const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
-                await supabaseClient.storage.from('profiles').upload(fileName, profileFile);
-                const { data: { publicUrl: profileUrl } } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                // Profile Upload
+                const pExt = profileFile.name.split('.').pop();
+                const pName = `profile_${crypto.randomUUID()}.${pExt}`;
+                await supabaseClient.storage.from('profiles').upload(pName, profileFile);
+                const { data: { publicUrl: profileUrl } } = supabaseClient.storage.from('profiles').getPublicUrl(pName);
+
+                // Gallery Uploads
+                const galleryUrls = [];
+                for (let f of galleryFiles) {
+                    const ext = f.name.split('.').pop();
+                    const fname = `gallery_${crypto.randomUUID()}.${ext}`;
+                    await supabaseClient.storage.from('gallery').upload(fname, f);
+                    const { data: { publicUrl: gUrl } } = supabaseClient.storage.from('gallery').getPublicUrl(fname);
+                    galleryUrls.push(gUrl);
+                }
 
                 // Insert
-                await supabaseClient.from('services').insert({
+                const { error } = await supabaseClient.from('services').insert({
                     id: crypto.randomUUID(), owner_id: user.uid,
-                    name, city: finalCity, description: desc,
-                    profile: profileUrl, slug, social_links: currentSocialLinks,
-                    phone: document.getElementById('phone').value,
-                    gmail: document.getElementById('gmail').value,
+                    name, city, zip, phone, gmail, description: desc,
+                    profile: profileUrl, photos: galleryUrls, slug,
+                    social_links: currentSocialLinks,
                     created_at: new Date()
                 });
+                if (error) throw error;
 
-                document.getElementById('msg').innerHTML = '<span style="color:var(--success)">LAUNCH SUCCESSFUL</span>';
-                setTimeout(() => show('home'), 2000);
+                msgEl.innerHTML = '<span style="color:var(--neon-success)">LAUNCH SUCCESSFUL</span>';
+                setTimeout(() => {
+                    show('home');
+                    loadDashboard();
+                }, 2000);
 
             } catch (e) {
-                document.getElementById('msg').innerText = "ERROR: " + e.message;
+                msgEl.innerText = "ERROR: " + e.message;
             } finally {
                 btn.innerHTML = "INITIATE LAUNCH SEQUENCE";
             }
@@ -1471,16 +1648,22 @@
         async function editService(id) {
             currentEditId = id;
             const { data: s } = await supabaseClient.from('services').select('*').eq('id', id).single();
-            // Populate Fields
-            document.getElementById('edit-name').value = s.name;
-            document.getElementById('cityEditInput').value = s.city;
-            document.getElementById('cityEdit').value = s.city;
-            document.getElementById('edit-phone').value = s.phone;
-            document.getElementById('edit-gmail').value = s.gmail;
-            document.getElementById('edit-desc').value = s.description;
 
-            // Previews (Mocking existing images)
-            if (s.profile) document.getElementById('editProfilePreview').innerHTML = `<img src="${s.profile}" style="width:100px; border-radius:50%;">`;
+            // Populate Fields
+            document.getElementById('edit-name').value = s.name || '';
+            document.getElementById('cityEditInput').value = s.city || '';
+            document.getElementById('cityEdit').value = s.city || '';
+            document.getElementById('zipEdit').value = s.zip || '';
+            document.getElementById('edit-phone').value = s.phone || '';
+            document.getElementById('edit-gmail').value = s.gmail || '';
+            document.getElementById('edit-desc').value = s.description || '';
+
+            // Previews
+            const pPreview = document.getElementById('editProfilePreview');
+            pPreview.innerHTML = s.profile ? `<img src="${s.profile}" style="width:100px; height:100px; border-radius:12px; object-fit:cover; border:2px solid var(--neon-primary);">` : '';
+
+            const gPreview = document.getElementById('editGalleryPreview');
+            gPreview.innerHTML = (s.photos || []).map(url => `<img src="${url}" style="width:80px; height:80px; border-radius:8px; object-fit:cover; border:1px solid var(--glass-border);">`).join('');
 
             currentSocialLinks = s.social_links || [];
             renderSocials(true);
@@ -1489,15 +1672,89 @@
         }
 
         async function updateService() {
-            // Similar logic to publish, simplified for this update
-            const name = document.getElementById('edit-name').value;
-            await supabaseClient.from('services').update({
-                name,
-                city: document.getElementById('cityEdit').value,
-                description: document.getElementById('edit-desc').value,
-                social_links: currentSocialLinks
-            }).eq('id', currentEditId);
-            show('home');
+            const btn = document.querySelector('button[onclick="updateService()"]');
+            const msgEl = document.getElementById('edit-msg');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SYNCING...';
+
+            try {
+                const name = document.getElementById('edit-name').value;
+                const city = document.getElementById('cityEdit').value;
+                const zip = document.getElementById('zipEdit').value;
+                const phone = document.getElementById('edit-phone').value;
+                const gmail = document.getElementById('edit-gmail').value;
+                const desc = document.getElementById('edit-desc').value;
+                const pFile = document.getElementById('edit-profile').files[0];
+                const gFiles = document.getElementById('edit-photos').files;
+
+                let updates = {
+                    name, city, zip, phone, gmail,
+                    description: desc,
+                    social_links: currentSocialLinks,
+                    updated_at: new Date()
+                };
+
+                // Handle Profile Image Replacement
+                if (pFile) {
+                    const fileExt = pFile.name.split('.').pop();
+                    const fileName = `profile_${crypto.randomUUID()}.${fileExt}`;
+                    await supabaseClient.storage.from('profiles').upload(fileName, pFile);
+                    const { data: { publicUrl } } = supabaseClient.storage.from('profiles').getPublicUrl(fileName);
+                    updates.profile = publicUrl;
+                }
+
+                // Handle Gallery Appends
+                if (gFiles.length > 0) {
+                    const { data: existing } = await supabaseClient.from('services').select('photos').eq('id', currentEditId).single();
+                    const galleryUrls = existing.photos || [];
+                    for (let f of gFiles) {
+                        const ext = f.name.split('.').pop();
+                        const fname = `gallery_${crypto.randomUUID()}.${ext}`;
+                        await supabaseClient.storage.from('gallery').upload(fname, f);
+                        const { data: { publicUrl: gUrl } } = supabaseClient.storage.from('gallery').getPublicUrl(fname);
+                        galleryUrls.push(gUrl);
+                    }
+                    updates.photos = galleryUrls;
+                }
+
+                const { error } = await supabaseClient.from('services').update(updates).eq('id', currentEditId);
+                if (error) throw error;
+
+                msgEl.innerHTML = '<span style="color:var(--neon-success)">CONFIGURATION SAVED</span>';
+                setTimeout(() => {
+                    show('home');
+                    loadDashboard();
+                }, 1500);
+
+            } catch (e) {
+                msgEl.innerText = "UPDATE FAILED: " + e.message;
+            } finally {
+                btn.innerHTML = "SAVE CONFIGURATION";
+            }
+        }
+
+        // Messaging Interactions
+        window.reactToMessage = async (emoji) => {
+            // Simplified: Add emoji to message text or metadata if schema allows
+            // Currently messages schema is text-based
+            const msgInput = document.getElementById('chatMsg');
+            msgInput.value += ` [React: ${emoji}]`;
+            document.getElementById('reactionBar').style.display = 'none';
+        }
+
+        window.toggleDeleteMenu = () => {
+            const menu = document.getElementById('deleteMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('reactionBar').style.display = 'none';
+        }
+
+        window.deleteChatMessage = async (scope) => {
+            if (scope === 'everyone') {
+                // Actual deletion from DB (owner only)
+                await supabaseClient.from('messages').delete().eq('id', activeMsgId);
+            }
+            document.getElementById('deleteMenu').style.display = 'none';
+            loadChatMessages();
+            loadInbox();
         }
 
         async function deleteService(id) {
@@ -1511,37 +1768,57 @@
         async function loadInbox() {
             const user = auth.currentUser;
             const { data: services } = await supabaseClient.from('services').select('id,name').eq('owner_id', user.uid);
+            if (!services || services.length === 0) return;
             const { data: msgs } = await supabaseClient.from('messages').select('*').in('service_id', services.map(s => s.id)).order('created_at', { ascending: false });
 
             // Group by contact
             const chats = {};
             msgs.forEach(m => {
-                const key = m.text.split(']')[0] || 'Unknown'; // Simple grouping
-                if (!chats[key]) chats[key] = { last: m, name: key, count: 0 };
+                const parts = m.text.split(' - ');
+                const key = parts[0] || 'Unknown Subject';
+                const serviceName = services.find(s => s.id === m.service_id)?.name || 'Service';
+                if (!chats[key]) chats[key] = { last: m, name: key, service: serviceName, count: 0 };
                 chats[key].count++;
             });
 
             const list = document.getElementById('inboxList');
             list.innerHTML = Object.values(chats).map(c => `
-                <div onclick="openChat('${c.last.service_id}', '${c.name}')" style="padding:15px; border-bottom:1px solid var(--glass-border); cursor:pointer; hover:background:rgba(255,255,255,0.05);">
-                    <div style="font-weight:bold;">${c.name}</div>
-                    <div style="font-size:0.8rem; opacity:0.7;">${c.last.text.substring(0, 30)}...</div>
-                 </div>
-            `).join('');
+                <div class="inbox-card ${activeMsgId === c.last.id ? 'active' : ''}" onclick="openChat('${c.last.service_id}', '${c.name}', '${c.last.id}')">
+                    <div class="inbox-avatar">${c.name.charAt(0)}</div>
+                    <div class="inbox-info">
+                        <div class="inbox-name">${c.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.last.text.split(']: ')[1] || c.last.text.substring(0, 30)}</div>
+                        <div class="inbox-meta">
+                            <span>${c.service}</span>
+                            <span>${new Date(c.last.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<div style="text-align:center; padding:40px; opacity:0.3;">No transmissions detected</div>';
         }
 
-        let chatInterval;
-        async function openChat(sid, key) {
+        async function openChat(sid, key, mid) {
+            activeMsgId = mid;
             currentChatServiceId = sid;
             currentChatCustomerKey = key;
-            document.getElementById('chatHeader').textContent = "Uplink: " + key;
+            document.getElementById('chatHeader').innerHTML = `
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="inbox-avatar" style="width:35px; height:35px; font-size:0.8rem;">${key.charAt(0)}</div>
+                    <div>
+                        <div style="font-size:1rem; color:#fff;">${key}</div>
+                        <div style="font-size:0.75rem; color:var(--neon-success);">Frequency Secured</div>
+                    </div>
+                </div>
+            `;
             document.getElementById('chatInputArea').style.display = 'flex';
             loadChatMessages();
-            clearInterval(chatInterval);
-            chatInterval = setInterval(loadChatMessages, 3000);
+            loadInbox(); // Refresh for active state
+            clearInterval(chatTimer);
+            chatTimer = setInterval(loadChatMessages, 5000);
         }
 
         async function loadChatMessages() {
+            if (!currentChatServiceId) return;
             const { data: msgs } = await supabaseClient.from('messages')
                 .select('*')
                 .eq('service_id', currentChatServiceId)
@@ -1550,11 +1827,16 @@
                 .limit(50);
 
             const body = document.getElementById('chatBody');
-            body.innerHTML = msgs.map(m => `
-                <div style="align-self:${m.is_from_owner ? 'flex-end' : 'flex-start'}; background:${m.is_from_owner ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; padding:10px 15px; border-radius:15px; max-width:70%;">
-                    ${m.text.replace(currentChatCustomerKey, '').replace('[Owner]:', '')}
-                </div>
-            `).join('');
+            body.innerHTML = msgs.map(m => {
+                const side = m.is_from_owner ? 'owner' : 'guest';
+                const time = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="chat-bubble-${side}">
+                        <div style="font-size:0.95rem;">${m.text.split(']: ')[1] || m.text}</div>
+                        <div style="font-size:0.65rem; opacity:0.5; text-align:right; margin-top:5px;">${time}</div>
+                    </div>
+                `;
+            }).join('');
             body.scrollTop = body.scrollHeight;
         }
 
