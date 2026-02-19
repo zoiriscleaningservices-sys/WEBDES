@@ -799,7 +799,7 @@
             </header>
 
             <!-- DASHBOARD SCREEN -->
-            <div id="dashboardScreen" style="display:none; flex-direction:column; width:100%;">
+            <div id="dashboardScreen" style="display:flex; flex-direction:column; width:100%;">
 
                 <!-- PLACEHOLDERS FOR VIEWS -->
                 <!-- HOME VIEW -->
@@ -1366,8 +1366,12 @@
         async function loadDashboard(user = auth.currentUser) {
             if (!user) return;
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appContainer').classList.add('loaded'); // Trigger animation
-            document.getElementById('appContainer').style.display = 'flex'; // Use flex for layout
+            const appContainer = document.getElementById('appContainer');
+            appContainer.classList.add('loaded'); // Trigger animation
+            appContainer.style.display = 'flex'; // Use flex for layout
+
+            // Ensure we are in the home view on load
+            show('home');
 
             // Set User Info
             document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
@@ -1376,34 +1380,42 @@
             avatar.textContent = (user.displayName || user.email)[0].toUpperCase();
             avatar.style.display = 'grid'; avatar.style.placeItems = 'center'; avatar.style.fontWeight = 'bold'; avatar.style.color = 'white';
 
-            const { data: services } = await supabaseClient.from('services').select('*').eq('owner_id', user.uid).order('created_at', { ascending: false });
+            try {
+                const { data: services, error } = await supabaseClient.from('services').select('*').eq('owner_id', user.uid).order('created_at', { ascending: false });
+                if (error) throw error;
 
-            // Dynamic Stats
-            document.getElementById('activeDeployments').textContent = services ? services.length : 0;
-            document.getElementById('totalInteractions').textContent = services ? (services.length * 124).toLocaleString() : '0';
+                // Dynamic Stats
+                document.getElementById('activeDeployments').textContent = services ? services.length : 0;
+                document.getElementById('totalInteractions').textContent = services ? (services.length * 124).toLocaleString() : '0';
 
-            list.innerHTML = services && services.length > 0 ? services.map(s => `
-                <div class="service-panel">
-                     <div class="service-header">
-                        <img src="${s.profile || 'https://via.placeholder.com/60'}" class="service-thumb">
-                        <div>
-                            <h3 style="font-size:1.2rem; margin-bottom:4px;">${s.name || 'Unknown Operation'}</h3>
-                            <div style="color:var(--text-muted); font-size:0.9rem;"><i class="fas fa-map-marker-alt" style="color:var(--accent);"></i> ${s.city || 'Unknown Sector'}</div>
+                const listEl = document.getElementById('list');
+                if (listEl) {
+                    listEl.innerHTML = services && services.length > 0 ? services.map(s => `
+                        <div class="service-panel">
+                             <div class="service-header">
+                                <img src="${s.profile || 'https://via.placeholder.com/60'}" class="service-thumb">
+                                <div>
+                                    <h3 style="font-size:1.2rem; margin-bottom:4px;">${s.name || 'Unknown Operation'}</h3>
+                                    <div style="color:var(--text-muted); font-size:0.9rem;"><i class="fas fa-map-marker-alt" style="color:var(--accent);"></i> ${s.city || 'Unknown Sector'}</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:rgba(255,255,255,0.7);">
+                                <div><i class="fas fa-eye"></i> Views: <strong>${Math.floor(Math.random() * 500)}</strong></div>
+                                <div><i class="fas fa-mouse-pointer"></i> Clicks: <strong>${Math.floor(Math.random() * 50)}</strong></div>
+                            </div>
+
+                            <div class="service-actions">
+                                <div class="action-chip" onclick="editService('${s.id}')"><i class="fas fa-sliders-h"></i> Configure</div>
+                                <a href="https://truewebx.site/profile/${s.slug}/" target="_blank" class="action-chip"><i class="fas fa-external-link-alt"></i> Deploy</a>
+                                <div class="action-chip" onclick="deleteService('${s.id}')" style="color:var(--accent); border-color:rgba(244,63,94,0.3);"><i class="fas fa-trash"></i></div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:rgba(255,255,255,0.7);">
-                        <div><i class="fas fa-eye"></i> Views: <strong>${Math.floor(Math.random() * 500)}</strong></div>
-                        <div><i class="fas fa-mouse-pointer"></i> Clicks: <strong>${Math.floor(Math.random() * 50)}</strong></div>
-                    </div>
-
-                    <div class="service-actions">
-                        <div class="action-chip" onclick="editService('${s.id}')"><i class="fas fa-sliders-h"></i> Configure</div>
-                        <a href="https://truewebx.site/profile/${s.slug}/" target="_blank" class="action-chip"><i class="fas fa-external-link-alt"></i> Deploy</a>
-                        <div class="action-chip" onclick="deleteService('${s.id}')" style="color:var(--accent); border-color:rgba(244,63,94,0.3);"><i class="fas fa-trash"></i></div>
-                    </div>
-                </div>
-            `).join('') : '<div style="grid-column:1/-1; text-align:center; padding:50px; opacity:0.5; border:2px dashed var(--glass-border); border-radius:20px;">No Active Deployments found. Initiate a new launch.</div>';
+                    `).join('') : '<div style="grid-column:1/-1; text-align:center; padding:50px; opacity:0.5; border:2px dashed var(--glass-border); border-radius:20px;">No Active Deployments found. Initiate a new launch.</div>';
+                }
+            } catch (err) {
+                console.error("Dashboard Load Error:", err);
+            }
         }
 
         // Navigation
