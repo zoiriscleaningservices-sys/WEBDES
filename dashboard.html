@@ -660,7 +660,7 @@
     <!-- Ambient Background -->
     <div class="liquid-bg"></div>
 
-    <div class="app-container">
+    <div id="appContainer" class="app-container">
         <!-- Navigation Dock (Desktop Left / Mobile Bottom) -->
         <nav class="nav-dock glass-panel">
             <div class="nav-item active" onclick="show('home')" title="Mission Control">
@@ -1119,7 +1119,6 @@
 
         const list = document.getElementById('list');
         const msg = document.getElementById('msg');
-        const welcomeMsg = document.getElementById('welcomeMsg');
 
         // ────────────────────────────────────────────────
         // CORE FUNCTIONS
@@ -1225,8 +1224,8 @@
         async function loadDashboard(user = auth.currentUser) {
             if (!user) return;
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('dashboardScreen').classList.add('loaded'); // Trigger animation
-            document.getElementById('dashboardScreen').style.display = 'flex'; // Use flex for layout
+            document.getElementById('appContainer').classList.add('loaded'); // Trigger animation
+            document.getElementById('appContainer').style.display = 'flex'; // Use flex for layout
 
             // Set User Info
             document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
@@ -1270,7 +1269,7 @@
             });
 
             // Update Active Nav Link
-            document.querySelectorAll('.nav-link').forEach((el, i) => {
+            document.querySelectorAll('.nav-item').forEach((el, i) => {
                 el.classList.remove('active');
                 if (i === (section === 'home' ? 0 : section === 'add' ? 1 : section === 'messages' ? 2 : -1)) el.classList.add('active');
             });
