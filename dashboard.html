@@ -210,134 +210,31 @@
             transform: scale(1);
         }
 
-        /* SIDEBAR */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100%;
-            background: rgba(10, 10, 15, 0.6);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            padding: 30px 20px;
-        }
-
-        .sidebar-logo {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 2rem;
-            color: #fff;
-            margin-bottom: 50px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .sidebar-logo span {
-            color: var(--accent);
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 16px;
-            margin-bottom: 8px;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            transform: translateX(5px);
-        }
-
-        .nav-link.active {
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
-            color: var(--primary);
-            border-left: 3px solid var(--primary);
-        }
-
-        .nav-spacer {
+        /* CONTENT AREA (New Layout) */
+        .content-area {
             flex: 1;
-        }
-
-        .user-profile-mini {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .user-profile-mini:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--glass-highlight);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-        }
-
-        /* MAIN AREA */
-        .main-area {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.8), transparent 70%);
-        }
-
-        .top-bar {
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .content-scroll {
-            flex: 1;
-            overflow-y: auto;
+            margin-left: 120px;
+            /* Desktop Dock Offset */
             padding: 40px;
-            padding-bottom: 100px;
-            scroll-behavior: smooth;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
         }
 
-        .content-scroll::-webkit-scrollbar {
-            width: 8px;
+        @media (max-width: 768px) {
+            .content-area {
+                margin-left: 0;
+                padding: 20px;
+                padding-bottom: 120px;
+                /* Space for Capsule */
+            }
         }
 
-        .content-scroll::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .content-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+        /* Typography Helper */
+        .font-tech {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         /* WIDGETS & CARDS */
@@ -708,6 +605,21 @@
             font-style: italic;
             width: 100%;
             text-align: center;
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            /* Slight blur on background for focus */
         }
     </style>
 </head>
