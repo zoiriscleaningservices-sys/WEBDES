@@ -26,43 +26,172 @@
          * Design System: Cyber-Executive
          */
         :root {
-            /* Core Palette */
-            --bg-deep: #030712;
-            --bg-panel: rgba(17, 24, 39, 0.7);
+            /* Neo-Glass Palette */
+            --bg-deep: #030014;
+            --bg-liquid: radial-gradient(circle at 50% 50%, #4f46e5 0%, #0f172a 40%, #000000 100%);
+            --glass-panel: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-highlight: rgba(255, 255, 255, 0.15);
-            --primary: #3b82f6;
-            /* Electric Blue */
-            --primary-glow: rgba(59, 130, 246, 0.5);
-            --accent: #f43f5e;
-            /* Cyber Rose */
-            --accent-glow: rgba(244, 63, 94, 0.5);
-            --success: #10b981;
-            /* Emerald Signal */
-            --success-glow: rgba(16, 185, 129, 0.5);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --sidebar-width: 280px;
-            --header-height: 80px;
+            --neon-primary: #00f3ff;
+            --neon-secondary: #bd00ff;
+            --neon-success: #00ff9d;
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+
+            /* Spatial Depth */
+            --shadow-nav: 0 20px 50px rgba(0, 0, 0, 0.5);
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+            /* Animations */
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* Animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.4s var(--ease-elastic) forwards;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.4s var(--ease-elastic) forwards;
+        }
+
+        /* Chat Bubbles */
+        .chat-bubble-owner {
+            align-self: flex-end;
+            background: rgba(0, 243, 255, 0.2);
+            border: 1px solid var(--neon-primary);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px 20px 0 20px;
+            padding: 12px 18px;
+            max-width: 75%;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .chat-bubble-guest {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            border-radius: 20px 20px 20px 0;
+            padding: 12px 18px;
+            max-width: 75%;
+            color: var(--text-muted);
+            margin-bottom: 10px;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            outline: none;
-            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-deep);
-            background-image:
-                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.1) 0%, transparent 40%);
+            background: var(--bg-deep);
             color: var(--text-main);
-            overflow: hidden;
+            overflow-x: hidden;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Ambient Liquid Background */
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-liquid);
+            filter: blur(80px);
+            z-index: -1;
+            animation: pulse-bg 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-bg {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0.5;
+            }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: var(--glass-panel);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .nav-dock {
+            /* Desktop Default */
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            height: auto;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 40px 0;
+            z-index: 1000;
+            transition: all 0.4s var(--ease-elastic);
+        }
+
+        /* Mobile "Command Capsule" Override */
+        @media (max-width: 768px) {
+            .nav-dock {
+                top: auto;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 350px;
+                height: 70px;
+                flex-direction: row;
+                justify-content: space-evenly;
+                align-items: center;
+                padding: 0;
+                border-radius: 35px;
+                background: rgba(10, 10, 20, 0.6);
+                /* Darker for contrast */
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
         }
 
         /* LAYOUT */
@@ -616,62 +745,84 @@
         </div>
     </div>
 
-    <!-- 2. MAIN APP CONTAINER -->
-    <div id="dashboardScreen" class="app-container" style="display:none;">
+    <!-- Ambient Background -->
+    <div class="liquid-bg"></div>
 
-        <!-- SIDEBAR -->
-        <nav class="sidebar">
-            <a href="#" class="sidebar-logo">
-                <i class="fas fa-cube"></i> TRUE<span>WEBX</span>
-            </a>
-
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <a href="#" class="nav-link active" onclick="show('home')">
-                    <i class="fas fa-tachometer-alt"></i> <span>Mission Control</span>
-                </a>
-                <a href="#" class="nav-link" onclick="show('add')">
-                    <i class="fas fa-rocket"></i> <span>Launch Service</span>
-                </a>
-                <a href="#" class="nav-link" onclick="show('messages')">
-                    <i class="fas fa-satellite-dish"></i> <span>Comms Link</span>
-                </a>
+    <div class="app-container">
+        <!-- Navigation Dock (Desktop Left / Mobile Bottom) -->
+        <nav class="nav-dock glass-panel">
+            <div class="nav-item active" onclick="show('home')" title="Mission Control">
+                <i class="fas fa-globe"></i>
             </div>
-
-            <div class="nav-spacer"></div>
-
-            <div class="user-profile-mini" onclick="logoutAndGoHome()">
-                <div class="user-avatar" id="userAvatar"></div>
-                <div style="flex:1; overflow:hidden;">
-                    <div style="font-weight:700; white-space:nowrap; text-overflow:ellipsis;" id="userName">Commander
-                    </div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Log Out</div>
-                </div>
-                <i class="fas fa-sign-out-alt"></i>
+            <div class="nav-item" onclick="show('add')" title="Launch Sequence">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div class="nav-item" onclick="show('messages')" title="Comms Link">
+                <i class="fas fa-comment-dots"></i>
+            </div>
+            <div class="nav-item" onclick="logoutAndGoHome()" title="Abort Session"
+                style="margin-top:auto; color:#f43f5e;">
+                <i class="fas fa-power-off"></i>
             </div>
         </nav>
 
-        <!-- MAIN CONTENT AREA -->
-        <main class="main-area">
-            <header class="top-bar">
-                <div class="page-title" id="pageTitle">System Overview</div>
-                <div style="display:flex; align-items:center; gap:20px;">
-                    <div class="search-bar" style="position:relative;">
-                        <input type="text" placeholder="Search Database..."
-                            style="background:rgba(255,255,255,0.05); border:none; padding:10px 15px; border-radius:20px; color:white; width:200px;">
-                        <i class="fas fa-search"
-                            style="position:absolute; right:15px; top:50%; transform:translateY(-50%); opacity:0.5;"></i>
+        <!-- Main Content Area -->
+        <main class="content-area" id="mainScroll">
+
+            <!-- Header / Status Bar -->
+            <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+                <div>
+                    <h1 class="font-tech" id="pageTitle"
+                        style="font-size:2.5rem; background:linear-gradient(to right, #fff, var(--text-muted)); background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+                        MISSION CONTROL</h1>
+                    <div style="font-size:0.9rem; color:var(--text-muted); display:flex; gap:10px; align-items:center;">
+                        <span id="userName">OPERATOR</span>
+                        <span
+                            style="width:6px; height:6px; background:var(--neon-success); border-radius:50%; box-shadow:0 0 10px var(--neon-success);"></span>
+                        SYSTEM ONLINE
                     </div>
+                </div>
+                <!-- Profile Avatar -->
+                <div id="userAvatar"
+                    style="width:50px; height:50px; border-radius:16px; background:var(--glass-highlight); border:1px solid var(--glass-border); cursor:pointer;">
                 </div>
             </header>
 
-            <div class="content-scroll">
+            <!-- DASHBOARD SCREEN -->
+            <div id="dashboardScreen" style="display:none; flex-direction:column; width:100%;">
 
                 <!-- PLACEHOLDERS FOR VIEWS -->
                 <!-- HOME VIEW -->
                 <div id="home">
-                    <h2
-                        style="font-family:'Rajdhani', sans-serif; font-size:2rem; margin-bottom:30px; letter-spacing:1px; display:flex; align-items:center; gap:15px;">
-                        <i class="fas fa-network-wired" style="color:var(--primary);"></i> Active Deployments
+                    <!-- Stats Section -->
+                    <div class="stats-grid">
+                        <div class="data-crystal">
+                            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">ACTIVE
+                                DEPLOYMENTS</div>
+                            <div style="font-size:2.5rem; font-weight:700; color:var(--neon-primary);">4</div>
+                            <div style="font-size:0.8rem; color:var(--neon-success); margin-top:5px;"><i
+                                    class="fas fa-arrow-up"></i> All Systems Nominal</div>
+                        </div>
+                        <div class="data-crystal">
+                            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">TOTAL
+                                INTERACTIONS</div>
+                            <div style="font-size:2.5rem; font-weight:700; color:var(--neon-secondary);">1,284</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">+12% from last cycle
+                            </div>
+                        </div>
+                        <div class="data-crystal">
+                            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:10px;">SEARCH
+                                VISIBILITY</div>
+                            <div style="font-size:2.5rem; font-weight:700; color:#fff;">92%</div>
+                            <div class="seo-score-container"
+                                style="position:absolute; right:20px; bottom:20px; width:40px; height:40px; opacity:0.5;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="font-tech"
+                        style="font-size:1.5rem; margin-bottom:20px; display:flex; align-items:center; gap:15px;">
+                        <i class="fas fa-network-wired" style="color:var(--neon-primary);"></i> LIVE OPERATIONS
                     </h2>
                     <div class="services-grid" id="list"></div>
                 </div>
